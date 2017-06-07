@@ -4,12 +4,15 @@
   "description": "Frontend example using truffle v3",
   "scripts": {
     "lint": "eslint ./",
-    "build": "webpack",
+    "compile": "truffle compile",
+    "cnm": "truffle compile && truffle migrate",
+    "build": "truffle build",
     "dev": "webpack-dev-server"
   },
-  "author": "Douglas von Kohorn",
+  "author": "Gnosis",
   "license": "MIT",
   "devDependencies": {
+    "@gnosis.pm/gnosis-core-contracts": "github:gnosis/gnosis-contracts-truffle",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
     "babel-eslint": "^6.1.2",

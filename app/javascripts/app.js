@@ -6,9 +6,11 @@ import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract'
 
 // Import our contract artifacts and turn them into usable abstractions.
+import math_artifacts from '@gnosis.pm/gnosis-core-contracts/build/contracts/Math.json'
 import metacoin_artifacts from '../../build/contracts/MetaCoin.json'
 
 // MetaCoin is our usable abstraction, which we'll use through the code below.
+var Math = contract(math_artifacts);
 var MetaCoin = contract(metacoin_artifacts);
 
 // The following code is simple to show off interacting with your contracts.
@@ -23,6 +25,7 @@ window.App = {
 
     // Bootstrap the MetaCoin abstraction for Use.
     MetaCoin.setProvider(web3.currentProvider);
+    Math.setProvider(web3.currentProvider);
 
     // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function(err, accs) {
@@ -48,41 +51,36 @@ window.App = {
     status.innerHTML = message;
   },
 
-  refreshBalance: function() {
-    var self = this;
-
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.getBalance.call(account, {from: account});
-    }).then(function(value) {
-      var balance_element = document.getElementById("balance");
-      balance_element.innerHTML = value.valueOf();
-    }).catch(function(e) {
+  refreshBalance: async function() {
+    try {
+      let meta = await MetaCoin.deployed(),
+          math = await Math.deployed(),
+          value = await meta.getBalance.call(account, {from: account}),
+          inflatedValue = await math.mul.call(value, 1000),
+          balance_element = document.getElementById("balance");
+      balance_element.innerHTML = inflatedValue.valueOf();
+    } catch(e) {
       console.log(e);
-      self.setStatus("Error getting balance; see log.");
-    });
+      this.setStatus("Error getting balance; see log.");
+    };
   },
 
-  sendCoin: function() {
-    var self = this;
-
-    var amount = parseInt(document.getElementById("amount").value);
-    var receiver = document.getElementById("receiver").value;
+  sendCoin: async function() {
+    let amount = parseInt(document.getElementById("amount").value);
+    let receiver = document.getElementById("receiver").value;
 
     this.setStatus("Initiating transaction... (please wait)");
 
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.sendCoin(receiver, amount, {from: account});
-    }).then(function() {
-      self.setStatus("Transaction complete!");
-      self.refreshBalance();
-    }).catch(function(e) {
+    try {
+      let meta = await MetaCoin.deployed();
+      await meta.sendCoin(receiver, amount, {from: account});
+
+      this.setStatus("Transaction complete!");
+      this.refreshBalance();
+    } catch(e) {
       console.log(e);
-      self.setStatus("Error sending coin; see log.");
-    });
+      this.setStatus("Error sending coin; see log.");
+    }
   }
 };
 

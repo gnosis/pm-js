@@ -1,6 +1,7 @@
 pragma solidity ^0.4.2;
 
 import "./ConvertLib.sol";
+import "@gnosis.pm/gnosis-core-contracts/contracts/Utils/Math.sol";
 
 // This is just a simple example of a coin-like contract.
 // It is not standards compatible and cannot be expected to talk to other
@@ -8,6 +9,8 @@ import "./ConvertLib.sol";
 // token, see: https://github.com/ConsenSys/Tokens. Cheers!
 
 contract MetaCoin {
+	using Math for *;
+
 	mapping (address => uint) balances;
 
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -17,7 +20,7 @@ contract MetaCoin {
 	}
 
 	function sendCoin(address receiver, uint amount) returns(bool sufficient) {
-		if (balances[msg.sender] < amount) return false;
+		if (!balances[msg.sender].safeToSub(amount) || !balances[receiver].safeToAdd(amount)) return false;
 		balances[msg.sender] -= amount;
 		balances[receiver] += amount;
 		Transfer(msg.sender, receiver, amount);

@@ -16,11 +16,9 @@ module.exports = {
   module: {
     rules: [
       {
-       test: /\.css$/,
-       use: [ 'style-loader', 'css-loader' ]
-      }
-    ],
-    loaders: [
+        test: /\.css$/,
+        use: [ 'style-loader', 'css-loader' ]
+      },
       { test: /\.json$/, use: 'json-loader' },
       {
         test: /\.js$/,
@@ -30,7 +28,14 @@ module.exports = {
           presets: ['es2015'],
           plugins: ['transform-runtime']
         }
-      }
+      },
+      // {
+      //   test: /\.sol$/,
+      //   use: [
+      //     { loader: 'json-loader' },
+      //     { loader: 'truffle-solidity-loader?network=development' },
+      //   ],
+      // },
     ]
   }
 }
