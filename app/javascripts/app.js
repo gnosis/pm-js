@@ -6,7 +6,7 @@ import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract'
 
 // Import our contract artifacts and turn them into usable abstractions.
-import math_artifacts from '@gnosis.pm/gnosis-core-contracts/build/contracts/Math.json'
+import math_artifacts from '../../build/contracts/Math.json'
 import metacoin_artifacts from '../../build/contracts/MetaCoin.json'
 
 // MetaCoin is our usable abstraction, which we'll use through the code below.
@@ -98,3 +98,4 @@ window.addEventListener('load', function() {
 
   App.start();
 });
+
