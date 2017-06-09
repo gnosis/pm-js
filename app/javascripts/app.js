@@ -56,9 +56,8 @@ window.App = {
       let meta = await MetaCoin.deployed()
       let math = await Math.deployed()
       let value = await meta.getBalance.call(account, { from: account })
-      let inflatedValue = await math.mul.call(value, 1000)
       let balanceElement = document.getElementById('balance')
-      balanceElement.innerHTML = inflatedValue.valueOf()
+      balanceElement.innerHTML = value.valueOf()
     } catch (e) {
       console.log(e)
       this.setStatus('Error getting balance; see log.')
