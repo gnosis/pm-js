@@ -1,18 +1,16 @@
+const fs = require('fs')
 const path = require('path')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-  entry: './app/javascripts/app.js',
+  entry: ['./app/javascripts/app.js'],
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'app.js'
   },
-  plugins: [
-    // Copy our app's index.html to the build folder.
-    new CopyWebpackPlugin([
-      { from: './app/index.html', to: 'index.html' }
-    ])
-  ],
+  plugins: [new HtmlWebpackPlugin({
+    template: 'app/index.ejs'
+  })],
   module: {
     rules: [
       {
@@ -24,18 +22,15 @@ module.exports = {
         test: /\.js$/,
         exclude: /(node_modules|bower_components)/,
         loader: 'babel-loader',
-        query: {
-          presets: ['es2015'],
-          plugins: ['transform-runtime']
-        }
+        query: JSON.parse(fs.readFileSync(path.resolve(__dirname, '.babelrc')))
+      },
+      {
+        test: /\.sol$/,
+        use: [
+          { loader: 'json-loader' },
+          { loader: 'truffle-solidity-loader?network=development' }
+        ]
       }
-      // {
-      //   test: /\.sol$/,
-      //   use: [
-      //     { loader: 'json-loader' },
-      //     { loader: 'truffle-solidity-loader?network=development' },
-      //   ],
-      // },
     ]
   }
 }

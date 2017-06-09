@@ -6,12 +6,12 @@ import { default as Web3 } from 'web3'
 import { default as contract } from 'truffle-contract'
 
 // Import our contract artifacts and turn them into usable abstractions.
-import MathArtifacts from '../../build/contracts/Math.json'
-import MetacoinArtifacts from '../../build/contracts/MetaCoin.json'
+import MathArtifacts from '@gnosis.pm/gnosis-core-contracts/contracts/Utils/Math.sol'
+import MetacoinArtifacts from '../../contracts/MetaCoin.sol'
 
 // MetaCoin is our usable abstraction, which we'll use through the code below.
-var Math = contract(MathArtifacts)
-var MetaCoin = contract(MetacoinArtifacts)
+let Math = contract(MathArtifacts)
+let MetaCoin = contract(MetacoinArtifacts)
 
 // The following code is simple to show off interacting with your contracts.
 // As your needs grow you will likely need to change its form and structure.
@@ -51,7 +51,7 @@ window.App = {
     status.innerHTML = message
   },
 
-  refreshBalance: async function() {
+  refreshBalance: async function () {
     try {
       let meta = await MetaCoin.deployed()
       let math = await Math.deployed()
@@ -65,7 +65,7 @@ window.App = {
     };
   },
 
-  sendCoin: async function() {
+  sendCoin: async function () {
     let amount = parseInt(document.getElementById('amount').value)
     let receiver = document.getElementById('receiver').value
 
