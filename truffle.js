@@ -9,5 +9,5 @@ module.exports = {
       network_id: '*' // Match any network id
     }
   },
-  build: 'webpack',
+  build: 'webpack'
 }

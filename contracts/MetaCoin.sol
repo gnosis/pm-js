@@ -16,7 +16,7 @@ contract MetaCoin {
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
 	function MetaCoin() {
-		balances[tx.origin] = 10000;
+		balances[tx.origin] = 100;
 	}
 
 	function sendCoin(address receiver, uint amount) returns(bool sufficient) {
