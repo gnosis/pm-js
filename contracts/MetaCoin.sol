@@ -1,7 +1,14 @@
 pragma solidity ^0.4.2;
 
-import "./ConvertLib.sol";
 import "@gnosis.pm/gnosis-core-contracts/contracts/Utils/Math.sol";
+import "@gnosis.pm/gnosis-core-contracts/contracts/Events/EventFactory.sol";
+import "@gnosis.pm/gnosis-core-contracts/contracts/Tokens/EtherToken.sol";
+import "@gnosis.pm/gnosis-core-contracts/contracts/Oracles/CentralizedOracleFactory.sol";
+import "@gnosis.pm/gnosis-core-contracts/contracts/Oracles/UltimateOracleFactory.sol";
+import "@gnosis.pm/gnosis-core-contracts/contracts/MarketMakers/LMSRMarketMaker.sol";
+import "@gnosis.pm/gnosis-core-contracts/contracts/Markets/StandardMarketFactory.sol";
+
+import "./ConvertLib.sol";
 
 // This is just a simple example of a coin-like contract.
 // It is not standards compatible and cannot be expected to talk to other

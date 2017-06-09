@@ -7,7 +7,7 @@
     "compile": "truffle compile",
     "cnm": "truffle compile && truffle migrate",
     "build": "truffle build",
-    "dev": "webpack-dev-server --watch-poll"
+    "dev": "truffle compile && truffle migrate && webpack-dev-server --watch-poll"
   },
   "repository": {
     "type": "git",
@@ -39,7 +39,6 @@
     "json-loader": "^0.5.4",
     "style-loader": "^0.18.2",
     "truffle": "^3.2.5",
-    "truffle-solidity-loader": "github:sogoiii/truffle-solidity-loader#update_truffle_3",
     "webpack-dev-server": "^2.4.5"
   },
   "dependencies": {
