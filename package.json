@@ -7,7 +7,8 @@
     "compile": "truffle compile",
     "cnm": "truffle compile && truffle migrate",
     "build": "truffle build",
-    "dev": "truffle compile && truffle migrate && webpack-dev-server --watch-poll"
+    "dev": "truffle compile && truffle migrate && webpack-dev-server --watch-poll",
+    "test": "./node_modules/.bin/mocha-webpack"
   },
   "repository": {
     "type": "git",
@@ -37,12 +38,16 @@
     "eslint-plugin-babel": "^4.1.1",
     "html-webpack-plugin": "^2.28.0",
     "json-loader": "^0.5.4",
+    "mocha": "^3.4.2",
+    "mocha-webpack": "^1.0.0-beta.1",
     "style-loader": "^0.18.2",
     "truffle": "^3.2.5",
+    "webpack": "^2.6.1",
     "webpack-dev-server": "^2.4.5"
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
-    "babel-runtime": "^6.23.0"
+    "babel-runtime": "^6.23.0",
+    "node-pre-gyp": "^0.6.36"
   }
 }
