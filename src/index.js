@@ -1,5 +1,8 @@
+import _ from 'lodash'
 import TruffleContract from 'truffle-contract'
 import Web3 from 'web3'
+
+import * as oracles from './oracles'
 
 let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
 
@@ -13,12 +16,21 @@ let contract_names = [
     'StandardMarketFactory'
 ]
 
-let contracts = contract_names.reduce((obj, name) => Object.assign(obj, {[name]: TruffleContract(require(`../build/contracts/${name}.json`))}), {})
+let contracts = _.zipObject(
+    contract_names,
+    contract_names.map(
+        (name) => TruffleContract(require(`../build/contracts/${name}.json`))
+    )
+)
 
-Object.values(contracts).forEach((c) => {
+_.values(contracts).forEach((c) => {
     c.setProvider(web3.currentProvider)
 })
 
-let allContractsDeployed = () => Promise.all(Object.values(contracts).map((c) => c.deployed()))
+function allContractsDeployed() {
+    let name_contract_pairs = _.entries(contracts)
+    return Promise.all(name_contract_pairs.map(([n, c]) => c.deployed())).then((contractSequence) =>
+        _.zipObject(name_contract_pairs.map(([n, c]) => n), contractSequence))
+}
 
 export default class Gnosis {}
