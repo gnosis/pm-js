@@ -13,10 +13,12 @@ let contract_names = [
     'StandardMarketFactory'
 ]
 
-export let contracts = contract_names.reduce((obj, name) => Object.assign(obj, {[name]: TruffleContract(require(`../build/contracts/${name}.json`))}), {})
+let contracts = contract_names.reduce((obj, name) => Object.assign(obj, {[name]: TruffleContract(require(`../build/contracts/${name}.json`))}), {})
 
 Object.values(contracts).forEach((c) => {
     c.setProvider(web3.currentProvider)
 })
 
-export let allContractsDeployed = () => Promise.all(Object.values(contracts).map((c) => c.deployed()))
+let allContractsDeployed = () => Promise.all(Object.values(contracts).map((c) => c.deployed()))
+
+export default class Gnosis {}
