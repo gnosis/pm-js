@@ -1,5 +1,5 @@
-const assert = require('assert')
-const Gnosis = require('../src/index')
+import assert from 'assert'
+import Gnosis from '../src/index'
 
 describe('Gnosis', () => {
     it('exists', () => {
@@ -21,7 +21,11 @@ describe('Gnosis', () => {
     })
 
     describe('#oracles', () => {
-        let gnosis = new Gnosis()
+        let gnosis
+
+        before(() => {
+            gnosis = new Gnosis()
+        })
 
         it('creates centralized oracles', () => {
             let oracle = gnosis.createCentralizedOracle()
@@ -51,8 +55,12 @@ describe('Gnosis', () => {
     })
 
     describe('#events', () => {
-        let gnosis = new Gnosis()
-        let oracle = gnosis.createCentralizedOracle()
+        let gnosis, oracle
+
+        before(() => {
+            gnosis = new Gnosis()
+            oracle = gnosis.createCentralizedOracle()
+        })
 
         it('creates categorical events', () => {
             let event = gnosis.createCategoricalEvent({
@@ -75,12 +83,16 @@ describe('Gnosis', () => {
     })
 
     describe('#markets', () => {
-        let gnosis = new Gnosis()
-        let oracle = gnosis.createCentralizedOracle()
-        let event = createCategoricalEvent({
-            collateralToken: gnosis.etherToken,
-            oracle: oracle,
-            outcomeCount: 2
+        let gnosis, oracle, event
+
+        before(() => {
+            gnosis = new Gnosis()
+            oracle = gnosis.createCentralizedOracle()
+            event = createCategoricalEvent({
+                collateralToken: gnosis.etherToken,
+                oracle: oracle,
+                outcomeCount: 2
+            })
         })
 
         it('creates markets', () => {
@@ -94,18 +106,22 @@ describe('Gnosis', () => {
     })
 
     describe('#lmsrMarketMaker', () => {
-        let gnosis = new Gnosis()
-        let oracle = gnosis.createCentralizedOracle()
-        let event = createCategoricalEvent({
-            collateralToken: gnosis.etherToken,
-            oracle: oracle,
-            outcomeCount: 2
-        })
-        let market = gnosis.createMarket({
-            marketFactory: gnosis.standardMarketFactory,
-            event: event,
-            marketMaker: gnosis.lmsrMarketMaker,
-            fee: 100
+        let gnosis, oracle, event, market
+
+        before(() => {
+            gnosis = new Gnosis()
+            oracle = gnosis.createCentralizedOracle()
+            event = createCategoricalEvent({
+                collateralToken: gnosis.etherToken,
+                oracle: oracle,
+                outcomeCount: 2
+            })
+            market = gnosis.createMarket({
+                marketFactory: gnosis.standardMarketFactory,
+                event: event,
+                marketMaker: gnosis.lmsrMarketMaker,
+                fee: 100
+            })
         })
 
         it('calculates outcome token count from cost', () => {
@@ -127,7 +143,9 @@ describe('Gnosis', () => {
     })
 
     describe('#db', () => {
-        let gnosis = new Gnosis()
+        before(() => {
+            gnosis = new Gnosis()
+        })
 
         it('exists', () => {
             assert(gnosis.db)
