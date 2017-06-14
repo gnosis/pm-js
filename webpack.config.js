@@ -29,5 +29,6 @@ module.exports = {
         query: JSON.parse(fs.readFileSync(path.resolve(__dirname, '.babelrc')))
       }
     ]
-  }
+  },
+  devtool: 'source-map'
 }
