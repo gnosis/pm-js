@@ -16,7 +16,7 @@ const contractArtifacts = _.fromPairs([
         'StandardMarketFactory'
     ].map((name) => [name, require(`../build/contracts/${name}.json`)]))
 
-export default class Gnosis {
+class Gnosis {
     static async create(opts) {
         let gnosis = new Gnosis(opts)
         await gnosis.initialized()
@@ -78,39 +78,8 @@ export default class Gnosis {
             })
         })
     }
-
-    async createCentralizedOracle() {
-        let newHash = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()'
-        let factory = await this.contracts.CentralizedOracleFactory.deployed()
-        let result = await factory.createCentralizedOracle(newHash)
-        return await this.contracts.CentralizedOracle.at(result.logs[0].args.centralizedOracle)
-    }
-
-    async createUltimateOracle(opts) {
-        const argNames = [
-            'forwardedOracle',
-            'collateralToken',
-            'spreadMultiplier',
-            'challengePeriod',
-            'challengeAmount',
-            'frontRunnerPeriod'
-        ]
-
-        opts = opts || {}
-
-        let args = argNames.map((argName) => {
-            if(!_.has(opts, argName)) {
-                throw new Error(`missing argument ${argName}`)
-            }
-            let arg = opts[argName]
-            if(_.has(arg, 'address')) {
-                arg = arg.address
-            }
-            return arg
-        })
-
-        let factory = await this.contracts.UltimateOracleFactory.deployed()
-        let result = await factory.createUltimateOracle(...args)
-        return await this.contracts.UltimateOracle.at(result.logs[0].args.ultimateOracle)
-    }
 }
+
+_.assign(Gnosis.prototype, oracles)
+
+export default Gnosis;
