@@ -88,7 +88,7 @@ describe('Gnosis', () => {
         before(async () => {
             gnosis = await Gnosis.create()
             oracle = await gnosis.createCentralizedOracle()
-            event = await createCategoricalEvent({
+            event = await gnosis.createCategoricalEvent({
                 collateralToken: gnosis.etherToken,
                 oracle: oracle,
                 outcomeCount: 2
@@ -111,7 +111,7 @@ describe('Gnosis', () => {
         before(async () => {
             gnosis = await Gnosis.create()
             oracle = await gnosis.createCentralizedOracle()
-            event = await createCategoricalEvent({
+            event = await gnosis.createCategoricalEvent({
                 collateralToken: gnosis.etherToken,
                 oracle: oracle,
                 outcomeCount: 2
