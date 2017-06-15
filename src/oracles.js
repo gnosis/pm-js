@@ -1,36 +1,34 @@
 import _ from 'lodash'
+import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
 
 export async function createCentralizedOracle() {
     let newHash = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()'
-    let factory = await this.contracts.CentralizedOracleFactory.deployed()
-    let result = await factory.createCentralizedOracle(newHash)
-    return await this.contracts.CentralizedOracle.at(result.logs[0].args.centralizedOracle)
+    return await sendTransactionAndGetResult({
+        factoryContract: this.contracts.CentralizedOracleFactory,
+        methodName: 'createCentralizedOracle',
+        methodArgs: [newHash],
+        eventName: 'CentralizedOracleCreation',
+        eventArgName: 'centralizedOracle',
+        resultContract: this.contracts.CentralizedOracle
+    })
 }
 
 export async function createUltimateOracle(opts) {
-    const argNames = [
+    let args = getTruffleArgsFromOptions([
         'forwardedOracle',
         'collateralToken',
         'spreadMultiplier',
         'challengePeriod',
         'challengeAmount',
         'frontRunnerPeriod'
-    ]
+    ], opts)
 
-    opts = opts || {}
-
-    let args = argNames.map((argName) => {
-        if(!_.has(opts, argName)) {
-            throw new Error(`missing argument ${argName}`)
-        }
-        let arg = opts[argName]
-        if(_.has(arg, 'address')) {
-            arg = arg.address
-        }
-        return arg
+    return await sendTransactionAndGetResult({
+        factoryContract: this.contracts.UltimateOracleFactory,
+        methodName: 'createUltimateOracle',
+        methodArgs: args,
+        eventName: 'UltimateOracleCreation',
+        eventArgName: 'ultimateOracle',
+        resultContract: this.contracts.UltimateOracle
     })
-
-    let factory = await this.contracts.UltimateOracleFactory.deployed()
-    let result = await factory.createUltimateOracle(...args)
-    return await this.contracts.UltimateOracle.at(result.logs[0].args.ultimateOracle)
 }

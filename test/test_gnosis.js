@@ -59,11 +59,11 @@ describe('Gnosis', () => {
 
         before(async () => {
             gnosis = await Gnosis.create()
-            oracle = gnosis.createCentralizedOracle()
+            oracle = await gnosis.createCentralizedOracle()
         })
 
-        it('creates categorical events', () => {
-            let event = gnosis.createCategoricalEvent({
+        it('creates categorical events', async () => {
+            let event = await gnosis.createCategoricalEvent({
                 collateralToken: gnosis.etherToken,
                 oracle: oracle,
                 outcomeCount: 2
@@ -71,8 +71,8 @@ describe('Gnosis', () => {
             assert(event)
         })
 
-        it('creates scalar events', () => {
-            let event = gnosis.createScalarEvent({
+        it('creates scalar events', async () => {
+            let event = await gnosis.createScalarEvent({
                 collateralToken: gnosis.etherToken,
                 oracle: oracle,
                 lowerBound: -1000,
@@ -87,16 +87,16 @@ describe('Gnosis', () => {
 
         before(async () => {
             gnosis = await Gnosis.create()
-            oracle = gnosis.createCentralizedOracle()
-            event = createCategoricalEvent({
+            oracle = await gnosis.createCentralizedOracle()
+            event = await createCategoricalEvent({
                 collateralToken: gnosis.etherToken,
                 oracle: oracle,
                 outcomeCount: 2
             })
         })
 
-        it('creates markets', () => {
-            let market = gnosis.createMarket({
+        it('creates markets', async () => {
+            let market = await gnosis.createMarket({
                 marketFactory: gnosis.standardMarketFactory,
                 event: event,
                 marketMaker: gnosis.lmsrMarketMaker,
@@ -110,13 +110,13 @@ describe('Gnosis', () => {
 
         before(async () => {
             gnosis = await Gnosis.create()
-            oracle = gnosis.createCentralizedOracle()
-            event = createCategoricalEvent({
+            oracle = await gnosis.createCentralizedOracle()
+            event = await createCategoricalEvent({
                 collateralToken: gnosis.etherToken,
                 oracle: oracle,
                 outcomeCount: 2
             })
-            market = gnosis.createMarket({
+            market = await gnosis.createMarket({
                 marketFactory: gnosis.standardMarketFactory,
                 event: event,
                 marketMaker: gnosis.lmsrMarketMaker,
@@ -124,7 +124,7 @@ describe('Gnosis', () => {
             })
         })
 
-        it('calculates outcome token count from cost', () => {
+        it('calculates outcome token count from cost', async () => {
             let outcomeTokenCount = 10000
             let cost = gnosis.lmsrMarketMaker.calcCost({
                 market: market,
