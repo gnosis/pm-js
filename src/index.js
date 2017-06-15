@@ -4,17 +4,20 @@ import TruffleContract from 'truffle-contract'
 import Web3 from 'web3'
 import * as oracles from './oracles'
 
-const contractArtifacts = _.fromPairs([
-        'Math',
-        'EventFactory',
-        'EtherToken',
-        'CentralizedOracle',
-        'CentralizedOracleFactory',
-        'UltimateOracle',
-        'UltimateOracleFactory',
-        'LMSRMarketMaker',
-        'StandardMarketFactory'
-    ].map((name) => [name, require(`../build/contracts/${name}.json`)]))
+const contractInfo = _.fromPairs([
+        ['Math', ],
+        ['EventFactory', ],
+        ['EtherToken', ],
+        ['CentralizedOracle', ],
+        ['CentralizedOracleFactory', { gas: 400000 }],
+        ['UltimateOracle', ],
+        ['UltimateOracleFactory', { gas: 900000 }],
+        ['LMSRMarketMaker', ],
+        ['StandardMarketFactory', ]
+    ].map(([name, defaults]) => [name, {
+        artifact: require(`../build/contracts/${name}.json`),
+        defaults: defaults
+    }]))
 
 class Gnosis {
     static async create(opts) {
@@ -42,18 +45,15 @@ class Gnosis {
             throw new TypeError(`type of option \`ethereum\` '${typeof opts.ethereum}' not supported!`)
         }
 
-        this.contracts = _.mapValues(contractArtifacts, (artifact) => {
-            let c = TruffleContract(artifact)
+        this.contracts = _.mapValues(contractInfo, (info) => {
+            let c = TruffleContract(info.artifact)
             c.setProvider(this.web3.currentProvider)
+
+            if(info.defaults != null) {
+                c.defaults(info.defaults)
+            }
+
             return c
-        })
-
-        this.contracts.CentralizedOracleFactory.defaults({
-            gas: 400000
-        })
-
-        this.contracts.UltimateOracleFactory.defaults({
-            gas: 900000
         })
 
         this.TruffleContract = TruffleContract
