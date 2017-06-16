@@ -1,7 +1,10 @@
 import assert from 'assert'
 import Gnosis from '../src/index'
+import { requireEventFromTXResult } from '../src/utils'
 
-describe('Gnosis', () => {
+describe('Gnosis', function() {
+    this.timeout(120000)
+
     it('exists', () => {
         assert(Gnosis)
     })
@@ -100,7 +103,8 @@ describe('Gnosis', () => {
                 marketFactory: gnosis.standardMarketFactory,
                 event: event,
                 marketMaker: gnosis.lmsrMarketMaker,
-                fee: 100
+                fee: 100,
+                marketContract: gnosis.contracts.StandardMarket
             })
         })
     })
@@ -120,29 +124,36 @@ describe('Gnosis', () => {
                 marketFactory: gnosis.standardMarketFactory,
                 event: event,
                 marketMaker: gnosis.lmsrMarketMaker,
-                fee: 100
+                fee: 100,
+                marketContract: gnosis.contracts.StandardMarket
             })
+
+            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: '100000000' }), 'Deposit')
+            requireEventFromTXResult(await gnosis.etherToken.approve(market.address, '100000000'), 'Approval')
+            requireEventFromTXResult(await market.fund('100000000'), 'MarketFunding')
         })
 
         it('calculates outcome token count from cost', async () => {
-            let outcomeTokenCount = 10000
-            let cost = gnosis.lmsrMarketMaker.calcCost({
+            let outcomeTokenCount = 1000000000
+
+            let cost = await gnosis.lmsrMarketMaker.calcCost({
                 market: market,
                 outcomeTokenIndex: 0,
                 outcomeTokenCount: outcomeTokenCount
             })
 
-            let calculatedOutcomeTokenCount = gnosis.lmsrMarketMaker.calcOutcomeTokenCount({
+            let calculatedOutcomeTokenCount = await gnosis.lmsrMarketMaker.calcOutcomeTokenCount({
                 market: market,
                 outcomeTokenIndex: 0,
                 cost: cost
             })
 
-            assert.equal(outcomeTokenCount, calculatedOutcomeTokenCount)
+            assert.equal(outcomeTokenCount.toString(), calculatedOutcomeTokenCount.toString())
         })
     })
 
     describe('#db', () => {
+        let gnosis
         before(async () => {
             gnosis = await Gnosis.create()
         })

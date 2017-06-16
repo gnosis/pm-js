@@ -2,13 +2,16 @@ import _ from 'lodash'
 import Promise from 'bluebird'
 import TruffleContract from 'truffle-contract'
 import Web3 from 'web3'
+import * as lmsrMarketMakerMixin from './lmsrMarketMakerMixin'
 import * as oracles from './oracles'
 import * as events from './events'
+import * as markets from './markets'
 
-let parseInt = (s) => Number(_.split(s, ',').join(''))
+const parseInt = (s) => Number(_.split(s, ',').join(''))
 
 const contractInfo = _.fromPairs([
         ['Math'],
+        ['Event'],
         ['CategoricalEvent'],
         ['ScalarEvent'],
         ['EventFactory', { gas: parseInt('3,000,000') }],
@@ -18,7 +21,8 @@ const contractInfo = _.fromPairs([
         ['UltimateOracle'],
         ['UltimateOracleFactory', { gas: parseInt('900,000') }],
         ['LMSRMarketMaker'],
-        ['StandardMarketFactory']
+        ['StandardMarket', { gas: parseInt('300,000') }],
+        ['StandardMarketFactory', { gas: parseInt('2,000,000') }]
     ].map(([name, defaults]) => [name, {
         artifact: require(`../build/contracts/${name}.json`),
         defaults: defaults
@@ -66,10 +70,19 @@ class Gnosis {
 
     async initialized() {
         let accounts
-        [accounts, this.etherToken] = await Promise.all([
+        [accounts, this.etherToken, this.standardMarketFactory, this.lmsrMarketMaker] = await Promise.all([
             Promise.promisify(this.web3.eth.getAccounts)(),
-            this.contracts.EtherToken.deployed()
+            this.contracts.EtherToken.deployed(),
+            this.contracts.StandardMarketFactory.deployed(),
+            this.contracts.LMSRMarketMaker.deployed()
         ])
+
+        // TODO: Rewrite this using a generic proxy which can be used to refit
+        // other TruffleContracts with nicer calling interfaces
+        this.lmsrMarketMaker._calcCost = this.lmsrMarketMaker.calcCost
+        this.lmsrMarketMaker.gnosis = this
+        _.assign(this.lmsrMarketMaker, lmsrMarketMakerMixin)
+
         if(accounts.length > 0) {
             this.setDefaultAccount(accounts[0])
         }
@@ -85,6 +98,6 @@ class Gnosis {
     }
 }
 
-_.assign(Gnosis.prototype, oracles, events)
+_.assign(Gnosis.prototype, oracles, events, markets)
 
 export default Gnosis;
