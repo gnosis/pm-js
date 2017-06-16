@@ -3,6 +3,7 @@ import DecimalJS from 'decimal.js'
 
 export let Decimal = DecimalJS.clone({ precision: 80 })
 
+
 export function getTruffleArgsFromOptions(argNames, opts) {
     opts = opts || {}
 
