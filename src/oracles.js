@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
 
 export async function createCentralizedOracle() {
-    let newHash = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()'
+    let newHash = '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
     return await sendTransactionAndGetResult({
         factoryContract: this.contracts.CentralizedOracleFactory,
         methodName: 'createCentralizedOracle',

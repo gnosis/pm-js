@@ -2,6 +2,8 @@ import _ from 'lodash'
 import Promise from 'bluebird'
 import TruffleContract from 'truffle-contract'
 import Web3 from 'web3'
+import IPFS from 'ipfs-mini'
+
 import * as lmsrMarketMakerMixin from './lmsrMarketMakerMixin'
 import * as oracles from './oracles'
 import * as events from './events'
@@ -36,8 +38,11 @@ class Gnosis {
     }
 
     constructor(opts) {
-        opts = _.defaults(opts || {}, {
-            ipfs: '',
+        opts = _.defaultsDeep(opts || {}, {
+            ipfs: {
+              host: 'ipfs.infura.io',
+              port: 5001,
+              protocol: 'https' },
             gnosisdb: 'https:/db.gnosis.pm'
         })
 
@@ -53,6 +58,11 @@ class Gnosis {
         } else {
             throw new TypeError(`type of option \`ethereum\` '${typeof opts.ethereum}' not supported!`)
         }
+
+        //IPFS instantiation
+        this.ipfs = Promise.promisifyAll(
+            new IPFS(opts.ipfs)
+          )
 
         this.contracts = _.mapValues(contractInfo, (info) => {
             let c = TruffleContract(info.artifact)
