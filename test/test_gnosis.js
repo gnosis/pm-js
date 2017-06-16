@@ -1,19 +1,22 @@
 import assert from 'assert'
 import Gnosis from '../src/index'
+import { requireEventFromTXResult } from '../src/utils'
 
-describe('Gnosis', () => {
+describe('Gnosis', function() {
+    this.timeout(120000)
+
     it('exists', () => {
         assert(Gnosis)
     })
 
-    it('initializes with defaults', () => {
-        let gnosis = new Gnosis()
+    it('initializes with defaults', async () => {
+        let gnosis = await Gnosis.create()
         assert(gnosis)
     })
 
-    it('initializes with options', () => {
-        let gnosis = new Gnosis({
-            ethereum: 'https://mainnnet.infura.io',
+    it('initializes with options', async () => {
+        let gnosis = await Gnosis.create({
+            ethereum: 'http://localhost:8545',
             ipfs: '',
             gnosisdb: 'https:/db.gnosis.pm'
         })
@@ -23,21 +26,21 @@ describe('Gnosis', () => {
     describe('#oracles', () => {
         let gnosis
 
-        before(() => {
-            gnosis = new Gnosis()
+        before(async () => {
+            gnosis = await Gnosis.create()
         })
 
-        it('creates centralized oracles', () => {
-            let oracle = gnosis.createCentralizedOracle()
+        it('creates centralized oracles', async () => {
+            let oracle = await gnosis.createCentralizedOracle()
             assert(oracle)
         })
 
-        it('creates ultimate oracles', () => {
-            let cenOracle = gnosis.createCentralizedOracle()
-            let ultOracle = gnosis.createUltimateOracle({
+        it('creates ultimate oracles', async () => {
+            let cenOracle = await gnosis.createCentralizedOracle()
+            let ultOracle = await gnosis.createUltimateOracle({
                 forwardedOracle: cenOracle,
                 collateralToken: gnosis.etherToken,
-                spreadMultiplier: 1,
+                spreadMultiplier: 2,
                 challengePeriod: 3600,
                 challengeAmount: 1000,
                 frontRunnerPeriod: 60
@@ -57,13 +60,13 @@ describe('Gnosis', () => {
     describe('#events', () => {
         let gnosis, oracle
 
-        before(() => {
-            gnosis = new Gnosis()
-            oracle = gnosis.createCentralizedOracle()
+        before(async () => {
+            gnosis = await Gnosis.create()
+            oracle = await gnosis.createCentralizedOracle()
         })
 
-        it('creates categorical events', () => {
-            let event = gnosis.createCategoricalEvent({
+        it('creates categorical events', async () => {
+            let event = await gnosis.createCategoricalEvent({
                 collateralToken: gnosis.etherToken,
                 oracle: oracle,
                 outcomeCount: 2
@@ -71,8 +74,8 @@ describe('Gnosis', () => {
             assert(event)
         })
 
-        it('creates scalar events', () => {
-            let event = gnosis.createScalarEvent({
+        it('creates scalar events', async () => {
+            let event = await gnosis.createScalarEvent({
                 collateralToken: gnosis.etherToken,
                 oracle: oracle,
                 lowerBound: -1000,
@@ -85,22 +88,23 @@ describe('Gnosis', () => {
     describe('#markets', () => {
         let gnosis, oracle, event
 
-        before(() => {
-            gnosis = new Gnosis()
-            oracle = gnosis.createCentralizedOracle()
-            event = createCategoricalEvent({
+        before(async () => {
+            gnosis = await Gnosis.create()
+            oracle = await gnosis.createCentralizedOracle()
+            event = await gnosis.createCategoricalEvent({
                 collateralToken: gnosis.etherToken,
                 oracle: oracle,
                 outcomeCount: 2
             })
         })
 
-        it('creates markets', () => {
-            let market = gnosis.createMarket({
+        it('creates markets', async () => {
+            let market = await gnosis.createMarket({
                 marketFactory: gnosis.standardMarketFactory,
                 event: event,
                 marketMaker: gnosis.lmsrMarketMaker,
-                fee: 100
+                fee: 100,
+                marketContract: gnosis.contracts.StandardMarket
             })
         })
     })
@@ -108,43 +112,50 @@ describe('Gnosis', () => {
     describe('#lmsrMarketMaker', () => {
         let gnosis, oracle, event, market
 
-        before(() => {
-            gnosis = new Gnosis()
-            oracle = gnosis.createCentralizedOracle()
-            event = createCategoricalEvent({
+        before(async () => {
+            gnosis = await Gnosis.create()
+            oracle = await gnosis.createCentralizedOracle()
+            event = await gnosis.createCategoricalEvent({
                 collateralToken: gnosis.etherToken,
                 oracle: oracle,
                 outcomeCount: 2
             })
-            market = gnosis.createMarket({
+            market = await gnosis.createMarket({
                 marketFactory: gnosis.standardMarketFactory,
                 event: event,
                 marketMaker: gnosis.lmsrMarketMaker,
-                fee: 100
+                fee: 100,
+                marketContract: gnosis.contracts.StandardMarket
             })
+
+            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: '100000000' }), 'Deposit')
+            requireEventFromTXResult(await gnosis.etherToken.approve(market.address, '100000000'), 'Approval')
+            requireEventFromTXResult(await market.fund('100000000'), 'MarketFunding')
         })
 
-        it('calculates outcome token count from cost', () => {
-            let outcomeTokenCount = 10000
-            let cost = gnosis.lmsrMarketMaker.calcCost({
+        it('calculates outcome token count from cost', async () => {
+            let outcomeTokenCount = 1000000000
+
+            let cost = await gnosis.lmsrMarketMaker.calcCost({
                 market: market,
                 outcomeTokenIndex: 0,
                 outcomeTokenCount: outcomeTokenCount
             })
 
-            let calculatedOutcomeTokenCount = gnosis.lmsrMarketMaker.calcOutcomeTokenCount({
+            let calculatedOutcomeTokenCount = await gnosis.lmsrMarketMaker.calcOutcomeTokenCount({
                 market: market,
                 outcomeTokenIndex: 0,
                 cost: cost
             })
 
-            assert.equal(outcomeTokenCount, calculatedOutcomeTokenCount)
+            assert.equal(outcomeTokenCount.toString(), calculatedOutcomeTokenCount.toString())
         })
     })
 
     describe('#db', () => {
-        before(() => {
-            gnosis = new Gnosis()
+        let gnosis
+        before(async () => {
+            gnosis = await Gnosis.create()
         })
 
         it('exists', () => {
