@@ -1,6 +1,10 @@
 import assert from 'assert'
 import Gnosis from '../src/index'
 import { requireEventFromTXResult } from '../src/utils'
+/**
+  * Testing Testing
+  * 123
+  **/
 
 describe('Gnosis', function() {
     this.timeout(120000)
