@@ -48,12 +48,16 @@ describe('Gnosis', function() {
             assert(ultOracle)
         })
 
-        it('publishes event descriptions and loads them', () => {
-            let description = {}
-            let _SOMETHING_ = gnosis.publishEventDescription(description)
-            assert(_SOMETHING_)
-            let loadedDescription = gnosis.loadEventDescription(_SOMETHING_)
-            assert.equal(loadedDescription, description)
+        it('publishes event descriptions and loads them', async () => {
+            let description = {
+              title: "Will Bitcoin Hardfork before 2018",
+              description: "Hello world",
+              resolutionDate: "tbd"
+            }
+            let ipfsHash = await gnosis.publishEventDescription(description)
+            assert(ipfsHash)
+            let loadedDescription = await gnosis.loadEventDescription(ipfsHash)
+            assert.deepEqual(loadedDescription, description)
         })
     })
 

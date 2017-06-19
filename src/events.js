@@ -35,3 +35,11 @@ export async function createScalarEvent(opts) {
         resultContract: this.contracts.ScalarEvent
     })
 }
+
+export async function publishEventDescription(description) {
+    return await this.ipfs.addJSONAsync(description)
+}
+
+export async function loadEventDescription(ipfsHash) {
+    return await this.ipfs.catJSONAsync(ipfsHash)
+}
