@@ -6,12 +6,7 @@ let UltimateOracleFactory = artifacts.require("@gnosis.pm/gnosis-core-contracts/
 let LMSRMarketMaker = artifacts.require("@gnosis.pm/gnosis-core-contracts/contracts/MarketMakers/LMSRMarketMaker.sol");
 let StandardMarketFactory = artifacts.require("@gnosis.pm/gnosis-core-contracts/contracts/Markets/StandardMarketFactory.sol");
 
-let ConvertLib = artifacts.require("./ConvertLib.sol");
-let MetaCoin = artifacts.require("./MetaCoin.sol");
-
 module.exports = function(deployer) {
-  deployer.deploy(Math);
-  deployer.deploy(ConvertLib);
 
   deployer.link(Math, EventFactory)
   deployer.deploy(EventFactory)
@@ -30,7 +25,4 @@ module.exports = function(deployer) {
   deployer.link(Math, EtherToken)
   deployer.deploy(EtherToken)
 
-  deployer.link(ConvertLib, MetaCoin);
-  deployer.link(Math, MetaCoin);
-  deployer.deploy(MetaCoin);
 };

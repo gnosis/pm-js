@@ -4,7 +4,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   entry: {
-    app: './app/javascripts/app.js',
+    // previously needed for default truffle app
+    // app: './app/javascripts/app.js',
     gnosis: './src/index.js'
   },
   output: {
@@ -13,7 +14,8 @@ module.exports = {
     library: '[name]'
   },
   plugins: [new HtmlWebpackPlugin({
-    template: 'app/index.ejs'
+    // previously needed for default truffle app
+    // template: 'app/index.ejs'
   })],
   module: {
     rules: [

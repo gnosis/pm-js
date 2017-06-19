@@ -1,12 +1,11 @@
 import _ from 'lodash'
 import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
 
-export async function createCentralizedOracle() {
-    let newHash = '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+export async function createCentralizedOracle(ipfsHash) {
     return await sendTransactionAndGetResult({
         factoryContract: this.contracts.CentralizedOracleFactory,
         methodName: 'createCentralizedOracle',
-        methodArgs: [newHash],
+        methodArgs: [ipfsHash],
         eventName: 'CentralizedOracleCreation',
         eventArgName: 'centralizedOracle',
         resultContract: this.contracts.CentralizedOracle
