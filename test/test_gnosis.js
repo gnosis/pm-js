@@ -1,13 +1,14 @@
 import assert from 'assert'
 import Gnosis from '../src/index'
 import { requireEventFromTXResult } from '../src/utils'
-/**
-  * Testing Testing
-  * 123
-  **/
 
 describe('Gnosis', function() {
     this.timeout(120000)
+    let description = {
+      title: "Will Bitcoin Hardfork before 2018",
+      description: "Hello world",
+      resolutionDate: "tbd"
+    }
 
     it('exists', () => {
         assert(Gnosis)
@@ -28,19 +29,20 @@ describe('Gnosis', function() {
     })
 
     describe('#oracles', () => {
-        let gnosis
+        let gnosis, ipfsHash
 
         before(async () => {
             gnosis = await Gnosis.create()
+            ipfsHash = await gnosis.publishEventDescription(description)
         })
 
         it('creates centralized oracles', async () => {
-            let oracle = await gnosis.createCentralizedOracle()
+            let oracle = await gnosis.createCentralizedOracle(ipfsHash)
             assert(oracle)
         })
 
         it('creates ultimate oracles', async () => {
-            let cenOracle = await gnosis.createCentralizedOracle()
+            let cenOracle = await gnosis.createCentralizedOracle(ipfsHash)
             let ultOracle = await gnosis.createUltimateOracle({
                 forwardedOracle: cenOracle,
                 collateralToken: gnosis.etherToken,
@@ -53,24 +55,25 @@ describe('Gnosis', function() {
         })
 
         it('publishes event descriptions and loads them', async () => {
-            let description = {
+            let newDescription = {
               title: "Will Bitcoin Hardfork before 2018",
               description: "Hello world",
               resolutionDate: "tbd"
             }
-            let ipfsHash = await gnosis.publishEventDescription(description)
-            assert(ipfsHash)
-            let loadedDescription = await gnosis.loadEventDescription(ipfsHash)
+            let newIpfsHash = await gnosis.publishEventDescription(newDescription)
+            assert(newIpfsHash)
+            let loadedDescription = await gnosis.loadEventDescription(newIpfsHash)
             assert.deepEqual(loadedDescription, description)
         })
     })
 
     describe('#events', () => {
-        let gnosis, oracle
+        let gnosis, oracle, ipfsHash
 
         before(async () => {
             gnosis = await Gnosis.create()
-            oracle = await gnosis.createCentralizedOracle()
+            ipfsHash = await gnosis.publishEventDescription(description)
+            oracle = await gnosis.createCentralizedOracle(ipfsHash)
         })
 
         it('creates categorical events', async () => {
@@ -94,11 +97,12 @@ describe('Gnosis', function() {
     })
 
     describe('#markets', () => {
-        let gnosis, oracle, event
+        let gnosis, oracle, event, ipfsHash
 
         before(async () => {
             gnosis = await Gnosis.create()
-            oracle = await gnosis.createCentralizedOracle()
+            ipfsHash = await gnosis.publishEventDescription(description)
+            oracle = await gnosis.createCentralizedOracle(ipfsHash)
             event = await gnosis.createCategoricalEvent({
                 collateralToken: gnosis.etherToken,
                 oracle: oracle,
@@ -118,11 +122,12 @@ describe('Gnosis', function() {
     })
 
     describe('#lmsrMarketMaker', () => {
-        let gnosis, oracle, event, market
+        let gnosis, oracle, event, market, ipfsHash
 
         before(async () => {
             gnosis = await Gnosis.create()
-            oracle = await gnosis.createCentralizedOracle()
+            ipfsHash = await gnosis.publishEventDescription(description)
+            oracle = await gnosis.createCentralizedOracle(ipfsHash)
             event = await gnosis.createCategoricalEvent({
                 collateralToken: gnosis.etherToken,
                 oracle: oracle,
