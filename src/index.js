@@ -30,7 +30,20 @@ const contractInfo = _.fromPairs([
         defaults: defaults
     }]))
 
+/**
+ * Represents the gnosis.js API
+ */
 class Gnosis {
+    /**
+     * Factory function for asynchronously creating an instance of the API
+     * @param {Object} [opts={}] - The options object
+     * @param {string} [opts.ethereum] - The URL of a Web3 HTTP provider. If not specified, Web3 provider will be either the browser-injected Web3 (Mist/MetaMask) or an HTTP provider looking at http://localhost:8545
+     * @param {Object} [opts.ipfs] - ipfs-mini configuration object
+     * @param {string} [opts.ipfs.host='ipfs.infura.io'] - IPFS node address
+     * @param {Number} [opts.ipfs.port=5001] - IPFS protocol port
+     * @param {string} [opts.ipfs.protocol='https'] - IPFS protocol name
+     * @returns {Gnosis} An instance of the gnosis.js API
+     */
     static async create(opts) {
         let gnosis = new Gnosis(opts)
         await gnosis.initialized()
@@ -43,7 +56,6 @@ class Gnosis {
               host: 'ipfs.infura.io',
               port: 5001,
               protocol: 'https' },
-            gnosisdb: 'https:/db.gnosis.pm'
         })
 
         if(opts.ethereum == null) {
