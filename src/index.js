@@ -26,7 +26,7 @@ const contractInfo = _.fromPairs([
         ['StandardMarket', { gas: parseInt('300,000') }],
         ['StandardMarketFactory', { gas: parseInt('2,000,000') }]
     ].map(([name, defaults]) => [name, {
-        artifact: require(`../build/contracts/${name}.json`),
+        artifact: require(`@gnosis.pm/gnosis-core-contracts/build/contracts/${name}.json`),
         defaults: defaults
     }]))
 
