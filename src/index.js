@@ -25,10 +25,10 @@ const contractInfo = _.fromPairs([
         ['LMSRMarketMaker'],
         ['StandardMarket', { gas: parseInt('300,000') }],
         ['StandardMarketFactory', { gas: parseInt('2,000,000') }]
-    ].map(([name, defaults]) => [name, {
-        artifact: require(`@gnosis.pm/gnosis-core-contracts/build/contracts/${name}.json`),
-        defaults: defaults
-    }]))
+].map(([name, defaults]) => [name, {
+    artifact: require(`@gnosis.pm/gnosis-core-contracts/build/contracts/${name}.json`),
+    defaults: defaults
+}]))
 
 /**
  * Represents the gnosis.js API
@@ -37,41 +37,43 @@ class Gnosis {
     /**
      * Factory function for asynchronously creating an instance of the API
      * @param {Object} [opts={}] - The options object
-     * @param {string} [opts.ethereum] - The URL of a Web3 HTTP provider. If not specified, Web3 provider will be either the browser-injected Web3 (Mist/MetaMask) or an HTTP provider looking at http://localhost:8545
+     * @param {string} [opts.ethereum] - The URL of a Web3 HTTP provider.
+     If not specified, Web3 provider will be either the browser-injected Web3
+     (Mist/MetaMask) or an HTTP provider looking at http://localhost:8545
      * @param {Object} [opts.ipfs] - ipfs-mini configuration object
      * @param {string} [opts.ipfs.host='ipfs.infura.io'] - IPFS node address
      * @param {Number} [opts.ipfs.port=5001] - IPFS protocol port
      * @param {string} [opts.ipfs.protocol='https'] - IPFS protocol name
      * @returns {Gnosis} An instance of the gnosis.js API
      */
-    static async create(opts) {
+    static async create (opts) {
         let gnosis = new Gnosis(opts)
         await gnosis.initialized()
         return gnosis
     }
 
-    constructor(opts) {
+    constructor (opts) {
         opts = _.defaultsDeep(opts || {}, {
             ipfs: {
-              host: 'ipfs.infura.io',
-              port: 5001,
-              protocol: 'https' },
+                host: 'ipfs.infura.io',
+                port: 5001,
+                protocol: 'https' }
         })
 
-        if(opts.ethereum == null) {
+        if (opts.ethereum == null) {
             // Prefer Web3 injected by the browser (Mist/MetaMask)
-            if(typeof web3 !== 'undefined') {
+            if (typeof web3 !== 'undefined') {
                 this.web3 = new Web3(web3.currentProvider)
             } else {
                 this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
             }
-        } else if(typeof opts.ethereum === 'string') {
+        } else if (typeof opts.ethereum === 'string') {
             this.web3 = new Web3(new Web3.providers.HttpProvider(opts.ethereum))
         } else {
             throw new TypeError(`type of option \`ethereum\` '${typeof opts.ethereum}' not supported!`)
         }
 
-        //IPFS instantiation
+        // IPFS instantiation
         this.ipfs = Promise.promisifyAll(
             new IPFS(opts.ipfs)
           )
@@ -80,7 +82,7 @@ class Gnosis {
             let c = TruffleContract(info.artifact)
             c.setProvider(this.web3.currentProvider)
 
-            if(info.defaults != null) {
+            if (info.defaults != null) {
                 c.defaults(info.defaults)
             }
 
@@ -90,7 +92,7 @@ class Gnosis {
         this.TruffleContract = TruffleContract
     }
 
-    async initialized() {
+    async initialized () {
         let accounts
         [accounts, this.etherToken, this.standardMarketFactory, this.lmsrMarketMaker] = await Promise.all([
             Promise.promisify(this.web3.eth.getAccounts)(),
@@ -105,12 +107,12 @@ class Gnosis {
         this.lmsrMarketMaker.gnosis = this
         _.assign(this.lmsrMarketMaker, lmsrMarketMakerMixin)
 
-        if(accounts.length > 0) {
+        if (accounts.length > 0) {
             this.setDefaultAccount(accounts[0])
         }
     }
 
-    setDefaultAccount(account) {
+    setDefaultAccount (account) {
         this.defaultAccount = account
         _.forOwn(this.contracts, (c) => {
             c.defaults({
@@ -122,4 +124,4 @@ class Gnosis {
 
 _.assign(Gnosis.prototype, oracles, events, markets)
 
-export default Gnosis;
+export default Gnosis

@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
 
 /**
@@ -9,7 +8,7 @@ import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
  * @returns {Contract} The created categorical event
  * @alias Gnosis.createCategoricalEvent
  */
-export async function createCategoricalEvent(opts) {
+export async function createCategoricalEvent (opts) {
     let args = getTruffleArgsFromOptions([
         'collateralToken',
         'oracle',
@@ -35,7 +34,7 @@ export async function createCategoricalEvent(opts) {
  * @returns {Contract} The created scalar event
  * @alias Gnosis.createScalarEvent
  */
-export async function createScalarEvent(opts) {
+export async function createScalarEvent (opts) {
     let args = getTruffleArgsFromOptions([
         'collateralToken',
         'oracle',
@@ -59,7 +58,7 @@ export async function createScalarEvent(opts) {
  * @returns {string} The IPFS hash locating the published event
  * @alias Gnosis.publishEventDescription
  */
-export async function publishEventDescription(description) {
+export async function publishEventDescription (description) {
     return await this.ipfs.addJSONAsync(description)
 }
 
@@ -69,6 +68,6 @@ export async function publishEventDescription(description) {
  * @returns {Object} A POD object describing the event
  * @alias Gnosis.loadEventDescription
  */
-export async function loadEventDescription(ipfsHash) {
+export async function loadEventDescription (ipfsHash) {
     return await this.ipfs.catJSONAsync(ipfsHash)
 }
