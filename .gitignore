@@ -61,8 +61,6 @@ typings/
 .env
 
 ###########################################################
-# Truffle
+# Project specific
 ###########################################################
-build
-node_modules
-yarn-error.log
+dist
