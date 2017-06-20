@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
 
 /**
@@ -7,7 +6,7 @@ import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
  * @returns {Contract} The created centralized oracle contract instance
  * @alias Gnosis.createCentralizedOracle
  */
-export async function createCentralizedOracle(ipfsHash) {
+export async function createCentralizedOracle (ipfsHash) {
     return await sendTransactionAndGetResult({
         factoryContract: this.contracts.CentralizedOracleFactory,
         methodName: 'createCentralizedOracle',
@@ -29,7 +28,7 @@ export async function createCentralizedOracle(ipfsHash) {
  * @returns {Contract} The created ultimate oracle contract instance
  * @alias Gnosis.createUltimateOracle
  */
-export async function createUltimateOracle(opts) {
+export async function createUltimateOracle (opts) {
     let args = getTruffleArgsFromOptions([
         'forwardedOracle',
         'collateralToken',

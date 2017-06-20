@@ -8,7 +8,7 @@ import { getTruffleArgsFromOptions, Decimal } from './utils'
  * @param {Number|string|BigNumber} opts.outcomeTokenCount - The number of outcome tokens to buy
  * @returns {BigNumber} The cost of the outcome tokens in event collateral tokens
  */
-export async function calcCost(opts) {
+export async function calcCost (opts) {
     let args = getTruffleArgsFromOptions([
         'market',
         'outcomeTokenIndex',
@@ -24,7 +24,7 @@ export async function calcCost(opts) {
  * @param {Number|string|BigNumber} opts.outcomeTokenCount - The amount of collateral for buying tokens
  * @returns {BigNumber} The number of outcome tokens that can be bought
  */
-export async function calcOutcomeTokenCount(opts) {
+export async function calcOutcomeTokenCount (opts) {
     // decimal.js making this reaaally messy :/
     let { market, outcomeTokenIndex, cost } = opts
     cost = new Decimal(cost.toString())
@@ -37,7 +37,8 @@ export async function calcOutcomeTokenCount(opts) {
             )
         ).getOutcomeCount()).toString())
 
-    let netOutcomeTokensSold = (await Promise.all(_.range(outcomeCount).map((i) => market.netOutcomeTokensSold(i)))).map((v) => new Decimal(v.toString()))
+    let netOutcomeTokensSold = (await Promise.all(_.range(outcomeCount).map((i) =>
+    market.netOutcomeTokensSold(i)))).map((v) => new Decimal(v.toString()))
     let b = new Decimal((await market.funding()).toString()).dividedBy(new Decimal(outcomeCount).ln())
     return b.times(
         netOutcomeTokensSold.reduce((acc, numShares) =>
@@ -48,8 +49,8 @@ export async function calcOutcomeTokenCount(opts) {
                 .exp()),
             new Decimal(0))
         .minus(netOutcomeTokensSold.reduce((acc, numShares, i) =>
-            i === outcomeTokenIndex ? acc :
-            acc.plus(
+            i === outcomeTokenIndex ? acc
+            : acc.plus(
                 new Decimal(numShares.toString())
                 .dividedBy(b)
                 .exp()),

@@ -2,12 +2,12 @@ import assert from 'assert'
 import Gnosis from '../src/index'
 import { requireEventFromTXResult } from '../src/utils'
 
-describe('Gnosis', function() {
+describe('Gnosis', function () {
     this.timeout(120000)
     let description = {
-      title: "Will Bitcoin Hardfork before 2018",
-      description: "Hello world",
-      resolutionDate: "tbd"
+        title: 'Will Bitcoin Hardfork before 2018',
+        description: 'Hello world',
+        resolutionDate: 'tbd'
     }
 
     it('exists', () => {
@@ -56,9 +56,9 @@ describe('Gnosis', function() {
 
         it('publishes event descriptions and loads them', async () => {
             let newDescription = {
-              title: "Will Bitcoin Hardfork before 2018",
-              description: "Hello world",
-              resolutionDate: "tbd"
+                title: 'Will Bitcoin Hardfork before 2018',
+                description: 'Hello world',
+                resolutionDate: 'tbd'
             }
             let newIpfsHash = await gnosis.publishEventDescription(newDescription)
             assert(newIpfsHash)
@@ -118,6 +118,7 @@ describe('Gnosis', function() {
                 fee: 100,
                 marketContract: gnosis.contracts.StandardMarket
             })
+            assert(market)
         })
     })
 
