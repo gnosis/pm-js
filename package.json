@@ -4,10 +4,12 @@
   "description": "A javascript library for building applications on top of Gnosis, the Ethereum prediction market platform",
   "scripts": {
     "lint": "eslint ./",
-    "compile": "truffle compile",
-    "cnm": "truffle compile && truffle migrate",
-    "build": "truffle build",
-    "dev": "truffle compile && truffle migrate && webpack-dev-server --watch-poll",
+    "compile": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle compile",
+    "migrate": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle migrate",
+    "cnm": "npm run compile && npm run migrate",
+    "buildcontracts": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle build",
+    "build": "npm run buildcontracts && webpack",
+    "dev": "npm run cnm && webpack-dev-server --watch-poll",
     "test": "mocha --compilers js:babel-register"
   },
   "repository": {
