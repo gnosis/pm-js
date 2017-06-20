@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
 
 /**
@@ -12,7 +11,7 @@ import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
  * @returns {Contract} The created ultimate oracle contract instance
  * @alias Gnosis.createUltimateOracle
  */
-export async function createMarket(opts) {
+export async function createMarket (opts) {
     let args = getTruffleArgsFromOptions([
         'event',
         'marketMaker',
