@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import {promisify, promisifyAll} from 'bluebird'
 import TruffleContract from 'truffle-contract'
 import Web3 from 'web3'
 import IPFS from 'ipfs-mini'
@@ -8,6 +7,7 @@ import * as lmsrMarketMakerMixin from './lmsrMarketMakerMixin'
 import * as oracles from './oracles'
 import * as events from './events'
 import * as markets from './markets'
+import {promisify, promisifyAll} from './utils'
 
 const parseInt = (s) => Number(_.split(s, ',').join(''))
 

@@ -43,3 +43,32 @@ export async function sendTransactionAndGetResult (opts) {
 
     return await opts.resultContract.at(matchingLog.args[opts.eventArgName])
 }
+
+// I know bluebird does this, but it's heavy
+export function promisify(fn) {
+    return new Proxy(fn, {
+        apply: (target, thisArg, args) => {
+            return new Promise((resolve, reject) => {
+                let newArgs = Array.from(args)
+                newArgs.push((err, result) => {
+                    if (err != null) {
+                        reject(new Error(`${err}${result == null ? '' : ` (${result})`}`))
+                    } else {
+                        resolve(result)
+                    }
+                })
+                target.apply(thisArg, newArgs)
+            })
+        }
+    })
+}
+
+export function promisifyAll(obj) {
+    _.functionsIn(obj).forEach((fnName) => {
+        let asyncFnName = fnName + 'Async'
+        if (!_.has(obj, asyncFnName)) {
+            obj[asyncFnName] = promisify(obj[fnName])
+        }
+    })
+    return obj
+}
