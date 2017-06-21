@@ -116,7 +116,6 @@ describe('Gnosis', function () {
                 event: event,
                 marketMaker: gnosis.lmsrMarketMaker,
                 fee: 100,
-                marketContract: gnosis.contracts.StandardMarket
             })
             assert(market)
         })
@@ -139,7 +138,6 @@ describe('Gnosis', function () {
                 event: event,
                 marketMaker: gnosis.lmsrMarketMaker,
                 fee: 100,
-                marketContract: gnosis.contracts.StandardMarket
             })
 
             requireEventFromTXResult(await gnosis.etherToken.deposit({ value: '100000000' }), 'Deposit')

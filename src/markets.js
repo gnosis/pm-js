@@ -24,6 +24,6 @@ export async function createMarket (opts) {
         methodArgs: args,
         eventName: 'MarketCreation',
         eventArgName: 'market',
-        resultContract: opts.marketContract
+        resultContract: this.contracts.Market
     })
 }
