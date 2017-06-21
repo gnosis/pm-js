@@ -9,7 +9,7 @@ import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
  * @param {Number|string|BigNumber} opts.challengeAmount - The amount of collateral tokens put at stake in the challenge
  * @param {Number|string|BigNumber} opts.frontRunnerPeriod - The front runner period in seconds
  * @returns {Contract} The created ultimate oracle contract instance
- * @alias Gnosis.createUltimateOracle
+ * @alias Gnosis#createUltimateOracle
  */
 export async function createMarket (opts) {
     let args = getTruffleArgsFromOptions([

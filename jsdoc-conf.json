@@ -1,0 +1,10 @@
+{
+    "source": {
+        "include": "src"
+    },
+    "plugins": ["node_modules/jsdoc-strip-async-await"],
+    "opts": {
+        "destination": "doc",
+        "readme": "README.md"
+    }
+}

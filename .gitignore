@@ -64,4 +64,7 @@ typings/
 # Project specific
 ###########################################################
 # build output directory
-dist
+dist/
+
+# documentation output directory
+doc/
