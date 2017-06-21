@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import Promise from 'bluebird'
+import {promisify, promisifyAll} from 'bluebird'
 import TruffleContract from 'truffle-contract'
 import Web3 from 'web3'
 import IPFS from 'ipfs-mini'
@@ -74,7 +74,7 @@ class Gnosis {
         }
 
         // IPFS instantiation
-        this.ipfs = Promise.promisifyAll(
+        this.ipfs = promisifyAll(
             new IPFS(opts.ipfs)
           )
 
@@ -95,7 +95,7 @@ class Gnosis {
     async initialized () {
         let accounts
         [accounts, this.etherToken, this.standardMarketFactory, this.lmsrMarketMaker] = await Promise.all([
-            Promise.promisify(this.web3.eth.getAccounts)(),
+            promisify(this.web3.eth.getAccounts)(),
             this.contracts.EtherToken.deployed(),
             this.contracts.StandardMarketFactory.deployed(),
             this.contracts.LMSRMarketMaker.deployed()
