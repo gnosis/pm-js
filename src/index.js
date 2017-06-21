@@ -36,7 +36,6 @@ const contractInfo = _.fromPairs([
 class Gnosis {
     /**
      * Factory function for asynchronously creating an instance of the API
-     * @param {Object} [opts={}] - The options object
      * @param {string} [opts.ethereum] - The URL of a Web3 HTTP provider.
      If not specified, Web3 provider will be either the browser-injected Web3
      (Mist/MetaMask) or an HTTP provider looking at http://localhost:8545
@@ -52,12 +51,18 @@ class Gnosis {
         return gnosis
     }
 
+    /**
+     * <strong>Note:</strong> Do not use constructor directly.
+     * @see {@link Gnosis#create}
+     * @constructor
+     */
     constructor (opts) {
         opts = _.defaultsDeep(opts || {}, {
             ipfs: {
                 host: 'ipfs.infura.io',
                 port: 5001,
-                protocol: 'https' }
+                protocol: 'https'
+            }
         })
 
         if (opts.ethereum == null) {
