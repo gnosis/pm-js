@@ -165,15 +165,4 @@ describe('Gnosis', function () {
             assert.equal(outcomeTokenCount.toString(), calculatedOutcomeTokenCount.toString())
         })
     })
-
-    describe('#db', () => {
-        let gnosis
-        before(async () => {
-            gnosis = await Gnosis.create()
-        })
-
-        it('exists', () => {
-            assert(gnosis.db)
-        })
-    })
 })

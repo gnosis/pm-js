@@ -4,14 +4,14 @@
 
 Run `npm install` to install dependencies.
 
-Needs a web3 to work. For testing, try TestRPC.
+Needs a Web3 provider to work. For testing, try TestRPC.
 
-## Building and the frontend
+## Development
 
-Run `npm run dev` to compile and migrate the contracts, build the app, and serve it on http://localhost:8080.
+Run `npm run dev` to run the dev server and serve the examples. The library source will be continuously recompiled. Examples will be available on http://localhost:8080. Don't forget to refresh the page during development.
 
 ## Testing
 
-Before any test runs, be sure contracts are compiled and migrated. You can do that by running `npm run cnm`.
+Before any test runs, be sure contracts are compiled and migrated. You can do that by running `npm run migrate`.
 
 Run `npm test` to run test suite.

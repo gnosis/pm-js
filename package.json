@@ -6,10 +6,10 @@
     "lint": "eslint ./",
     "compile": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle compile",
     "migrate": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle migrate",
-    "cnm": "npm run compile && npm run migrate",
+    "netclean": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle networks --clean",
     "buildcontracts": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle build",
-    "build": "npm run buildcontracts && webpack",
-    "dev": "npm run cnm && webpack-dev-server --watch-poll",
+    "build": "npm run netclean && webpack && cross-env WEBPACK_ENV=minified webpack -p",
+    "dev": "npm run migrate && webpack-dev-server",
     "test": "mocha --compilers js:babel-register"
   },
   "repository": {
@@ -32,17 +32,19 @@
     "@gnosis.pm/gnosis-core-contracts": "github:gnosis/gnosis-contracts-truffle",
     "babel-core": "^6.25.0",
     "babel-eslint": "^7.2.3",
-    "babel-loader": "^7.0.0",
+    "babel-loader": "^7.1.0",
     "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-lodash": "^3.2.11",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.5.2",
     "babel-register": "^6.24.1",
+    "cross-env": "^5.0.1",
     "css-loader": "^0.28.4",
     "eslint": "^3.19.0",
     "eslint-plugin-babel": "^4.1.1",
-    "html-webpack-plugin": "^2.28.0",
-    "ipfs-mini": "^1.1.2",
+    "jsdoc": "^3.4.3",
     "json-loader": "^0.5.4",
+    "lodash-webpack-plugin": "^0.11.4",
     "mocha": "^3.4.2",
     "style-loader": "^0.18.2",
     "truffle": "^3.2.5",
@@ -52,9 +54,9 @@
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "babel-runtime": "^6.23.0",
-    "bluebird": "^3.5.0",
     "decimal.js": "^7.2.1",
-    "jsdoc": "^3.4.3",
-    "lodash": "^4.17.4"
+    "ipfs-mini": "^1.1.2",
+    "lodash": "^4.17.4",
+    "truffle-contract": "^2.0.1"
   }
 }

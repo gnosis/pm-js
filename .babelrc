@@ -1,4 +1,4 @@
 {
   "presets": ["env"],
-  "plugins": ["add-module-exports", "transform-runtime"]
+  "plugins": ["add-module-exports", "lodash", "transform-runtime"]
 }
