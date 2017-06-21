@@ -45,7 +45,7 @@ export async function sendTransactionAndGetResult (opts) {
 }
 
 // I know bluebird does this, but it's heavy
-export function promisify(fn) {
+export function promisify (fn) {
     return new Proxy(fn, {
         apply: (target, thisArg, args) => {
             return new Promise((resolve, reject) => {
@@ -63,7 +63,7 @@ export function promisify(fn) {
     })
 }
 
-export function promisifyAll(obj) {
+export function promisifyAll (obj) {
     _.functionsIn(obj).forEach((fnName) => {
         let asyncFnName = fnName + 'Async'
         if (!_.has(obj, asyncFnName)) {

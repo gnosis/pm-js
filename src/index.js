@@ -7,7 +7,7 @@ import * as lmsrMarketMakerMixin from './lmsrMarketMakerMixin'
 import * as oracles from './oracles'
 import * as events from './events'
 import * as markets from './markets'
-import {promisify, promisifyAll} from './utils'
+import { promisify, promisifyAll } from './utils'
 
 const parseInt = (s) => Number(_.split(s, ',').join(''))
 

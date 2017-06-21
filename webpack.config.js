@@ -1,15 +1,17 @@
 const path = require('path')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 
+let minifiedOutput = process.env.WEBPACK_ENV === 'minified'
+
 module.exports = {
     entry: './src/index.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'gnosis.js',
+        filename: minifiedOutput ? 'gnosis.min.js' : 'gnosis.js',
         library: 'Gnosis'
     },
     plugins: [
-        new LodashModuleReplacementPlugin
+        new LodashModuleReplacementPlugin()
     ],
     module: {
         rules: [
@@ -24,7 +26,7 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /(node_modules|bower_components)/,
-                loader: 'babel-loader',
+                loader: 'babel-loader'
             }
         ]
     },
