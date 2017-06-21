@@ -17,7 +17,10 @@ module.exports = {
                 test: /\.css$/,
                 use: [ 'style-loader', 'css-loader' ]
             },
-            { test: /\.json$/, use: 'json-loader' },
+            {
+                test: /\.json$/,
+                use: ['json-loader', './truffle-artifact-loader?exclude=unlinked_binary']
+            },
             {
                 test: /\.js$/,
                 exclude: /(node_modules|bower_components)/,
