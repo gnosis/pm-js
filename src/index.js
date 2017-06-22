@@ -52,8 +52,7 @@ class Gnosis {
     }
 
     /**
-     * <strong>Note:</strong> Do not use constructor directly.
-     * @see {@link Gnosis#create}
+     * <strong>Warning:</strong> Do not use constructor directly. Some asynchronous initialization will not be handled. Instead, use {@link Gnosis.create}.
      * @constructor
      */
     constructor (opts) {
