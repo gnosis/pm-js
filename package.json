@@ -45,6 +45,7 @@
     "jsdoc": "^3.4.3",
     "jsdoc-strip-async-await": "^0.1.0",
     "json-loader": "^0.5.4",
+    "json-x-loader": "^0.1.0",
     "lodash-webpack-plugin": "^0.11.4",
     "mocha": "^3.4.2",
     "style-loader": "^0.18.2",

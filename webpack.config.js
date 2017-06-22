@@ -21,7 +21,7 @@ module.exports = {
             },
             {
                 test: /\.json$/,
-                use: ['json-loader', './truffle-artifact-loader?exclude=unlinked_binary']
+                use: ['json-loader', 'json-x-loader?exclude=unlinked_binary']
             },
             {
                 test: /\.js$/,
