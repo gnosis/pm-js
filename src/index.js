@@ -3,7 +3,7 @@ import TruffleContract from 'truffle-contract'
 import Web3 from 'web3'
 import IPFS from 'ipfs-mini'
 
-import * as lmsrMarketMakerMixin from './lmsrMarketMakerMixin'
+import * as lmsr from './lmsr'
 import * as oracles from './oracles'
 import * as events from './events'
 import * as markets from './markets'
@@ -36,9 +36,10 @@ const contractInfo = _.fromPairs([
 class Gnosis {
     /**
      * Factory function for asynchronously creating an instance of the API
-     * @param {string} [opts.ethereum] - The URL of a Web3 HTTP provider.
-     If not specified, Web3 provider will be either the browser-injected Web3
-     (Mist/MetaMask) or an HTTP provider looking at http://localhost:8545
+     *
+     * Note: this method is asynchronous and will return a Promise
+     *
+     * @param {string} [opts.ethereum] - The URL of a Web3 HTTP provider. If not specified, Web3 provider will be either the browser-injected Web3 (Mist/MetaMask) or an HTTP provider looking at http://localhost:8545
      * @param {Object} [opts.ipfs] - ipfs-mini configuration object
      * @param {string} [opts.ipfs.host='ipfs.infura.io'] - IPFS node address
      * @param {Number} [opts.ipfs.port=5001] - IPFS protocol port
@@ -52,7 +53,7 @@ class Gnosis {
     }
 
     /**
-     * <strong>Warning:</strong> Do not use constructor directly. Some asynchronous initialization will not be handled. Instead, use {@link Gnosis.create}.
+     * **Warning:** Do not use constructor directly. Some asynchronous initialization will not be handled. Instead, use {@link Gnosis.create}.
      * @constructor
      */
     constructor (opts) {
@@ -105,12 +106,6 @@ class Gnosis {
             this.contracts.LMSRMarketMaker.deployed()
         ])
 
-        // TODO: Rewrite this using a generic proxy which can be used to refit
-        // other TruffleContracts with nicer calling interfaces
-        this.lmsrMarketMaker._calcCost = this.lmsrMarketMaker.calcCost
-        this.lmsrMarketMaker.gnosis = this
-        _.assign(this.lmsrMarketMaker, lmsrMarketMakerMixin)
-
         if (accounts.length > 0) {
             this.setDefaultAccount(accounts[0])
         }
@@ -127,5 +122,6 @@ class Gnosis {
 }
 
 _.assign(Gnosis.prototype, oracles, events, markets)
+_.assign(Gnosis, lmsr)
 
 export default Gnosis

@@ -8,9 +8,8 @@
     "compile": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle compile",
     "migrate": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle migrate",
     "netclean": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle networks --clean",
-    "buildcontracts": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle build",
-    "build": "npm run netclean && webpack && cross-env WEBPACK_ENV=minified webpack -p",
-    "dev": "npm run migrate && webpack-dev-server",
+    "build": "webpack && cross-env WEBPACK_ENV=minified webpack -p",
+    "dev": "webpack-dev-server",
     "test": "mocha --compilers js:babel-register"
   },
   "repository": {
@@ -45,6 +44,7 @@
     "jsdoc": "^3.4.3",
     "jsdoc-strip-async-await": "^0.1.0",
     "json-loader": "^0.5.4",
+    "json-x-loader": "^0.1.0",
     "lodash-webpack-plugin": "^0.11.4",
     "mocha": "^3.4.2",
     "style-loader": "^0.18.2",

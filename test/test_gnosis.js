@@ -121,41 +121,22 @@ describe('Gnosis', function () {
         })
     })
 
-    describe('#lmsrMarketMaker', () => {
-        let gnosis, oracle, event, market, ipfsHash
-
-        before(async () => {
-            gnosis = await Gnosis.create()
-            ipfsHash = await gnosis.publishEventDescription(description)
-            oracle = await gnosis.createCentralizedOracle(ipfsHash)
-            event = await gnosis.createCategoricalEvent({
-                collateralToken: gnosis.etherToken,
-                oracle: oracle,
-                outcomeCount: 2
-            })
-            market = await gnosis.createMarket({
-                marketFactory: gnosis.standardMarketFactory,
-                event: event,
-                marketMaker: gnosis.lmsrMarketMaker,
-                fee: 100,
-            })
-
-            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: '100000000' }), 'Deposit')
-            requireEventFromTXResult(await gnosis.etherToken.approve(market.address, '100000000'), 'Approval')
-            requireEventFromTXResult(await market.fund('100000000'), 'MarketFunding')
-        })
-
-        it('calculates outcome token count from cost', async () => {
+    describe('.lmsr', () => {
+        it('calculates outcome token count from cost', () => {
             let outcomeTokenCount = 1000000000
+            let netOutcomeTokensSold = [0, 0]
+            let funding = 1000000000
 
-            let cost = await gnosis.lmsrMarketMaker.calcCost({
-                market: market,
+            let cost = Gnosis.calcLMSRCost({
+                netOutcomeTokensSold,
+                funding,
                 outcomeTokenIndex: 0,
-                outcomeTokenCount: outcomeTokenCount
+                outcomeTokenCount: outcomeTokenCount,
             })
 
-            let calculatedOutcomeTokenCount = await gnosis.lmsrMarketMaker.calcOutcomeTokenCount({
-                market: market,
+            let calculatedOutcomeTokenCount = Gnosis.calcLMSROutcomeTokenCount({
+                netOutcomeTokensSold,
+                funding,
                 outcomeTokenIndex: 0,
                 cost: cost
             })

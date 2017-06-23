@@ -2,7 +2,7 @@
     "source": {
         "include": "src"
     },
-    "plugins": ["node_modules/jsdoc-strip-async-await"],
+    "plugins": ["node_modules/jsdoc-strip-async-await", "plugins/markdown"],
     "opts": {
         "destination": "doc",
         "readme": "README.md"
