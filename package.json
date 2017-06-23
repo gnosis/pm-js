@@ -8,9 +8,8 @@
     "compile": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle compile",
     "migrate": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle migrate",
     "netclean": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle networks --clean",
-    "buildcontracts": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle build",
-    "build": "npm run netclean && webpack && cross-env WEBPACK_ENV=minified webpack -p",
-    "dev": "npm run migrate && webpack-dev-server",
+    "build": "webpack && cross-env WEBPACK_ENV=minified webpack -p",
+    "dev": "webpack-dev-server",
     "test": "mocha --compilers js:babel-register"
   },
   "repository": {
