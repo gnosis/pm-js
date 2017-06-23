@@ -3,7 +3,7 @@ import TruffleContract from 'truffle-contract'
 import Web3 from 'web3'
 import IPFS from 'ipfs-mini'
 
-import * as lmsrMarketMakerMixin from './lmsrMarketMakerMixin'
+import * as lmsr from './lmsr'
 import * as oracles from './oracles'
 import * as events from './events'
 import * as markets from './markets'
@@ -105,12 +105,6 @@ class Gnosis {
             this.contracts.LMSRMarketMaker.deployed()
         ])
 
-        // TODO: Rewrite this using a generic proxy which can be used to refit
-        // other TruffleContracts with nicer calling interfaces
-        this.lmsrMarketMaker._calcCost = this.lmsrMarketMaker.calcCost
-        this.lmsrMarketMaker.gnosis = this
-        _.assign(this.lmsrMarketMaker, lmsrMarketMakerMixin)
-
         if (accounts.length > 0) {
             this.setDefaultAccount(accounts[0])
         }
@@ -127,5 +121,6 @@ class Gnosis {
 }
 
 _.assign(Gnosis.prototype, oracles, events, markets)
+_.assign(Gnosis, lmsr)
 
 export default Gnosis
