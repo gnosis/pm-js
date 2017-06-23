@@ -36,9 +36,10 @@ const contractInfo = _.fromPairs([
 class Gnosis {
     /**
      * Factory function for asynchronously creating an instance of the API
-     * @param {string} [opts.ethereum] - The URL of a Web3 HTTP provider.
-     If not specified, Web3 provider will be either the browser-injected Web3
-     (Mist/MetaMask) or an HTTP provider looking at http://localhost:8545
+     *
+     * Note: this method is asynchronous and will return a Promise
+     *
+     * @param {string} [opts.ethereum] - The URL of a Web3 HTTP provider. If not specified, Web3 provider will be either the browser-injected Web3 (Mist/MetaMask) or an HTTP provider looking at http://localhost:8545
      * @param {Object} [opts.ipfs] - ipfs-mini configuration object
      * @param {string} [opts.ipfs.host='ipfs.infura.io'] - IPFS node address
      * @param {Number} [opts.ipfs.port=5001] - IPFS protocol port
@@ -52,7 +53,7 @@ class Gnosis {
     }
 
     /**
-     * <strong>Warning:</strong> Do not use constructor directly. Some asynchronous initialization will not be handled. Instead, use {@link Gnosis.create}.
+     * **Warning:** Do not use constructor directly. Some asynchronous initialization will not be handled. Instead, use {@link Gnosis.create}.
      * @constructor
      */
     constructor (opts) {
