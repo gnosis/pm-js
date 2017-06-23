@@ -23,6 +23,7 @@ async function getNetOutcomeTokensSoldFromMarket(market, outcomeCount) {
  * @param {Number|string|BigNumber} opts.outcomeTokenIndex - The index of the outcome
  * @param {Number|string|BigNumber} opts.outcomeTokenCount - The number of outcome tokens to buy
  * @returns {BigNumber} The cost of the outcome tokens in event collateral tokens
+ * @alias Gnosis#lmsrMarketMaker.calcCost
  */
 export async function calcCost (opts) {
     let { market, outcomeTokenIndex, outcomeTokenCount } = opts
@@ -55,6 +56,7 @@ export async function calcCost (opts) {
  * @param {Number|string|BigNumber} opts.outcomeTokenIndex - The index of the outcome
  * @param {Number|string|BigNumber} opts.outcomeTokenCount - The amount of collateral for buying tokens
  * @returns {BigNumber} The number of outcome tokens that can be bought
+ * @alias Gnosis#lmsrMarketMaker.calcOutcomeTokenCount
  */
 export async function calcOutcomeTokenCount (opts) {
     // decimal.js making this reaaally messy :/
