@@ -21,3 +21,7 @@ Run `npm run dev` to run the dev server and serve the examples. The library sour
 ### Running the tests
 
 Run `npm test` to run test suite.
+
+### Running the docs
+
+Run `npm run doc` to run and open the jsdocs in your browser. 
