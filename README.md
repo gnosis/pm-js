@@ -2,7 +2,7 @@
 
 ## Installation
 
-Run `npm install` to install dependencies.
+Run `npm install` to install dependencies. This will also trigger a call to `npm run migrate`. See the Development section for more info about that.
 
 Needs a Web3 provider to work. For testing, try TestRPC.
 
