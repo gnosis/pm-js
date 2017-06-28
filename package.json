@@ -10,8 +10,10 @@
     "netclean": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle networks --clean",
     "build": "webpack && cross-env WEBPACK_ENV=minified webpack -p",
     "dev": "webpack-dev-server",
-    "test": "mocha --compilers js:babel-register"
+    "test": "mocha --compilers js:babel-register",
+    "postinstall": "npm run migrate"
   },
+  "main": "src/index",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gnosis/gnosis.js.git"
@@ -53,7 +55,7 @@
     "webpack-dev-server": "^2.4.5"
   },
   "dependencies": {
-    "@gnosis.pm/gnosis-core-contracts": "github:gnosis/gnosis-contracts-truffle",
+    "@gnosis.pm/gnosis-core-contracts": "github:gnosis/gnosis-contracts-truffle#6c2fd09c651b5bad2ef2c26b0563d43a1955fad0",
     "babel-polyfill": "^6.23.0",
     "babel-runtime": "^6.23.0",
     "decimal.js": "^7.2.1",
