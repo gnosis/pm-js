@@ -51,17 +51,17 @@
     "mocha": "^3.4.2",
     "open": "0.0.5",
     "style-loader": "^0.18.2",
-    "truffle": "^3.2.5",
+    "truffle": "^3.3.0",
+    "truffle-contract": "^2.0.1",
     "webpack": "^2.6.1",
     "webpack-dev-server": "^2.4.5"
   },
   "dependencies": {
-    "@gnosis.pm/gnosis-core-contracts": "github:gnosis/gnosis-contracts-truffle#6c2fd09c651b5bad2ef2c26b0563d43a1955fad0",
+    "@gnosis.pm/gnosis-core-contracts": "github:gnosis/gnosis-contracts#13fd6f126ce90fa04b3d75763ec20bc0092de71a",
     "babel-polyfill": "^6.23.0",
     "babel-runtime": "^6.23.0",
     "decimal.js": "^7.2.1",
     "ipfs-mini": "^1.1.2",
-    "lodash": "^4.17.4",
-    "truffle-contract": "^2.0.1"
+    "lodash": "^4.17.4"
   }
 }
