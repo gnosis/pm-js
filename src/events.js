@@ -63,7 +63,11 @@ export async function createScalarEvent (opts) {
  *
  * Note: this method is asynchronous and will return a Promise
  *
- * @param {Object} description - A POD object describing the event
+ * @param {Object} eventDescription - A POD object describing the event
+ * @param {string} eventDescription.title - A string describing the title of the event
+ * @param {string} eventDescription.description - A string describing the purpose of the event
+ * @param {string} eventDescription.resolutionDate - A string containing the resolution date of the event
+ * @param {string[]} eventDescription.outcomes - A string array containing the outcomes of the event
  * @returns {string} The IPFS hash locating the published event
  * @alias Gnosis#publishEventDescription
  */
