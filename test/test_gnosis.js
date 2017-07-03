@@ -2,12 +2,21 @@ import assert from 'assert'
 import Gnosis from '../src/index'
 import { requireEventFromTXResult } from '../src/utils'
 
+const options = {
+  ipfs: {
+    host: 'localhost',
+    port: 5001,
+    protocol: 'http'
+  }
+};
+
 describe('Gnosis', function () {
     this.timeout(120000)
     let description = {
         title: 'Will Bitcoin Hardfork before 2018',
         description: 'Hello world',
-        resolutionDate: 'tbd'
+        resolutionDate: new Date().toISOString(),
+        outcomes: ['Yes', 'No']
     }
 
     it('exists', () => {
@@ -32,7 +41,7 @@ describe('Gnosis', function () {
         let gnosis, ipfsHash
 
         before(async () => {
-            gnosis = await Gnosis.create()
+            gnosis = await Gnosis.create(options)
             ipfsHash = await gnosis.publishEventDescription(description)
         })
 
@@ -58,7 +67,11 @@ describe('Gnosis', function () {
             let newDescription = {
                 title: 'Will Bitcoin Hardfork before 2018',
                 description: 'Hello world',
-                resolutionDate: 'tbd'
+                resolutionDate: description.resolutionDate,
+                outcomes: [
+                  'Yes',
+                  'No'
+                ]
             }
             let newIpfsHash = await gnosis.publishEventDescription(newDescription)
             assert(newIpfsHash)
@@ -71,7 +84,7 @@ describe('Gnosis', function () {
         let gnosis, oracle, ipfsHash
 
         before(async () => {
-            gnosis = await Gnosis.create()
+            gnosis = await Gnosis.create(options)
             ipfsHash = await gnosis.publishEventDescription(description)
             oracle = await gnosis.createCentralizedOracle(ipfsHash)
         })
@@ -100,7 +113,7 @@ describe('Gnosis', function () {
         let gnosis, oracle, event, ipfsHash
 
         before(async () => {
-            gnosis = await Gnosis.create()
+            gnosis = await Gnosis.create(options)
             ipfsHash = await gnosis.publishEventDescription(description)
             oracle = await gnosis.createCentralizedOracle(ipfsHash)
             event = await gnosis.createCategoricalEvent({

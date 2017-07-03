@@ -5,14 +5,11 @@ import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
  *
  * Note: this method is asynchronous and will return a Promise
  *
- * @param {(Contract|string)} opts.forwardedOracle - The forwarded oracle contract or its address
- * @param {(Contract|string)} opts.collateralToken - The collateral token contract or its address
- * @param {(number|string|BigNumber)} opts.spreadMultiplier - The spread multiplier
- * @param {(number|string|BigNumber)} opts.challengePeriod - The challenge period in seconds
- * @param {(number|string|BigNumber)} opts.challengeAmount - The amount of collateral tokens put at stake in the challenge
- * @param {(number|string|BigNumber)} opts.frontRunnerPeriod - The front runner period in seconds
- * @returns {Contract} The created ultimate oracle contract instance
- * @alias Gnosis#createUltimateOracle
+ * @param {(Contract|string)} opts.event - The forwarded oracle contract or its address
+ * @param {(Contract|string)} opts.marketMaker - The collateral token contract or its address
+ * @param {(number|string|BigNumber)} opts.fee - The fee factor. Specifying 1,000,000 corresponds to 100%, 50,000 corresponds to 5%, etc.
+ * @returns {Contract} The created market contract instance
+ * @alias Gnosis#createMarket
  */
 export async function createMarket (opts) {
     let args = getTruffleArgsFromOptions([
