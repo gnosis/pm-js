@@ -1,5 +1,4 @@
 # Gnosis.js Library 
-===================
 
 [![Logo](assets/logo.png)](https://gnosis.pm/)
 
