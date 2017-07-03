@@ -1,4 +1,9 @@
-# gnosis.js
+# Gnosis.js Library 
+===================
+
+[![Logo](assets/logo.png)](https://gnosis.pm/)
+
+[![Slack Status](https://slack.gnosis.pm/badge.svg)](https://slack.gnosis.pm)
 
 ## Installation
 
@@ -24,4 +29,4 @@ Run `npm test` to run test suite.
 
 ### Running the docs
 
-Run `npm run doc` to run and open the jsdocs in your browser. 
+Run `npm run doc` to run and open the jsdocs in your browser.
