@@ -66,3 +66,24 @@ export function calcLMSROutcomeTokenCount (opts) {
             new Decimal(0)))
         .ln()).minus(netOutcomeTokensSold[outcomeTokenIndex]).floor()
 }
+
+/**
+ * Estimates the marginal price of outcome token.
+ * @param {(Number[]|string[]|BigNumber[])} opts.netOutcomeTokensSold - Amounts of net outcome tokens that have been sold. Negative amount means more have been bought than sold.
+ * @param {(number|string|BigNumber)} opts.funding - The amount of funding market has
+ * @param {(number|string|BigNumber)} opts.outcomeTokenIndex - The index of the outcome
+ * @returns {Decimal} The marginal price of outcome tokens. Will differ from actual price, which varies with quantity being moved.
+ * @alias Gnosis.calcLMSRMarginalPrice
+ */
+export function calcLMSRMarginalPrice(opts) {
+    let { netOutcomeTokensSold, funding, outcomeTokenIndex } = opts
+
+    const b = Decimal(funding.valueOf()).div(netOutcomeTokensSold.length).ln()
+
+    return Decimal(netOutcomeTokensSold[outcomeTokenIndex].valueOf()).div(b).exp().div(
+        netOutcomeTokensSold.reduce(
+            (acc, tokensSold) => acc.add(Decimal(tokensSold.valueOf()).div(b).exp()),
+            Decimal(0)
+        )
+    )
+}
