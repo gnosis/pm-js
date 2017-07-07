@@ -41,7 +41,10 @@ export async function sendTransactionAndGetResult (opts) {
     let result = await factory[opts.methodName](...opts.methodArgs)
     let matchingLog = requireEventFromTXResult(result, opts.eventName)
 
-    return await opts.resultContract.at(matchingLog.args[opts.eventArgName])
+    if(opts.resultContract == null)
+        return matchingLog.args[opts.eventArgName]
+    else
+        return await opts.resultContract.at(matchingLog.args[opts.eventArgName])
 }
 
 // I know bluebird does this, but it's heavy
