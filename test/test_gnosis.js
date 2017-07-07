@@ -1,6 +1,6 @@
 import assert from 'assert'
 import Gnosis from '../src/index'
-import { requireEventFromTXResult } from '../src/utils'
+import { requireEventFromTXResult, sendTransactionAndGetResult } from '../src/utils'
 
 const options = {
   ipfs: {
@@ -135,26 +135,65 @@ describe('Gnosis', function () {
     })
 
     describe('.lmsr', () => {
-        it('calculates outcome token count from cost', () => {
-            let outcomeTokenCount = 1000000000
-            let netOutcomeTokensSold = [0, 0]
-            let funding = 1000000000
+        let gnosis, oracle, event, ipfsHash, market, netOutcomeTokensSold, funding
 
-            let cost = Gnosis.calcLMSRCost({
+        before(async () => {
+            netOutcomeTokensSold = [0, 0]
+
+            gnosis = await Gnosis.create(options)
+            ipfsHash = await gnosis.publishEventDescription(description)
+            oracle = await gnosis.createCentralizedOracle(ipfsHash)
+            event = await gnosis.createCategoricalEvent({
+                collateralToken: gnosis.etherToken,
+                oracle: oracle,
+                outcomeCount: netOutcomeTokensSold.length
+            })
+            market = await gnosis.createMarket({
+                marketFactory: gnosis.standardMarketFactory,
+                event: event,
+                marketMaker: gnosis.lmsrMarketMaker,
+                fee: 0, // 0%
+            })
+
+            funding = 1000000000
+            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: funding }), 'Deposit')
+            requireEventFromTXResult(await gnosis.etherToken.approve(market.address, funding), 'Approval')
+            requireEventFromTXResult(await market.fund(funding), 'MarketFunding')
+        })
+
+        it('calculates outcome token count from cost', async () => {
+            let outcomeTokenIndex = 0
+            let outcomeTokenCount = 1000000000
+
+            let localCalculatedCost = Gnosis.calcLMSRCost({
                 netOutcomeTokensSold,
                 funding,
-                outcomeTokenIndex: 0,
-                outcomeTokenCount: outcomeTokenCount,
+                outcomeTokenIndex,
+                outcomeTokenCount,
             })
+
+            let chainCalculatedCost = await gnosis.lmsrMarketMaker.calcCost(market.address, outcomeTokenIndex, outcomeTokenCount)
+            assert.equal(localCalculatedCost.valueOf(), chainCalculatedCost.valueOf())
+
+            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: localCalculatedCost }), 'Deposit')
+            requireEventFromTXResult(await gnosis.etherToken.approve(market.address, localCalculatedCost), 'Approval')
+            let actualCost = await sendTransactionAndGetResult({
+                factoryContract: market,
+                methodName: 'buy',
+                methodArgs: [outcomeTokenIndex, outcomeTokenCount, localCalculatedCost],
+                eventName: 'OutcomeTokenPurchase',
+                eventArgName: 'cost',
+            })
+            assert.equal(localCalculatedCost.valueOf(), actualCost.valueOf())
 
             let calculatedOutcomeTokenCount = Gnosis.calcLMSROutcomeTokenCount({
                 netOutcomeTokensSold,
                 funding,
                 outcomeTokenIndex: 0,
-                cost: cost
+                cost: localCalculatedCost
             })
 
-            assert.equal(outcomeTokenCount.toString(), calculatedOutcomeTokenCount.toString())
+            assert.equal(outcomeTokenCount.valueOf(), calculatedOutcomeTokenCount.valueOf())
         })
     })
 })
