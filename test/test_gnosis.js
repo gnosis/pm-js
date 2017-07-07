@@ -1,6 +1,6 @@
 import assert from 'assert'
 import Gnosis from '../src/index'
-import { requireEventFromTXResult, sendTransactionAndGetResult } from '../src/utils'
+import { requireEventFromTXResult, sendTransactionAndGetResult, Decimal } from '../src/utils'
 
 const options = {
   ipfs: {
@@ -9,6 +9,18 @@ const options = {
     protocol: 'http'
   }
 };
+
+const ONE = Math.pow(2, 64)
+
+function isClose(a, b, relTol=1e9, absTol=1e18) {
+    return Decimal(a.valueOf()).sub(b).abs().lte(
+        Decimal.max(
+            Decimal.max(
+                Decimal.abs(a.valueOf()),
+                Decimal.abs(b.valueOf())
+            ).mul(relTol),
+            absTol))
+}
 
 describe('Gnosis', function () {
     this.timeout(120000)
@@ -137,7 +149,7 @@ describe('Gnosis', function () {
     describe('.lmsr', () => {
         let gnosis, oracle, event, ipfsHash, market, netOutcomeTokensSold, funding
 
-        before(async () => {
+        beforeEach(async () => {
             netOutcomeTokensSold = [0, 0]
 
             gnosis = await Gnosis.create(options)
@@ -194,6 +206,19 @@ describe('Gnosis', function () {
             })
 
             assert.equal(outcomeTokenCount.valueOf(), calculatedOutcomeTokenCount.valueOf())
+        })
+
+        it('calculates marginal price function', async () => {
+            let outcomeTokenIndex = 0
+            let localCalculatedMarginalPrice = Gnosis.calcLMSRMarginalPrice({
+                netOutcomeTokensSold,
+                funding,
+                outcomeTokenIndex
+            })
+            let chainCalculatedMarginalPrice = await gnosis.lmsrMarketMaker.calcMarginalPrice(market.address, outcomeTokenIndex)
+            chainCalculatedMarginalPrice = Decimal(chainCalculatedMarginalPrice.valueOf())
+
+            assert(isClose(localCalculatedMarginalPrice.valueOf(), chainCalculatedMarginalPrice.div(ONE).valueOf()))
         })
     })
 })
