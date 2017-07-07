@@ -2,13 +2,7 @@ import assert from 'assert'
 import Gnosis from '../src/index'
 import { requireEventFromTXResult } from '../src/utils'
 
-const options = {
-  ipfs: {
-    host: 'localhost',
-    port: 5001,
-    protocol: 'http'
-  }
-};
+const options = process.env.GNOSIS_OPTIONS ? JSON.parse(process.env.GNOSIS_OPTIONS) : null
 
 describe('Gnosis', function () {
     this.timeout(120000)
