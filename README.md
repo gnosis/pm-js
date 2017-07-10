@@ -32,7 +32,7 @@ Run `npm run dev` to run the dev server and serve the examples. The library sour
 
 ### Running the tests
 
-Run `npm test` to run test suite.
+Run `npm test` to run test suite. This should run without the need of an RPC provider running on localhost:8545. If you already have such a provider running and wish to run the test suite without automatically spinning up TestRPC and causing a chain migration, use `npm run test-manual`.
 
 ### Running the docs
 
