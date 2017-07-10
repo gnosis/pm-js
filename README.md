@@ -2,6 +2,8 @@
 
 [![Logo](assets/logo.png)](https://gnosis.pm/)
 
+[![Build Status](https://travis-ci.org/gnosis/gnosis.js.svg?branch=master)](https://travis-ci.org/gnosis/gnosis.js)
+
 [![Slack Status](https://slack.gnosis.pm/badge.svg)](https://slack.gnosis.pm)
 
 ## Installation
