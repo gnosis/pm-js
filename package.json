@@ -9,7 +9,7 @@
     "compile": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle compile",
     "migrate": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle migrate",
     "netclean": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle networks --clean",
-    "nodebuild": "babel src/ --out-dir dist",
+    "nodebuild": "babel src/ --out-dir dist --source-maps",
     "webbuild": "webpack && cross-env WEBPACK_ENV=minified webpack -p",
     "dev": "webpack-dev-server",
     "test": "mocha --compilers js:babel-register",
