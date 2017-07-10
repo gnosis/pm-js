@@ -14,7 +14,6 @@
     "dev": "webpack-dev-server",
     "test": "mocha --compilers js:babel-register",
     "test-gnosisdb": "cross-env GNOSIS_OPTIONS='{\"ipfs\":{\"host\":\"localhost\",\"port\":5001,\"protocol\":\"http\"}}' npm test",
-    "postinstall": "npm run migrate",
     "prepublish": "npm run netclean && npm run nodebuild && npm run webbuild && npm run docbuild"
   },
   "main": "dist/index",
