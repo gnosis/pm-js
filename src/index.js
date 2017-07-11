@@ -9,22 +9,22 @@ import * as oracles from './oracles'
 import * as events from './events'
 import * as markets from './markets'
 
-const parseInt = (s) => Number(_.split(s, ',').join(''))
+const parseInt = (s) => Number(s.replace(/ /g, ''))
 
 const contractInfo = _.fromPairs([
         ['Math'],
         ['Event'],
         ['CategoricalEvent'],
         ['ScalarEvent'],
-        ['EventFactory', { gas: parseInt('3,000,000') }],
+        ['EventFactory', { gas: parseInt('3 000 000') }],
         ['EtherToken'],
         ['CentralizedOracle'],
-        ['CentralizedOracleFactory', { gas: parseInt('400,000') }],
+        ['CentralizedOracleFactory', { gas: parseInt('400 000') }],
         ['UltimateOracle'],
-        ['UltimateOracleFactory', { gas: parseInt('900,000') }],
+        ['UltimateOracleFactory', { gas: parseInt('900 000') }],
         ['LMSRMarketMaker'],
-        ['Market', { gas: parseInt('300,000') }],
-        ['StandardMarketFactory', { gas: parseInt('2,000,000') }]
+        ['Market', { gas: parseInt('300 000') }],
+        ['StandardMarketFactory', { gas: parseInt('2 000 000') }]
 ].map(([name, defaults]) => [name, {
     artifact: require(`@gnosis.pm/gnosis-core-contracts/build/contracts/${name}.json`),
     defaults: defaults
