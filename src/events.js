@@ -19,7 +19,7 @@ export async function createCategoricalEvent (opts) {
     ], opts)
 
     return await sendTransactionAndGetResult({
-        factoryContract: this.contracts.EventFactory,
+        callerContract: this.contracts.EventFactory,
         methodName: 'createCategoricalEvent',
         methodArgs: args,
         eventName: 'CategoricalEventCreation',
@@ -49,7 +49,7 @@ export async function createScalarEvent (opts) {
     ], opts)
 
     return await sendTransactionAndGetResult({
-        factoryContract: this.contracts.EventFactory,
+        callerContract: this.contracts.EventFactory,
         methodName: 'createScalarEvent',
         methodArgs: args,
         eventName: 'ScalarEventCreation',

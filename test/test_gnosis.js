@@ -1,9 +1,9 @@
 import assert from 'assert'
 import Gnosis from '../src/index'
-import { requireEventFromTXResult, sendTransactionAndGetResult, Decimal } from '../src/utils'
 
 const options = process.env.GNOSIS_OPTIONS ? JSON.parse(process.env.GNOSIS_OPTIONS) : null
 
+const { requireEventFromTXResult, sendTransactionAndGetResult, Decimal } = Gnosis
 const ONE = Math.pow(2, 64)
 
 function isClose(a, b, relTol=1e9, absTol=1e18) {
@@ -184,7 +184,7 @@ describe('Gnosis', function () {
             requireEventFromTXResult(await gnosis.etherToken.deposit({ value: localCalculatedCost }), 'Deposit')
             requireEventFromTXResult(await gnosis.etherToken.approve(market.address, localCalculatedCost), 'Approval')
             let actualCost = await sendTransactionAndGetResult({
-                factoryContract: market,
+                callerContract: market,
                 methodName: 'buy',
                 methodArgs: [outcomeTokenIndex, outcomeTokenCount, localCalculatedCost],
                 eventName: 'OutcomeTokenPurchase',

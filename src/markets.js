@@ -19,7 +19,7 @@ export async function createMarket (opts) {
     ], opts)
 
     return await sendTransactionAndGetResult({
-        factoryContract: opts.marketFactory,
+        callerContract: opts.marketFactory,
         methodName: 'createMarket',
         methodArgs: args,
         eventName: 'MarketCreation',

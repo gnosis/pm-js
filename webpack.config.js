@@ -21,7 +21,7 @@ module.exports = {
             },
             {
                 test: /\.json$/,
-                use: ['json-loader', 'json-x-loader?exclude=unlinked_binary']
+                use: ['json-loader', 'json-x-loader?exclude=unlinked_binary+networks.*.events+networks.*.links']
             },
             {
                 test: /\.js$/,

@@ -33,12 +33,12 @@ export function requireEventFromTXResult (result, eventName) {
 export async function sendTransactionAndGetResult (opts) {
     opts = opts || {}
 
-    let factory = opts.factoryContract
-    if (_.has(factory, 'deployed')) {
-        factory = await factory.deployed()
+    let caller = opts.callerContract
+    if (_.has(caller, 'deployed')) {
+        caller = await caller.deployed()
     }
 
-    let result = await factory[opts.methodName](...opts.methodArgs)
+    let result = await caller[opts.methodName](...opts.methodArgs)
     let matchingLog = requireEventFromTXResult(result, opts.eventName)
 
     if(opts.resultContract == null)
