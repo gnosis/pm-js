@@ -11,7 +11,7 @@ import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
  */
 export async function createCentralizedOracle (ipfsHash) {
     return await sendTransactionAndGetResult({
-        factoryContract: this.contracts.CentralizedOracleFactory,
+        callerContract: this.contracts.CentralizedOracleFactory,
         methodName: 'createCentralizedOracle',
         methodArgs: [ipfsHash],
         eventName: 'CentralizedOracleCreation',
@@ -45,7 +45,7 @@ export async function createUltimateOracle (opts) {
     ], opts)
 
     return await sendTransactionAndGetResult({
-        factoryContract: this.contracts.UltimateOracleFactory,
+        callerContract: this.contracts.UltimateOracleFactory,
         methodName: 'createUltimateOracle',
         methodArgs: args,
         eventName: 'UltimateOracleCreation',

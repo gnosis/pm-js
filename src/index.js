@@ -4,10 +4,10 @@ import Web3 from 'web3'
 import IPFS from 'ipfs-mini'
 
 import * as lmsr from './lmsr'
+import * as utils from './utils'
 import * as oracles from './oracles'
 import * as events from './events'
 import * as markets from './markets'
-import { promisify, promisifyAll } from './utils'
 
 const parseInt = (s) => Number(_.split(s, ',').join(''))
 
@@ -79,9 +79,7 @@ class Gnosis {
         }
 
         // IPFS instantiation
-        this.ipfs = promisifyAll(
-            new IPFS(opts.ipfs)
-          )
+        this.ipfs = utils.promisifyAll(new IPFS(opts.ipfs))
 
         this.contracts = _.mapValues(contractInfo, (info) => {
             let c = TruffleContract(info.artifact)
@@ -100,7 +98,7 @@ class Gnosis {
     async initialized () {
         let accounts
         [accounts, this.etherToken, this.standardMarketFactory, this.lmsrMarketMaker] = await Promise.all([
-            promisify(this.web3.eth.getAccounts)(),
+            utils.promisify(this.web3.eth.getAccounts)(),
             this.contracts.EtherToken.deployed(),
             this.contracts.StandardMarketFactory.deployed(),
             this.contracts.LMSRMarketMaker.deployed()
@@ -122,6 +120,6 @@ class Gnosis {
 }
 
 _.assign(Gnosis.prototype, oracles, events, markets)
-_.assign(Gnosis, lmsr)
+_.assign(Gnosis, lmsr, utils)
 
 export default Gnosis
