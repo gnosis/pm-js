@@ -31,7 +31,6 @@ new Promise((resolve, reject) => {
     testrpc.kill()
     process.exit()
 }).catch((err) => {
-    console.error(err.message)
     testrpc.kill()
-    process.exit(-1)
+    throw err
 })

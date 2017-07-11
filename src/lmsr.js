@@ -1,5 +1,4 @@
-import _ from 'lodash'
-import { getTruffleArgsFromOptions, Decimal } from './utils'
+import { Decimal } from './utils'
 
 /**
  * Estimates the cost of buying specified number of outcome tokens from LMSR market.
