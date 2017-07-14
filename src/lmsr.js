@@ -19,7 +19,7 @@ export function calcLMSRCost (opts) {
         netOutcomeTokensSold.reduce((acc, numShares, i) =>
             acc.plus(
                 new Decimal(numShares.toString())
-                .plus(i === outcomeTokenIndex ? outcomeTokenCount : 0)
+                .plus(i === parseInt(outcomeTokenIndex, 10) ? outcomeTokenCount : 0)
                 .dividedBy(b)
                 .exp()),
             new Decimal(0)).ln()
@@ -57,7 +57,7 @@ export function calcLMSROutcomeTokenCount (opts) {
                 .exp()),
             new Decimal(0))
         .minus(netOutcomeTokensSold.reduce((acc, numShares, i) =>
-            i === outcomeTokenIndex ? acc
+            i === parseInt(outcomeTokenIndex, 10) ? acc
             : acc.plus(
                 new Decimal(numShares.toString())
                 .dividedBy(b)
