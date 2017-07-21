@@ -179,7 +179,8 @@ describe('Gnosis', function () {
             })
 
             let chainCalculatedCost = await gnosis.lmsrMarketMaker.calcCost(market.address, outcomeTokenIndex, outcomeTokenCount)
-            assert.equal(localCalculatedCost.valueOf(), chainCalculatedCost.valueOf())
+            assert(isClose(localCalculatedCost.valueOf(), chainCalculatedCost.valueOf()))
+            assert(localCalculatedCost.gte(chainCalculatedCost.valueOf()))
 
             requireEventFromTXResult(await gnosis.etherToken.deposit({ value: localCalculatedCost }), 'Deposit')
             requireEventFromTXResult(await gnosis.etherToken.approve(market.address, localCalculatedCost), 'Approval')
@@ -190,7 +191,8 @@ describe('Gnosis', function () {
                 eventName: 'OutcomeTokenPurchase',
                 eventArgName: 'cost',
             })
-            assert.equal(localCalculatedCost.valueOf(), actualCost.valueOf())
+            assert(isClose(localCalculatedCost.valueOf(), actualCost.valueOf()))
+            assert(localCalculatedCost.gte(actualCost.valueOf()))
 
             let calculatedOutcomeTokenCount = Gnosis.calcLMSROutcomeTokenCount({
                 netOutcomeTokensSold,
