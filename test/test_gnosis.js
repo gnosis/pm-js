@@ -161,7 +161,7 @@ describe('Gnosis', function () {
                 fee: 0, // 0%
             })
 
-            funding = 1000000000
+            funding = 1e18
             requireEventFromTXResult(await gnosis.etherToken.deposit({ value: funding }), 'Deposit')
             requireEventFromTXResult(await gnosis.etherToken.approve(market.address, funding), 'Approval')
             requireEventFromTXResult(await market.fund(funding), 'MarketFunding')
@@ -169,7 +169,7 @@ describe('Gnosis', function () {
 
         it('calculates outcome token count from cost', async () => {
             let outcomeTokenIndex = 0
-            let outcomeTokenCount = 1000000000
+            let outcomeTokenCount = 1e18
 
             let localCalculatedCost = Gnosis.calcLMSRCost({
                 netOutcomeTokensSold,
@@ -204,15 +204,25 @@ describe('Gnosis', function () {
 
         it('calculates marginal price function', async () => {
             let outcomeTokenIndex = 0
+            let outcomeTokenCount = 1e18
+
+            let chainCalculatedCost = await gnosis.lmsrMarketMaker.calcCost(market.address, outcomeTokenIndex, outcomeTokenCount)
+            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: chainCalculatedCost }), 'Deposit')
+            requireEventFromTXResult(await gnosis.etherToken.approve(market.address, chainCalculatedCost), 'Approval')
+            requireEventFromTXResult(await market.buy(outcomeTokenIndex, outcomeTokenCount, chainCalculatedCost), 'OutcomeTokenPurchase')
+
+            let newNetOutcomeTokensSold = netOutcomeTokensSold.slice()
+            newNetOutcomeTokensSold[outcomeTokenIndex] = outcomeTokenCount
+
             let localCalculatedMarginalPrice = Gnosis.calcLMSRMarginalPrice({
-                netOutcomeTokensSold,
+                netOutcomeTokensSold: newNetOutcomeTokensSold,
                 funding,
                 outcomeTokenIndex
             })
             let chainCalculatedMarginalPrice = await gnosis.lmsrMarketMaker.calcMarginalPrice(market.address, outcomeTokenIndex)
             chainCalculatedMarginalPrice = Decimal(chainCalculatedMarginalPrice.valueOf())
 
-            assert(isClose(localCalculatedMarginalPrice.valueOf(), chainCalculatedMarginalPrice.div(ONE).valueOf()))
+            assert.equal(localCalculatedMarginalPrice.valueOf(), chainCalculatedMarginalPrice.div(ONE).valueOf())
         })
     })
 })
