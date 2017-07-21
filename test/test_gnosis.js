@@ -222,7 +222,7 @@ describe('Gnosis', function () {
             let chainCalculatedMarginalPrice = await gnosis.lmsrMarketMaker.calcMarginalPrice(market.address, outcomeTokenIndex)
             chainCalculatedMarginalPrice = Decimal(chainCalculatedMarginalPrice.valueOf())
 
-            assert.equal(localCalculatedMarginalPrice.valueOf(), chainCalculatedMarginalPrice.div(ONE).valueOf())
+            assert(isClose(localCalculatedMarginalPrice.valueOf(), chainCalculatedMarginalPrice.div(ONE).valueOf()))
         })
     })
 })

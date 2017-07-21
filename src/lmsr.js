@@ -77,11 +77,12 @@ export function calcLMSROutcomeTokenCount (opts) {
 export function calcLMSRMarginalPrice(opts) {
     let { netOutcomeTokensSold, funding, outcomeTokenIndex } = opts
 
-    const b = Decimal(funding.valueOf()).div(netOutcomeTokensSold.length).ln()
+    const b = Decimal(funding.valueOf()).div(Decimal.ln(netOutcomeTokensSold.length))
+    const expOffset = Decimal.max(...netOutcomeTokensSold).div(b)
 
-    return Decimal(netOutcomeTokensSold[outcomeTokenIndex].valueOf()).div(b).exp().div(
+    return Decimal(netOutcomeTokensSold[outcomeTokenIndex].valueOf()).div(b).sub(expOffset).exp().div(
         netOutcomeTokensSold.reduce(
-            (acc, tokensSold) => acc.add(Decimal(tokensSold.valueOf()).div(b).exp()),
+            (acc, tokensSold) => acc.add(Decimal(tokensSold.valueOf()).div(b).sub(expOffset).exp()),
             Decimal(0)
         )
     )
