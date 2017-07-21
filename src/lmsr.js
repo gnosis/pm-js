@@ -29,7 +29,9 @@ export function calcLMSRCost (opts) {
                 .dividedBy(b)
                 .exp()),
             new Decimal(0)).ln()
-        )).ceil()
+        )).times(1+1e-9).ceil() // TODO: Standardize this 1e-9 and 1e9 in isClose of tests
+                                //       This is necessary because of rounding errors due to
+                                //       series truncation in solidity implementation.
 }
 
 /**

@@ -201,7 +201,7 @@ describe('Gnosis', function () {
                 cost: localCalculatedCost
             })
 
-            assert.equal(outcomeTokenCount.valueOf(), calculatedOutcomeTokenCount.valueOf())
+            assert(isClose(outcomeTokenCount.valueOf(), calculatedOutcomeTokenCount.valueOf()))
         })
 
         it('calculates marginal price function', async () => {
