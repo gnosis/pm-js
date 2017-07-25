@@ -29,7 +29,9 @@ export function calcLMSRCost (opts) {
                 .dividedBy(b)
                 .exp()),
             new Decimal(0)).ln()
-        )).ceil()
+        )).times(1+1e-9).ceil() // TODO: Standardize this 1e-9 and 1e9 in isClose of tests
+                                //       This is necessary because of rounding errors due to
+                                //       series truncation in solidity implementation.
 }
 
 /**
@@ -77,11 +79,12 @@ export function calcLMSROutcomeTokenCount (opts) {
 export function calcLMSRMarginalPrice(opts) {
     let { netOutcomeTokensSold, funding, outcomeTokenIndex } = opts
 
-    const b = Decimal(funding.valueOf()).div(netOutcomeTokensSold.length).ln()
+    const b = Decimal(funding.valueOf()).div(Decimal.ln(netOutcomeTokensSold.length))
+    const expOffset = Decimal.max(...netOutcomeTokensSold).div(b)
 
-    return Decimal(netOutcomeTokensSold[outcomeTokenIndex].valueOf()).div(b).exp().div(
+    return Decimal(netOutcomeTokensSold[outcomeTokenIndex].valueOf()).div(b).sub(expOffset).exp().div(
         netOutcomeTokensSold.reduce(
-            (acc, tokensSold) => acc.add(Decimal(tokensSold.valueOf()).div(b).exp()),
+            (acc, tokensSold) => acc.add(Decimal(tokensSold.valueOf()).div(b).sub(expOffset).exp()),
             Decimal(0)
         )
     )

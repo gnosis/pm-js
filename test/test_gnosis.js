@@ -161,7 +161,7 @@ describe('Gnosis', function () {
                 fee: 0, // 0%
             })
 
-            funding = 1000000000
+            funding = 1e18
             requireEventFromTXResult(await gnosis.etherToken.deposit({ value: funding }), 'Deposit')
             requireEventFromTXResult(await gnosis.etherToken.approve(market.address, funding), 'Approval')
             requireEventFromTXResult(await market.fund(funding), 'MarketFunding')
@@ -169,7 +169,7 @@ describe('Gnosis', function () {
 
         it('calculates outcome token count from cost', async () => {
             let outcomeTokenIndex = 0
-            let outcomeTokenCount = 1000000000
+            let outcomeTokenCount = 1e18
 
             let localCalculatedCost = Gnosis.calcLMSRCost({
                 netOutcomeTokensSold,
@@ -179,7 +179,8 @@ describe('Gnosis', function () {
             })
 
             let chainCalculatedCost = await gnosis.lmsrMarketMaker.calcCost(market.address, outcomeTokenIndex, outcomeTokenCount)
-            assert.equal(localCalculatedCost.valueOf(), chainCalculatedCost.valueOf())
+            assert(isClose(localCalculatedCost.valueOf(), chainCalculatedCost.valueOf()))
+            assert(localCalculatedCost.gte(chainCalculatedCost.valueOf()))
 
             requireEventFromTXResult(await gnosis.etherToken.deposit({ value: localCalculatedCost }), 'Deposit')
             requireEventFromTXResult(await gnosis.etherToken.approve(market.address, localCalculatedCost), 'Approval')
@@ -190,7 +191,8 @@ describe('Gnosis', function () {
                 eventName: 'OutcomeTokenPurchase',
                 eventArgName: 'cost',
             })
-            assert.equal(localCalculatedCost.valueOf(), actualCost.valueOf())
+            assert(isClose(localCalculatedCost.valueOf(), actualCost.valueOf()))
+            assert(localCalculatedCost.gte(actualCost.valueOf()))
 
             let calculatedOutcomeTokenCount = Gnosis.calcLMSROutcomeTokenCount({
                 netOutcomeTokensSold,
@@ -199,13 +201,23 @@ describe('Gnosis', function () {
                 cost: localCalculatedCost
             })
 
-            assert.equal(outcomeTokenCount.valueOf(), calculatedOutcomeTokenCount.valueOf())
+            assert(isClose(outcomeTokenCount.valueOf(), calculatedOutcomeTokenCount.valueOf()))
         })
 
         it('calculates marginal price function', async () => {
             let outcomeTokenIndex = 0
+            let outcomeTokenCount = 1e18
+
+            let chainCalculatedCost = await gnosis.lmsrMarketMaker.calcCost(market.address, outcomeTokenIndex, outcomeTokenCount)
+            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: chainCalculatedCost }), 'Deposit')
+            requireEventFromTXResult(await gnosis.etherToken.approve(market.address, chainCalculatedCost), 'Approval')
+            requireEventFromTXResult(await market.buy(outcomeTokenIndex, outcomeTokenCount, chainCalculatedCost), 'OutcomeTokenPurchase')
+
+            let newNetOutcomeTokensSold = netOutcomeTokensSold.slice()
+            newNetOutcomeTokensSold[outcomeTokenIndex] = outcomeTokenCount
+
             let localCalculatedMarginalPrice = Gnosis.calcLMSRMarginalPrice({
-                netOutcomeTokensSold,
+                netOutcomeTokensSold: newNetOutcomeTokensSold,
                 funding,
                 outcomeTokenIndex
             })
