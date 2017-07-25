@@ -142,7 +142,8 @@ export function wrapWeb3Function(spec) {
 
         let {
             callerContract, callerABI, methodName,
-            eventName, eventArgName, resultContract, argAliases
+            eventName, eventArgName, resultContract,
+            argAliases, validators
         } = spec(this, opts)
 
         if(callerABI == null) {
@@ -185,6 +186,10 @@ export function wrapWeb3Function(spec) {
             throw new Error(`${methodName}(${
                 functionInputs.map(({ name, type }) => `${type} ${name}`).join(', ')
             }) can't be called with args (${args.join(', ')})`)
+        }
+
+        if(validators != null) {
+            validators.forEach((validator) => { validator(methodArgs) })
         }
 
         // Pass extra options down to the web3 layer

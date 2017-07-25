@@ -1,5 +1,7 @@
 import { wrapWeb3Function } from './utils'
 
+const ipfsHashLength = 46
+
 /**
  * Creates a centralized oracle linked to a published event.
  *
@@ -15,7 +17,13 @@ export const createCentralizedOracle = wrapWeb3Function((self, opts) => ({
     methodName: 'createCentralizedOracle',
     eventName: 'CentralizedOracleCreation',
     eventArgName: 'centralizedOracle',
-    resultContract: self.contracts.CentralizedOracle
+    resultContract: self.contracts.CentralizedOracle,
+    validators: [
+        ([ipfsHash]) => {
+            if(ipfsHash.length !== ipfsHashLength)
+                throw new Error(`expected ipfsHash ${ipfsHash} to have length ${ipfsHashLength}`)
+        }
+    ]
 }))
 
 /**
