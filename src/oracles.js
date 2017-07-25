@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
 
 /**
@@ -35,14 +37,12 @@ export async function createCentralizedOracle (ipfsHash) {
  * @alias Gnosis#createUltimateOracle
  */
 export async function createUltimateOracle (opts) {
-    let args = getTruffleArgsFromOptions([
-        'forwardedOracle',
-        'collateralToken',
-        'spreadMultiplier',
-        'challengePeriod',
-        'challengeAmount',
-        'frontRunnerPeriod'
-    ], opts)
+    opts = opts || {}
+    opts.argAliases = _.defaults(opts.argAliases || {}, {
+        forwardedOracle: 'oracle'
+    })
+
+    let args = getTruffleArgsFromOptions(this.contracts.UltimateOracleFactory.abi.filter(({name}) => name === 'createUltimateOracle').pop().inputs, opts)
 
     return await sendTransactionAndGetResult({
         callerContract: this.contracts.UltimateOracleFactory,

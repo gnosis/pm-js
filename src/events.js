@@ -12,11 +12,7 @@ import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
  * @alias Gnosis#createCategoricalEvent
  */
 export async function createCategoricalEvent (opts) {
-    let args = getTruffleArgsFromOptions([
-        'collateralToken',
-        'oracle',
-        'outcomeCount'
-    ], opts)
+    let args = getTruffleArgsFromOptions(this.contracts.EventFactory.abi.filter(({name}) => name === 'createCategoricalEvent').pop().inputs, opts)
 
     return await sendTransactionAndGetResult({
         callerContract: this.contracts.EventFactory,
@@ -41,12 +37,7 @@ export async function createCategoricalEvent (opts) {
  * @alias Gnosis#createScalarEvent
  */
 export async function createScalarEvent (opts) {
-    let args = getTruffleArgsFromOptions([
-        'collateralToken',
-        'oracle',
-        'lowerBound',
-        'upperBound'
-    ], opts)
+    let args = getTruffleArgsFromOptions(this.contracts.EventFactory.abi.filter(({name}) => name === 'createScalarEvent').pop().inputs, opts)
 
     return await sendTransactionAndGetResult({
         callerContract: this.contracts.EventFactory,

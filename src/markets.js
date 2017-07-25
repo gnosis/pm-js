@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
 
 /**
@@ -12,11 +14,12 @@ import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
  * @alias Gnosis#createMarket
  */
 export async function createMarket (opts) {
-    let args = getTruffleArgsFromOptions([
-        'event',
-        'marketMaker',
-        'fee'
-    ], opts)
+    opts = opts || {}
+    opts.argAliases = _.defaults(opts.argAliases || {}, {
+        event: 'eventContract'
+    })
+
+    let args = getTruffleArgsFromOptions(this.contracts.MarketFactory.abi.filter(({name}) => name === 'createMarket').pop().inputs, opts)
 
     return await sendTransactionAndGetResult({
         callerContract: opts.marketFactory,
