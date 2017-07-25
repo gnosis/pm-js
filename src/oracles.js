@@ -12,7 +12,7 @@ const ipfsHashLength = 46
  * @returns {Contract} The created centralized oracle contract instance
  * @alias Gnosis#createCentralizedOracle
  */
-export const createCentralizedOracle = wrapWeb3Function((self, opts) => ({
+export const createCentralizedOracle = wrapWeb3Function((self) => ({
     callerContract: self.contracts.CentralizedOracleFactory,
     methodName: 'createCentralizedOracle',
     eventName: 'CentralizedOracleCreation',
@@ -41,7 +41,7 @@ export const createCentralizedOracle = wrapWeb3Function((self, opts) => ({
  * @returns {Contract} The created ultimate oracle contract instance
  * @alias Gnosis#createUltimateOracle
  */
-export const createUltimateOracle = wrapWeb3Function((self, opts) => ({
+export const createUltimateOracle = wrapWeb3Function((self) => ({
     callerContract: self.contracts.UltimateOracleFactory,
     methodName: 'createUltimateOracle',
     eventName: 'UltimateOracleCreation',

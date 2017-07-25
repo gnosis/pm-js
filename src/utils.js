@@ -96,7 +96,11 @@ function makeWeb3Compatible(value, type, argName) {
                 value.slice(2) === Number(value).toString(16) ||
                 value == Number(value).toString()
             ) {
-                return Number(value)
+                value = Number(value)
+            }
+
+            if(!signed && value.toString().startsWith('-')) {
+                throw new Error(`cannot pass negative value ${value} for ${type} ${argName}`)
             }
 
             return value
@@ -155,6 +159,7 @@ export function wrapWeb3Function(spec) {
         if(functionCandidates.length === 0) {
             throw new Error(`could not find function ${methodName} in abi ${callerABI}`)
         } else if(functionCandidates.length > 1) {
+            // eslint-disable-next-line no-console
             console.warn(`function ${methodName} has multiple candidates in abi ${callerABI} -- using last candidate`)
         }
 

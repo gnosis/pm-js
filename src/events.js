@@ -12,7 +12,7 @@ import { wrapWeb3Function } from './utils'
  * @returns {Contract} The created categorical event
  * @alias Gnosis#createCategoricalEvent
  */
-export const createCategoricalEvent = wrapWeb3Function((self, opts) => ({
+export const createCategoricalEvent = wrapWeb3Function((self) => ({
     callerContract: self.contracts.EventFactory,
     methodName: 'createCategoricalEvent',
     eventName: 'CategoricalEventCreation',
@@ -33,7 +33,7 @@ export const createCategoricalEvent = wrapWeb3Function((self, opts) => ({
  * @returns {Contract} The created scalar event
  * @alias Gnosis#createScalarEvent
  */
-export const createScalarEvent = wrapWeb3Function((self, opts) => ({
+export const createScalarEvent = wrapWeb3Function((self) => ({
     callerContract: self.contracts.EventFactory,
     methodName: 'createScalarEvent',
     eventName: 'ScalarEventCreation',
