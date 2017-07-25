@@ -1,32 +1,29 @@
-import _ from 'lodash'
-
-import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
+import { wrapWeb3Function } from './utils'
 
 /**
  * Creates a centralized oracle linked to a published event.
  *
  * Note: this method is asynchronous and will return a Promise
  *
+ * @function
  * @param {string} ipfsHash - The published event's IPFS hash
  * @returns {Contract} The created centralized oracle contract instance
  * @alias Gnosis#createCentralizedOracle
  */
-export async function createCentralizedOracle (ipfsHash) {
-    return await sendTransactionAndGetResult({
-        callerContract: this.contracts.CentralizedOracleFactory,
-        methodName: 'createCentralizedOracle',
-        methodArgs: [ipfsHash],
-        eventName: 'CentralizedOracleCreation',
-        eventArgName: 'centralizedOracle',
-        resultContract: this.contracts.CentralizedOracle
-    })
-}
+export const createCentralizedOracle = wrapWeb3Function((self, opts) => ({
+    callerContract: self.contracts.CentralizedOracleFactory,
+    methodName: 'createCentralizedOracle',
+    eventName: 'CentralizedOracleCreation',
+    eventArgName: 'centralizedOracle',
+    resultContract: self.contracts.CentralizedOracle
+}))
 
 /**
  * Creates an ultimate oracle.
  *
  * Note: this method is asynchronous and will return a Promise
  *
+ * @function
  * @param {(Contract|string)} opts.forwardedOracle - The forwarded oracle contract or its address
  * @param {(Contract|string)} opts.collateralToken - The collateral token contract or its address
  * @param {(number|string|BigNumber)} opts.spreadMultiplier - The spread multiplier
@@ -36,20 +33,13 @@ export async function createCentralizedOracle (ipfsHash) {
  * @returns {Contract} The created ultimate oracle contract instance
  * @alias Gnosis#createUltimateOracle
  */
-export async function createUltimateOracle (opts) {
-    opts = opts || {}
-    opts.argAliases = _.defaults(opts.argAliases || {}, {
+export const createUltimateOracle = wrapWeb3Function((self, opts) => ({
+    callerContract: self.contracts.UltimateOracleFactory,
+    methodName: 'createUltimateOracle',
+    eventName: 'UltimateOracleCreation',
+    eventArgName: 'ultimateOracle',
+    resultContract: self.contracts.UltimateOracle,
+    argAliases: {
         forwardedOracle: 'oracle'
-    })
-
-    let args = getTruffleArgsFromOptions(this.contracts.UltimateOracleFactory.abi.filter(({name}) => name === 'createUltimateOracle').pop().inputs, opts)
-
-    return await sendTransactionAndGetResult({
-        callerContract: this.contracts.UltimateOracleFactory,
-        methodName: 'createUltimateOracle',
-        methodArgs: args,
-        eventName: 'UltimateOracleCreation',
-        eventArgName: 'ultimateOracle',
-        resultContract: this.contracts.UltimateOracle
-    })
-}
+    }
+}))

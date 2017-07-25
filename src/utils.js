@@ -108,13 +108,9 @@ function makeWeb3Compatible(value, type, argName) {
     throw new Error(`unsupported type ${type} for ${argName}`)
 }
 
-
-export let Decimal = DecimalJS.clone({ precision: 80 })
-
-export function getTruffleArgsFromOptions (argInfo, opts) {
+function popTruffleArgsFromOptions (argInfo, opts, argAliases) {
     opts = opts || {}
 
-    let { argAliases } = opts
     if(argAliases != null) {
         _.forOwn(argAliases, (name, alias) => {
             if(_.has(opts, alias)) {
@@ -131,8 +127,76 @@ export function getTruffleArgsFromOptions (argInfo, opts) {
         if (!_.has(opts, name)) {
             throw new Error(`missing argument ${name}`)
         }
-        return makeWeb3Compatible(opts[name], type, name)
+        const normalizedArg = makeWeb3Compatible(opts[name], type, name)
+        delete opts[name]
+        return normalizedArg
     })
+}
+
+export let Decimal = DecimalJS.clone({ precision: 80 })
+
+export function wrapWeb3Function(spec) {
+    return async function() {
+        let args = Array.from(arguments)
+        let opts = typeof args[args.length - 1] === 'object' ? args[args.length - 1] : {}
+
+        let {
+            callerContract, callerABI, methodName,
+            eventName, eventArgName, resultContract, argAliases
+        } = spec(this, opts)
+
+        if(callerABI == null) {
+            callerABI = callerContract.abi
+        }
+
+        const functionCandidates = callerABI.filter(({name}) => name === methodName)
+
+        if(functionCandidates.length === 0) {
+            throw new Error(`could not find function ${methodName} in abi ${callerABI}`)
+        } else if(functionCandidates.length > 1) {
+            console.warn(`function ${methodName} has multiple candidates in abi ${callerABI} -- using last candidate`)
+        }
+
+        const functionInputs = functionCandidates.pop().inputs
+
+        // Format arguments in a way that web3 likes
+        let methodArgs
+        if(functionInputs.length === 1 && args.length === 1) {
+            // if there is one input, user could have supplied either the argument with no options
+            // or the argument inside of an options object
+            if(typeof args[0] === 'object' && _.has(args[0], functionInputs[0].name)) {
+                // we consider argument to be an options object if it has the parameter name as a key on it
+                opts = args[0]
+                methodArgs = popTruffleArgsFromOptions(functionInputs, opts, argAliases)
+            } else {
+                opts = null
+                methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
+            }
+        } else if(functionInputs.length === args.length) {
+            opts = null
+            methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
+        } else if(functionInputs.length + 1 === args.length && typeof args[functionInputs.length] === 'object') {
+            opts = args.pop()
+            methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
+        } else if(args.length === 1 && typeof args[0] === 'object') {
+            opts = args[0]
+            methodArgs = popTruffleArgsFromOptions(functionInputs, opts, argAliases)
+        } else {
+            throw new Error(`${methodName}(${
+                functionInputs.map(({ name, type }) => `${type} ${name}`).join(', ')
+            }) can't be called with args (${args.join(', ')})`)
+        }
+
+        // Pass extra options down to the web3 layer
+        if(opts != null) {
+            methodArgs.push(_.pick(opts, ['from', 'to', 'value', 'gas', 'gasPrice']))
+        }
+
+        return await sendTransactionAndGetResult({
+            callerContract, methodName, methodArgs,
+            eventName, eventArgName, resultContract
+        })
+    }
 }
 
 export function requireEventFromTXResult (result, eventName) {
