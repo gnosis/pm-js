@@ -139,6 +139,42 @@ function popTruffleArgsFromOptions (argInfo, opts, argAliases) {
 
 export let Decimal = DecimalJS.clone({ precision: 80 })
 
+export function normalizeWeb3Args(args, opts) {
+    let {
+        functionInputs, methodName, argAliases
+    } = opts
+
+    // Format arguments in a way that web3 likes
+    let methodArgs, methodOpts
+    if(functionInputs.length === 1 && args.length === 1) {
+        // if there is one input, user could have supplied either the argument with no options
+        // or the argument inside of an options object
+        if(typeof args[0] === 'object' && _.has(args[0], functionInputs[0].name)) {
+            // we consider argument to be an options object if it has the parameter name as a key on it
+            methodOpts = args[0]
+            methodArgs = popTruffleArgsFromOptions(functionInputs, methodOpts, argAliases)
+        } else {
+            methodOpts = null
+            methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
+        }
+    } else if(functionInputs.length === args.length) {
+        methodOpts = null
+        methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
+    } else if(functionInputs.length + 1 === args.length && typeof args[functionInputs.length] === 'object') {
+        methodOpts = args.pop()
+        methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
+    } else if(args.length === 1 && typeof args[0] === 'object') {
+        methodOpts = args[0]
+        methodArgs = popTruffleArgsFromOptions(functionInputs, methodOpts, argAliases)
+    } else {
+        throw new Error(`${methodName}(${
+            functionInputs.map(({ name, type }) => `${type} ${name}`).join(', ')
+        }) can't be called with args (${args.join(', ')})`)
+    }
+
+    return [methodArgs, methodOpts]
+}
+
 export function wrapWeb3Function(spec) {
     return async function() {
         let args = Array.from(arguments)
@@ -154,7 +190,7 @@ export function wrapWeb3Function(spec) {
             callerABI = callerContract.abi
         }
 
-        const functionCandidates = callerABI.filter(({name}) => name === methodName)
+        const functionCandidates = callerABI.filter(({ name }) => name === methodName)
 
         if(functionCandidates.length === 0) {
             throw new Error(`could not find function ${methodName} in abi ${callerABI}`)
@@ -165,41 +201,15 @@ export function wrapWeb3Function(spec) {
 
         const functionInputs = functionCandidates.pop().inputs
 
-        // Format arguments in a way that web3 likes
-        let methodArgs
-        if(functionInputs.length === 1 && args.length === 1) {
-            // if there is one input, user could have supplied either the argument with no options
-            // or the argument inside of an options object
-            if(typeof args[0] === 'object' && _.has(args[0], functionInputs[0].name)) {
-                // we consider argument to be an options object if it has the parameter name as a key on it
-                opts = args[0]
-                methodArgs = popTruffleArgsFromOptions(functionInputs, opts, argAliases)
-            } else {
-                opts = null
-                methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
-            }
-        } else if(functionInputs.length === args.length) {
-            opts = null
-            methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
-        } else if(functionInputs.length + 1 === args.length && typeof args[functionInputs.length] === 'object') {
-            opts = args.pop()
-            methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
-        } else if(args.length === 1 && typeof args[0] === 'object') {
-            opts = args[0]
-            methodArgs = popTruffleArgsFromOptions(functionInputs, opts, argAliases)
-        } else {
-            throw new Error(`${methodName}(${
-                functionInputs.map(({ name, type }) => `${type} ${name}`).join(', ')
-            }) can't be called with args (${args.join(', ')})`)
-        }
+        let [methodArgs, methodOpts] = normalizeWeb3Args(args, { functionInputs, methodName, argAliases })
 
         if(validators != null) {
             validators.forEach((validator) => { validator(methodArgs) })
         }
 
         // Pass extra options down to the web3 layer
-        if(opts != null) {
-            methodArgs.push(_.pick(opts, ['from', 'to', 'value', 'gas', 'gasPrice']))
+        if(methodOpts != null) {
+            methodArgs.push(_.pick(methodOpts, ['from', 'to', 'value', 'gas', 'gasPrice']))
         }
 
         return await sendTransactionAndGetResult({

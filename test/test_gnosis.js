@@ -209,11 +209,32 @@ describe('Gnosis', function () {
             let calculatedOutcomeTokenCount = Gnosis.calcLMSROutcomeTokenCount({
                 netOutcomeTokensSold,
                 funding,
-                outcomeTokenIndex: 0,
+                outcomeTokenIndex,
                 cost: localCalculatedCost
             })
 
             assert.equal(outcomeTokenCount.valueOf(), calculatedOutcomeTokenCount.valueOf())
+        })
+
+        it('accepts strings for outcome token index', async () => {
+            let outcomeTokenIndex = 0
+            let outcomeTokenCount = 1000000000
+
+            let calculatedCost1 = Gnosis.calcLMSRCost({
+                netOutcomeTokensSold,
+                funding,
+                outcomeTokenIndex,
+                outcomeTokenCount,
+            })
+
+            let calculatedCost2 = Gnosis.calcLMSRCost({
+                netOutcomeTokensSold,
+                funding,
+                outcomeTokenIndex: outcomeTokenIndex.toString(),
+                outcomeTokenCount,
+            })
+
+            assert.equal(calculatedCost1.valueOf(), calculatedCost2.valueOf())
         })
 
         it('calculates marginal price function', async () => {
