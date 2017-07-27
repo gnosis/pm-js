@@ -99,7 +99,7 @@ export function calcLMSROutcomeTokenCount (opts) {
     // decimal.js making this reaaally messy :/
     let [[netOutcomeTokensSold, funding, outcomeTokenIndex, cost], otherOpts] =
         normalizeWeb3Args(Array.from(arguments), {
-            methodName: 'calcLMSRCost',
+            methodName: 'calcLMSROutcomeTokenCount',
             functionInputs: [
                 { name: 'netOutcomeTokensSold', type: 'int256[]' },
                 { name: 'funding', type: 'uint256'},
