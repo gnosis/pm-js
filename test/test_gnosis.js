@@ -181,7 +181,7 @@ describe('Gnosis', function () {
             requireEventFromTXResult(await market.fund(funding), 'MarketFunding')
         })
 
-        it('calculates outcome token count from cost', async () => {
+        it('can do buying and selling calculations and transactions', async () => {
             let outcomeTokenIndex = 0
             let outcomeTokenCount = 1e18
 
@@ -216,6 +216,33 @@ describe('Gnosis', function () {
             })
 
             assert(isClose(outcomeTokenCount.valueOf(), calculatedOutcomeTokenCount.valueOf()))
+
+            netOutcomeTokensSold[outcomeTokenIndex] += outcomeTokenCount
+
+            let numOutcomeTokensToSell = 5e17
+
+            let localCalculatedProfit = Gnosis.calcLMSRProfit({
+                netOutcomeTokensSold,
+                funding,
+                outcomeTokenIndex,
+                outcomeTokenCount: numOutcomeTokensToSell,
+            })
+
+            let chainCalculatedProfit = await gnosis.lmsrMarketMaker.calcProfit(market.address, outcomeTokenIndex, numOutcomeTokensToSell)
+            assert(isClose(localCalculatedProfit.valueOf(), chainCalculatedProfit.valueOf()))
+            assert(localCalculatedProfit.lte(chainCalculatedProfit.valueOf()))
+
+            let outcomeToken = gnosis.contracts.Token.at(await gnosis.contracts.Event.at(await market.eventContract()).outcomeTokens(outcomeTokenIndex))
+            requireEventFromTXResult(await outcomeToken.approve(market.address, numOutcomeTokensToSell), 'Approval')
+            let actualProfit = await sendTransactionAndGetResult({
+                callerContract: market,
+                methodName: 'sell',
+                methodArgs: [outcomeTokenIndex, numOutcomeTokensToSell, localCalculatedProfit],
+                eventName: 'OutcomeTokenSale',
+                eventArgName: 'profit',
+            })
+            assert(isClose(localCalculatedProfit.valueOf(), actualProfit.valueOf()))
+            assert(localCalculatedProfit.lte(actualProfit.valueOf()))
         })
 
         it('accepts strings for outcome token index', async () => {
