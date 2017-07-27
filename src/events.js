@@ -1,38 +1,31 @@
-import { getTruffleArgsFromOptions, sendTransactionAndGetResult } from './utils'
+import { wrapWeb3Function } from './utils'
 
 /**
  * Creates a categorical event.
  *
  * Note: this method is asynchronous and will return a Promise
  *
+ * @function
  * @param {(Contract|string)} opts.collateralToken - The collateral token contract or its address
  * @param {(Contract|string)} opts.oracle - The oracle responsible for resolving this event
  * @param {(number|string|BigNumber)} opts.outcomeCount - The number of outcomes of this event
  * @returns {Contract} The created categorical event
  * @alias Gnosis#createCategoricalEvent
  */
-export async function createCategoricalEvent (opts) {
-    let args = getTruffleArgsFromOptions([
-        'collateralToken',
-        'oracle',
-        'outcomeCount'
-    ], opts)
-
-    return await sendTransactionAndGetResult({
-        callerContract: this.contracts.EventFactory,
-        methodName: 'createCategoricalEvent',
-        methodArgs: args,
-        eventName: 'CategoricalEventCreation',
-        eventArgName: 'categoricalEvent',
-        resultContract: this.contracts.CategoricalEvent
-    })
-}
+export const createCategoricalEvent = wrapWeb3Function((self) => ({
+    callerContract: self.contracts.EventFactory,
+    methodName: 'createCategoricalEvent',
+    eventName: 'CategoricalEventCreation',
+    eventArgName: 'categoricalEvent',
+    resultContract: self.contracts.CategoricalEvent
+}))
 
 /**
  * Creates a scalar event.
  *
  * Note: this method is asynchronous and will return a Promise
  *
+ * @function
  * @param {(Contract|string)} opts.collateralToken - The collateral token contract or its address
  * @param {(Contract|string)} opts.oracle - The oracle responsible for resolving this event
  * @param {(number|string|BigNumber)} opts.lowerBound - The lower bound for the event outcome
@@ -40,23 +33,13 @@ export async function createCategoricalEvent (opts) {
  * @returns {Contract} The created scalar event
  * @alias Gnosis#createScalarEvent
  */
-export async function createScalarEvent (opts) {
-    let args = getTruffleArgsFromOptions([
-        'collateralToken',
-        'oracle',
-        'lowerBound',
-        'upperBound'
-    ], opts)
-
-    return await sendTransactionAndGetResult({
-        callerContract: this.contracts.EventFactory,
-        methodName: 'createScalarEvent',
-        methodArgs: args,
-        eventName: 'ScalarEventCreation',
-        eventArgName: 'scalarEvent',
-        resultContract: this.contracts.ScalarEvent
-    })
-}
+export const createScalarEvent = wrapWeb3Function((self) => ({
+    callerContract: self.contracts.EventFactory,
+    methodName: 'createScalarEvent',
+    eventName: 'ScalarEventCreation',
+    eventArgName: 'scalarEvent',
+    resultContract: self.contracts.ScalarEvent
+}))
 
 /**
  * Publishes an event description onto IPFS.

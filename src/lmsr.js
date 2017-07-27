@@ -1,4 +1,4 @@
-import { Decimal } from './utils'
+import { Decimal, normalizeWeb3Args } from './utils'
 
 /**
  * Estimates the cost of buying specified number of outcome tokens from LMSR market.
@@ -9,8 +9,17 @@ import { Decimal } from './utils'
  * @returns {Decimal} The cost of the outcome tokens in event collateral tokens
  * @alias Gnosis.calcLMSRCost
  */
-export function calcLMSRCost (opts) {
-    let { netOutcomeTokensSold, funding, outcomeTokenIndex, outcomeTokenCount } = opts
+export function calcLMSRCost () {
+    let [[netOutcomeTokensSold, funding, outcomeTokenIndex, outcomeTokenCount], otherOpts] =
+        normalizeWeb3Args(Array.from(arguments), {
+            methodName: 'calcLMSRCost',
+            functionInputs: [
+                { name: 'netOutcomeTokensSold', type: 'int256[]' },
+                { name: 'funding', type: 'uint256'},
+                { name: 'outcomeTokenIndex', type: 'uint8'},
+                { name: 'outcomeTokenCount', type: 'uint256'},
+            ]
+        })
 
     outcomeTokenCount = new Decimal(outcomeTokenCount.toString())
     let b = new Decimal(funding.toString()).dividedBy(new Decimal(netOutcomeTokensSold.length).ln())
@@ -39,13 +48,22 @@ export function calcLMSRCost (opts) {
  * @param {(Number[]|string[]|BigNumber[])} opts.netOutcomeTokensSold - Amounts of net outcome tokens that have been sold. Negative amount means more have been bought than sold.
  * @param {(number|string|BigNumber)} opts.funding - The amount of funding market has
  * @param {(number|string|BigNumber)} opts.outcomeTokenIndex - The index of the outcome
- * @param {(number|string|BigNumber)} opts.outcomeTokenCount - The amount of collateral for buying tokens
+ * @param {(number|string|BigNumber)} opts.cost - The amount of collateral for buying tokens
  * @returns {Decimal} The number of outcome tokens that can be bought
  * @alias Gnosis.calcLMSROutcomeTokenCount
  */
 export function calcLMSROutcomeTokenCount (opts) {
     // decimal.js making this reaaally messy :/
-    let { netOutcomeTokensSold, funding, outcomeTokenIndex, cost } = opts
+    let [[netOutcomeTokensSold, funding, outcomeTokenIndex, cost], otherOpts] =
+        normalizeWeb3Args(Array.from(arguments), {
+            methodName: 'calcLMSRCost',
+            functionInputs: [
+                { name: 'netOutcomeTokensSold', type: 'int256[]' },
+                { name: 'funding', type: 'uint256'},
+                { name: 'outcomeTokenIndex', type: 'uint8'},
+                { name: 'cost', type: 'uint256'},
+            ]
+        })
 
     cost = new Decimal(cost.toString())
     let b = new Decimal(funding.toString()).dividedBy(new Decimal(netOutcomeTokensSold.length).ln())
@@ -77,7 +95,15 @@ export function calcLMSROutcomeTokenCount (opts) {
  * @alias Gnosis.calcLMSRMarginalPrice
  */
 export function calcLMSRMarginalPrice(opts) {
-    let { netOutcomeTokensSold, funding, outcomeTokenIndex } = opts
+    let [[netOutcomeTokensSold, funding, outcomeTokenIndex], otherOpts] =
+        normalizeWeb3Args(Array.from(arguments), {
+            methodName: 'calcLMSRMarginalPrice',
+            functionInputs: [
+                { name: 'netOutcomeTokensSold', type: 'int256[]' },
+                { name: 'funding', type: 'uint256'},
+                { name: 'outcomeTokenIndex', type: 'uint8'},
+            ]
+        })
 
     const b = Decimal(funding.valueOf()).div(Decimal.ln(netOutcomeTokensSold.length))
     const expOffset = Decimal.max(...netOutcomeTokensSold).div(b)

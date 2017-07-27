@@ -16,6 +16,15 @@ function isClose(a, b, relTol=1e9, absTol=1e18) {
             absTol))
 }
 
+async function requireRejection(q, msg) {
+    try {
+        await q
+    } catch(e) {
+        return e
+    }
+    throw new Error(msg || 'promise did not reject')
+}
+
 describe('Gnosis', function () {
     this.timeout(120000)
     let description = {
@@ -54,6 +63,11 @@ describe('Gnosis', function () {
         it('creates centralized oracles', async () => {
             let oracle = await gnosis.createCentralizedOracle(ipfsHash)
             assert(oracle)
+        })
+
+        it('errors with sensible message when creating centralized oracle incorrectly', async () => {
+            let error = await requireRejection(gnosis.createCentralizedOracle('???'))
+            assert.equal(error.toString(), 'Error: expected ipfsHash ??? to have length 46')
         })
 
         it('creates ultimate oracles', async () => {
@@ -197,11 +211,32 @@ describe('Gnosis', function () {
             let calculatedOutcomeTokenCount = Gnosis.calcLMSROutcomeTokenCount({
                 netOutcomeTokensSold,
                 funding,
-                outcomeTokenIndex: 0,
+                outcomeTokenIndex,
                 cost: localCalculatedCost
             })
 
             assert(isClose(outcomeTokenCount.valueOf(), calculatedOutcomeTokenCount.valueOf()))
+        })
+
+        it('accepts strings for outcome token index', async () => {
+            let outcomeTokenIndex = 0
+            let outcomeTokenCount = 1000000000
+
+            let calculatedCost1 = Gnosis.calcLMSRCost({
+                netOutcomeTokensSold,
+                funding,
+                outcomeTokenIndex,
+                outcomeTokenCount,
+            })
+
+            let calculatedCost2 = Gnosis.calcLMSRCost({
+                netOutcomeTokensSold,
+                funding,
+                outcomeTokenIndex: outcomeTokenIndex.toString(),
+                outcomeTokenCount,
+            })
+
+            assert.equal(calculatedCost1.valueOf(), calculatedCost2.valueOf())
         })
 
         it('calculates marginal price function', async () => {
