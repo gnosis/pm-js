@@ -243,6 +243,24 @@ describe('Gnosis', function () {
             })
             assert(isClose(localCalculatedProfit.valueOf(), actualProfit.valueOf()))
             assert(localCalculatedProfit.lte(actualProfit.valueOf()))
+
+            netOutcomeTokensSold[outcomeTokenIndex] -= numOutcomeTokensToSell
+
+            numOutcomeTokensToSell = 2.5e17
+
+            localCalculatedProfit = Gnosis.calcLMSRProfit({
+                netOutcomeTokensSold,
+                funding,
+                outcomeTokenIndex,
+                outcomeTokenCount: numOutcomeTokensToSell,
+            })
+
+            actualProfit = await gnosis.sellOutcomeTokens({
+                market, outcomeTokenIndex,
+                outcomeTokenCount: numOutcomeTokensToSell
+            })
+            assert(isClose(localCalculatedProfit.valueOf(), actualProfit.valueOf()))
+            assert(localCalculatedProfit.lte(actualProfit.valueOf()))
         })
 
         it('accepts strings for outcome token index', async () => {

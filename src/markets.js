@@ -1,4 +1,7 @@
-import { wrapWeb3Function } from './utils'
+import {
+    normalizeWeb3Args, wrapWeb3Function,
+    requireEventFromTXResult, sendTransactionAndGetResult
+} from './utils'
 
 /**
  * Creates a market.
@@ -23,3 +26,44 @@ export const createMarket = wrapWeb3Function((self, opts) => ({
         event: 'eventContract',
     }
 }))
+
+/**
+ * Sells outcome tokens.
+ *
+ * Note: this method is asynchronous and will return a Promise
+ *
+ * @function
+ * @param {(Contract|string)} opts.market - The market to sell tokens to
+ * @param {(number|string|BigNumber)} opts.outcomeTokenIndex - The index of the outcome
+ * @param {(number|string|BigNumber)} opts.outcomeTokenCount - Number of outcome tokens to sell
+ * @returns {BigNumber} How much collateral tokens caller received from sale
+ * @alias Gnosis#sellOutcomeTokens
+ */
+export async function sellOutcomeTokens() {
+    const [[market, outcomeTokenIndex, outcomeTokenCount], opts] =
+        normalizeWeb3Args(Array.from(arguments), {
+            methodName: 'calcLMSRCost',
+            functionInputs: [
+                { name: 'market', type: 'address' },
+                { name: 'outcomeTokenIndex', type: 'uint8'},
+                { name: 'outcomeTokenCount', type: 'uint256'},
+            ]
+        })
+
+    const outcomeToken = this.contracts.Token.at(
+        await this.contracts.Event.at(
+            await this.contracts.Market.at(market).eventContract()
+        ).outcomeTokens(outcomeTokenIndex)
+    )
+    const minProfit = await this.lmsrMarketMaker.calcProfit(market, outcomeTokenIndex, outcomeTokenCount)
+
+    requireEventFromTXResult(await outcomeToken.approve(market, outcomeTokenCount), 'Approval')
+
+    return await sendTransactionAndGetResult({
+        callerContract: this.contracts.Market.at(market),
+        methodName: 'sell',
+        methodArgs: [outcomeTokenIndex, outcomeTokenCount, minProfit],
+        eventName: 'OutcomeTokenSale',
+        eventArgName: 'profit',
+    })
+}
