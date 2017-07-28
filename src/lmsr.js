@@ -10,7 +10,7 @@ import { Decimal, normalizeWeb3Args } from './utils'
  * @alias Gnosis.calcLMSRCost
  */
 export function calcLMSRCost () {
-    let [[netOutcomeTokensSold, funding, outcomeTokenIndex, outcomeTokenCount], otherOpts] =
+    let [[netOutcomeTokensSold, funding, outcomeTokenIndex, outcomeTokenCount]] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'calcLMSRCost',
             functionInputs: [
@@ -53,7 +53,7 @@ export function calcLMSRCost () {
  * @alias Gnosis.calcLMSRProfit
  */
 export function calcLMSRProfit () {
-    let [[netOutcomeTokensSold, funding, outcomeTokenIndex, outcomeTokenCount], otherOpts] =
+    let [[netOutcomeTokensSold, funding, outcomeTokenIndex, outcomeTokenCount]] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'calcLMSRProfit',
             functionInputs: [
@@ -95,9 +95,9 @@ export function calcLMSRProfit () {
  * @returns {Decimal} The number of outcome tokens that can be bought
  * @alias Gnosis.calcLMSROutcomeTokenCount
  */
-export function calcLMSROutcomeTokenCount (opts) {
+export function calcLMSROutcomeTokenCount () {
     // decimal.js making this reaaally messy :/
-    let [[netOutcomeTokensSold, funding, outcomeTokenIndex, cost], otherOpts] =
+    let [[netOutcomeTokensSold, funding, outcomeTokenIndex, cost]] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'calcLMSROutcomeTokenCount',
             functionInputs: [
@@ -137,8 +137,8 @@ export function calcLMSROutcomeTokenCount (opts) {
  * @returns {Decimal} The marginal price of outcome tokens. Will differ from actual price, which varies with quantity being moved.
  * @alias Gnosis.calcLMSRMarginalPrice
  */
-export function calcLMSRMarginalPrice(opts) {
-    let [[netOutcomeTokensSold, funding, outcomeTokenIndex], otherOpts] =
+export function calcLMSRMarginalPrice() {
+    let [[netOutcomeTokensSold, funding, outcomeTokenIndex]] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'calcLMSRMarginalPrice',
             functionInputs: [

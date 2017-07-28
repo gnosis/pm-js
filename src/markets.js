@@ -42,7 +42,7 @@ export const createMarket = wrapWeb3Function((self, opts) => ({
  * @alias Gnosis#buyOutcomeTokens
  */
 export async function buyOutcomeTokens() {
-    const [[market, outcomeTokenIndex, outcomeTokenCount], opts] =
+    const [[market, outcomeTokenIndex, outcomeTokenCount]] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'calcLMSRCost',
             functionInputs: [
@@ -84,7 +84,7 @@ export async function buyOutcomeTokens() {
  * @alias Gnosis#sellOutcomeTokens
  */
 export async function sellOutcomeTokens() {
-    const [[market, outcomeTokenIndex, outcomeTokenCount], opts] =
+    const [[market, outcomeTokenIndex, outcomeTokenCount]] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'calcLMSRCost',
             functionInputs: [
