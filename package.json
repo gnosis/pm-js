@@ -64,7 +64,7 @@
     "webpack-dev-server": "^2.5.1"
   },
   "dependencies": {
-    "@gnosis.pm/gnosis-core-contracts": "^0.2.0",
+    "@gnosis.pm/gnosis-core-contracts": "^0.2.1",
     "babel-polyfill": "^6.23.0",
     "babel-runtime": "^6.23.0",
     "decimal.js": "^7.2.3",
