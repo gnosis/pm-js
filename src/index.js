@@ -17,6 +17,7 @@ const contractInfo = _.fromPairs([
         ['CategoricalEvent'],
         ['ScalarEvent'],
         ['EventFactory', { gas: parseInt('3 000 000') }],
+        ['Token'],
         ['EtherToken'],
         ['CentralizedOracle'],
         ['CentralizedOracleFactory', { gas: parseInt('400 000') }],
