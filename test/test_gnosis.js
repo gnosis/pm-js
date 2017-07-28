@@ -185,6 +185,8 @@ describe('Gnosis', function () {
             let outcomeTokenIndex = 0
             let outcomeTokenCount = 1e18
 
+            // Buying shares, long version
+
             let localCalculatedCost = Gnosis.calcLMSRCost({
                 netOutcomeTokensSold,
                 funding,
@@ -208,6 +210,8 @@ describe('Gnosis', function () {
             assert(isClose(localCalculatedCost.valueOf(), actualCost.valueOf()))
             assert(localCalculatedCost.gte(actualCost.valueOf()))
 
+            // Checking inverse calculation
+
             let calculatedOutcomeTokenCount = Gnosis.calcLMSROutcomeTokenCount({
                 netOutcomeTokensSold,
                 funding,
@@ -218,6 +222,29 @@ describe('Gnosis', function () {
             assert(isClose(outcomeTokenCount.valueOf(), calculatedOutcomeTokenCount.valueOf()))
 
             netOutcomeTokensSold[outcomeTokenIndex] += outcomeTokenCount
+
+            // Buying shares, short version
+
+            outcomeTokenCount = 2.5e17
+
+            localCalculatedCost = Gnosis.calcLMSRCost({
+                netOutcomeTokensSold,
+                funding,
+                outcomeTokenIndex,
+                outcomeTokenCount
+            })
+
+            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: localCalculatedCost }), 'Deposit')
+            actualCost = await gnosis.buyOutcomeTokens({
+                market, outcomeTokenIndex, outcomeTokenCount
+            })
+
+            assert(isClose(localCalculatedCost.valueOf(), actualCost.valueOf()))
+            assert(localCalculatedCost.gte(actualCost.valueOf()))
+
+            netOutcomeTokensSold[outcomeTokenIndex] += outcomeTokenCount
+
+            // Selling shares, long version
 
             let numOutcomeTokensToSell = 5e17
 
@@ -245,6 +272,8 @@ describe('Gnosis', function () {
             assert(localCalculatedProfit.lte(actualProfit.valueOf()))
 
             netOutcomeTokensSold[outcomeTokenIndex] -= numOutcomeTokensToSell
+
+            // Selling shares, short version
 
             numOutcomeTokensToSell = 2.5e17
 
