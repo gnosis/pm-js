@@ -1,4 +1,5 @@
 import assert from 'assert'
+import _ from 'lodash'
 import Gnosis from '../src/index'
 
 const options = process.env.GNOSIS_OPTIONS ? JSON.parse(process.env.GNOSIS_OPTIONS) : null
@@ -335,5 +336,28 @@ describe('Gnosis', function () {
 
             assert(isClose(localCalculatedMarginalPrice.valueOf(), chainCalculatedMarginalPrice.div(ONE).valueOf()))
         })
+
+        it('does not mutate arguments when performing calculations', () => {
+            let netOutcomeTokensSoldCopy = _.clone(netOutcomeTokensSold)
+            let outcomeTokenIndex = 0
+            let cost = 1e18
+
+            let lmsrOptions = { netOutcomeTokensSold, outcomeTokenIndex, cost, funding }
+            let lmsrOptionsCopy = _.clone(lmsrOptions)
+
+            assert.deepStrictEqual(netOutcomeTokensSoldCopy, netOutcomeTokensSold)
+            assert.deepStrictEqual(lmsrOptionsCopy, lmsrOptions)
+
+            const probability = Gnosis.calcLMSRMarginalPrice(lmsrOptions)
+
+            assert.deepStrictEqual(netOutcomeTokensSoldCopy, netOutcomeTokensSold)
+            assert.deepStrictEqual(lmsrOptionsCopy, lmsrOptions)
+
+            const maximumWin = Gnosis.calcLMSROutcomeTokenCount(lmsrOptions)
+
+            assert.deepStrictEqual(netOutcomeTokensSoldCopy, netOutcomeTokensSold)
+            assert.deepStrictEqual(lmsrOptionsCopy, lmsrOptions)
+        })
+
     })
 })
