@@ -139,7 +139,7 @@ export let Decimal = DecimalJS.clone({ precision: 80 })
 
 export function normalizeWeb3Args(args, opts) {
     let {
-        functionInputs, methodName, argAliases
+        functionInputs, methodName, argAliases, defaults
     } = opts
 
     // Format arguments in a way that web3 likes
@@ -149,7 +149,7 @@ export function normalizeWeb3Args(args, opts) {
         // or the argument inside of an options object
         if(typeof args[0] === 'object' && _.has(args[0], functionInputs[0].name)) {
             // we consider argument to be an options object if it has the parameter name as a key on it
-            methodOpts = args[0]
+            methodOpts = _.defaults(_.clone(args[0]), defaults)
             methodArgs = getTruffleArgsFromOptions(functionInputs, methodOpts, argAliases)
         } else {
             methodOpts = null
@@ -163,7 +163,7 @@ export function normalizeWeb3Args(args, opts) {
         // this map should not hit the last element of args
         methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
     } else if(args.length === 1 && typeof args[0] === 'object') {
-        methodOpts = args[0]
+        methodOpts = _.defaults(_.clone(args[0]), defaults)
         methodArgs = getTruffleArgsFromOptions(functionInputs, methodOpts, argAliases)
     } else {
         throw new Error(`${methodName}(${

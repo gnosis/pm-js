@@ -42,7 +42,7 @@ export const createMarket = wrapWeb3Function((self, opts) => ({
  * @alias Gnosis#buyOutcomeTokens
  */
 export async function buyOutcomeTokens() {
-    const [[market, outcomeTokenIndex, outcomeTokenCount]] =
+    const [[marketAddress, outcomeTokenIndex, outcomeTokenCount]] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'calcLMSRCost',
             functionInputs: [
@@ -52,19 +52,21 @@ export async function buyOutcomeTokens() {
             ]
         })
 
+    const market = this.contracts.Market.at(marketAddress)
     const collateralToken = this.contracts.Token.at(
         await this.contracts.Event.at(
-            await this.contracts.Market.at(market).eventContract()
+            await market.eventContract()
         ).collateralToken()
     )
-    const baseCost = await this.lmsrMarketMaker.calcCost(market, outcomeTokenIndex, outcomeTokenCount)
+    const baseCost = await this.lmsrMarketMaker.calcCost(marketAddress, outcomeTokenIndex, outcomeTokenCount)
+    const cost = baseCost.add(await market.calcMarketFee(baseCost))
 
-    requireEventFromTXResult(await collateralToken.approve(market, outcomeTokenCount), 'Approval')
+    requireEventFromTXResult(await collateralToken.approve(marketAddress, outcomeTokenCount), 'Approval')
 
     return await sendTransactionAndGetResult({
-        callerContract: this.contracts.Market.at(market),
+        callerContract: market,
         methodName: 'buy',
-        methodArgs: [outcomeTokenIndex, outcomeTokenCount, baseCost],
+        methodArgs: [outcomeTokenIndex, outcomeTokenCount, cost],
         eventName: 'OutcomeTokenPurchase',
         eventArgName: 'cost',
     })
@@ -84,7 +86,7 @@ export async function buyOutcomeTokens() {
  * @alias Gnosis#sellOutcomeTokens
  */
 export async function sellOutcomeTokens() {
-    const [[market, outcomeTokenIndex, outcomeTokenCount]] =
+    const [[marketAddress, outcomeTokenIndex, outcomeTokenCount]] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'calcLMSRCost',
             functionInputs: [
@@ -94,17 +96,19 @@ export async function sellOutcomeTokens() {
             ]
         })
 
+    const market = this.contracts.Market.at(marketAddress)
     const outcomeToken = this.contracts.Token.at(
         await this.contracts.Event.at(
-            await this.contracts.Market.at(market).eventContract()
+            await market.eventContract()
         ).outcomeTokens(outcomeTokenIndex)
     )
-    const minProfit = await this.lmsrMarketMaker.calcProfit(market, outcomeTokenIndex, outcomeTokenCount)
+    const baseProfit = await this.lmsrMarketMaker.calcProfit(marketAddress, outcomeTokenIndex, outcomeTokenCount)
+    const minProfit = baseProfit.sub(await market.calcMarketFee(baseProfit))
 
-    requireEventFromTXResult(await outcomeToken.approve(market, outcomeTokenCount), 'Approval')
+    requireEventFromTXResult(await outcomeToken.approve(marketAddress, outcomeTokenCount), 'Approval')
 
     return await sendTransactionAndGetResult({
-        callerContract: this.contracts.Market.at(market),
+        callerContract: market,
         methodName: 'sell',
         methodArgs: [outcomeTokenIndex, outcomeTokenCount, minProfit],
         eventName: 'OutcomeTokenSale',
