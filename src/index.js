@@ -41,7 +41,7 @@ class Gnosis {
      *
      * Note: this method is asynchronous and will return a Promise
      *
-     * @param {string} [opts.ethereum] - The URL of a Web3 HTTP provider. If not specified, Web3 provider will be either the browser-injected Web3 (Mist/MetaMask) or an HTTP provider looking at http://localhost:8545
+     * @param {(string|Provider)} [opts.ethereum] - An instance of a Web3 provider or a URL of a Web3 HTTP provider. If not specified, Web3 provider will be either the browser-injected Web3 (Mist/MetaMask) or an HTTP provider looking at http://localhost:8545
      * @param {Object} [opts.ipfs] - ipfs-mini configuration object
      * @param {string} [opts.ipfs.host='ipfs.infura.io'] - IPFS node address
      * @param {Number} [opts.ipfs.port=5001] - IPFS protocol port
@@ -49,16 +49,6 @@ class Gnosis {
      * @returns {Gnosis} An instance of the gnosis.js API
      */
     static async create (opts) {
-        let gnosis = new Gnosis(opts)
-        await gnosis.initialized()
-        return gnosis
-    }
-
-    /**
-     * **Warning:** Do not use constructor directly. Some asynchronous initialization will not be handled. Instead, use {@link Gnosis.create}.
-     * @constructor
-     */
-    constructor (opts) {
         opts = _.defaultsDeep(opts || {}, {
             ipfs: {
                 host: 'ipfs.infura.io',
@@ -67,25 +57,21 @@ class Gnosis {
             }
         })
 
-        if (opts.ethereum == null) {
-            // Prefer Web3 injected by the browser (Mist/MetaMask)
-            if (typeof web3 !== 'undefined') {
-                this.web3 = new Web3(web3.currentProvider)
-            } else {
-                this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
-            }
-        } else if (typeof opts.ethereum === 'string') {
-            this.web3 = new Web3(new Web3.providers.HttpProvider(opts.ethereum))
-        } else {
-            throw new TypeError(`type of option \`ethereum\` '${typeof opts.ethereum}' not supported!`)
-        }
+        let gnosis = new Gnosis(opts)
+        await gnosis.initialized(opts)
+        return gnosis
+    }
 
+    /**
+     * **Warning:** Do not use constructor directly. Some asynchronous initialization will not be handled. Instead, use {@link Gnosis.create}.
+     * @constructor
+     */
+    constructor (opts) {
         // IPFS instantiation
         this.ipfs = utils.promisifyAll(new IPFS(opts.ipfs))
 
         this.contracts = _.mapValues(contractInfo, (info) => {
             let c = TruffleContract(info.artifact)
-            c.setProvider(this.web3.currentProvider)
 
             if (info.defaults != null) {
                 c.defaults(info.defaults)
@@ -97,17 +83,56 @@ class Gnosis {
         this.TruffleContract = TruffleContract
     }
 
-    async initialized () {
-        let accounts
-        [accounts, this.etherToken, this.standardMarketFactory, this.lmsrMarketMaker] = await Promise.all([
-            utils.promisify(this.web3.eth.getAccounts)(),
-            this.contracts.EtherToken.deployed(),
-            this.contracts.StandardMarketFactory.deployed(),
-            this.contracts.LMSRMarketMaker.deployed()
-        ])
+    async initialized (opts) {
+        await this.setWeb3Provider(opts.ethereum)
+    }
+
+    /**
+     * Setter for the ethereum web3 provider.
+     *
+     * Note: this method is asynchronous and will return a Promise
+     *
+     * @param {(string|Provider)} [provider] - An instance of a Web3 provider or a URL of a Web3 HTTP provider. If not specified, Web3 provider will be either the browser-injected Web3 (Mist/MetaMask) or an HTTP provider looking at http://localhost:8545
+     */
+    async setWeb3Provider (provider) {
+        if (provider == null) {
+            // Prefer Web3 injected by the browser (Mist/MetaMask)
+            if (typeof web3 !== 'undefined') {
+                this.web3 = new Web3(web3.currentProvider)
+            } else {
+                this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
+            }
+        } else if (typeof provider === 'string') {
+            this.web3 = new Web3(new Web3.providers.HttpProvider(provider))
+        } else if (typeof provider === 'object' && provider.constructor.name.endsWith('Provider')) {
+            this.web3 = new Web3(provider)
+        } else {
+            throw new TypeError(`provider of type '${typeof provider}' not supported`)
+        }
+
+        _.forOwn(this.contracts, (c) => { c.setProvider(this.web3.currentProvider) })
+
+        const accounts = await utils.promisify(this.web3.eth.getAccounts)()
 
         if (accounts.length > 0) {
             this.setDefaultAccount(accounts[0])
+        }
+
+        await Promise.all([
+            this.trySettingContractInstance('etherToken', this.contracts.EtherToken),
+            this.trySettingContractInstance('standardMarketFactory', this.contracts.StandardMarketFactory),
+            this.trySettingContractInstance('lmsrMarketMaker', this.contracts.LMSRMarketMaker),
+        ])
+    }
+
+    async trySettingContractInstance(instanceName, contract) {
+        try {
+            this[instanceName] = await contract.deployed()
+        } catch(e) {
+            delete this[instanceName]
+            if(!e.message.includes('has not been deployed to detected network')) {
+                throw e
+            }
         }
     }
 
