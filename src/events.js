@@ -1,4 +1,5 @@
-import { wrapWeb3Function } from './utils'
+import _ from 'lodash'
+import { wrapWeb3Function, normalizeWeb3Args, requireEventFromTXResult } from './utils'
 
 /**
  * Creates a categorical event.
@@ -69,4 +70,31 @@ export async function publishEventDescription (description) {
  */
 export async function loadEventDescription (ipfsHash) {
     return await this.ipfs.catJSONAsync(ipfsHash)
+}
+
+/**
+ * Resolves an event. Assumes event is backed solely by a centralized oracle controlled by you
+ *
+ * Note: this method is asynchronous and will return a Promise
+ *
+ * @param {(Contract|string)} opts.event - The event address or instance
+ * @param {(number|string|BigNumber)} opts.outcome - The outcome to set this event to. This is the zero-based index of the outcome for categorical events and the decimals-adjusted value of the outcome for scalar events.
+ * @alias Gnosis#resolveEvent
+ */
+export async function resolveEvent() {
+    const [[eventAddress, outcome], opts] =
+        normalizeWeb3Args(Array.from(arguments), {
+            methodName: 'resolveEvent',
+            functionInputs: [
+                { name: 'event', type: 'address' },
+                { name: 'outcome', type: 'int256'},
+            ]
+        })
+
+    const txOpts = _.pick(opts, ['from', 'to', 'value', 'gas', 'gasPrice'])
+
+    const event = this.contracts.Event.at(eventAddress)
+    const oracle = this.contracts.CentralizedOracle.at(await event.oracle(txOpts))
+    requireEventFromTXResult(await oracle.setOutcome(outcome, txOpts), 'OutcomeAssignment')
+    requireEventFromTXResult(await event.setOutcome(txOpts), 'OutcomeAssignment')
 }
