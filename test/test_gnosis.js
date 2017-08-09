@@ -63,7 +63,7 @@ describe('Gnosis', function () {
     describe('#oracles', () => {
         let gnosis, ipfsHash
 
-        before(async () => {
+        beforeEach(async () => {
             gnosis = await Gnosis.create(options)
             ipfsHash = await gnosis.publishEventDescription(description)
         })
@@ -109,15 +109,15 @@ describe('Gnosis', function () {
     })
 
     describe('#events', () => {
-        let gnosis, ipfsHash
+        let gnosis, ipfsHash, oracle
 
-        before(async () => {
+        beforeEach(async () => {
             gnosis = await Gnosis.create(options)
             ipfsHash = await gnosis.publishEventDescription(description)
+            oracle = await gnosis.createCentralizedOracle(ipfsHash)
         })
 
         it('creates and resolves categorical events', async () => {
-            let oracle = await gnosis.createCentralizedOracle(ipfsHash)
             let event = await gnosis.createCategoricalEvent({
                 collateralToken: gnosis.etherToken,
                 oracle: oracle,
@@ -137,7 +137,6 @@ describe('Gnosis', function () {
         })
 
         it('creates and resolves scalar events', async () => {
-            let oracle = await gnosis.createCentralizedOracle(ipfsHash)
             let event = await gnosis.createScalarEvent({
                 collateralToken: gnosis.etherToken,
                 oracle: oracle,
@@ -161,7 +160,7 @@ describe('Gnosis', function () {
     describe('#markets', () => {
         let gnosis, oracle, event, ipfsHash
 
-        before(async () => {
+        beforeEach(async () => {
             gnosis = await Gnosis.create(options)
             ipfsHash = await gnosis.publishEventDescription(description)
             oracle = await gnosis.createCentralizedOracle(ipfsHash)
@@ -328,6 +327,30 @@ describe('Gnosis', function () {
             })
             assert(isClose(localCalculatedProfit.valueOf(), actualProfit.valueOf()))
             assert(localCalculatedProfit.lte(actualProfit.valueOf()))
+
+            netOutcomeTokensSold[outcomeTokenIndex] -= numOutcomeTokensToSell
+
+            // Setting the outcome and redeeming winnings
+
+            await gnosis.resolveEvent({
+                event,
+                outcome: outcomeTokenIndex,
+            })
+
+            let balanceBefore = await gnosis.etherToken.balanceOf(gnosis.defaultAccount)
+
+            let winnings = await sendTransactionAndGetResult({
+                callerContract: event,
+                methodName: 'redeemWinnings',
+                methodArgs: [],
+                eventName: 'WinningsRedemption',
+                eventArgName: 'winnings',
+            })
+
+            let balanceAfter = await gnosis.etherToken.balanceOf(gnosis.defaultAccount)
+
+            assert.equal(winnings.valueOf(), netOutcomeTokensSold[outcomeTokenIndex])
+            assert.equal(balanceAfter.sub(balanceBefore).valueOf(), winnings.valueOf())
         })
 
         it('accepts strings for outcome token index', async () => {
