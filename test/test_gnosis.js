@@ -7,7 +7,7 @@ const options = process.env.GNOSIS_OPTIONS ? JSON.parse(process.env.GNOSIS_OPTIO
 const { requireEventFromTXResult, sendTransactionAndGetResult, Decimal } = Gnosis
 const ONE = Math.pow(2, 64)
 
-function isClose(a, b, relTol=1e9, absTol=1e18) {
+function isClose(a, b, relTol=2e-9, absTol=1e-18) {
     return Decimal(a.valueOf()).sub(b).abs().lte(
         Decimal.max(
             Decimal.max(
@@ -15,6 +15,13 @@ function isClose(a, b, relTol=1e9, absTol=1e18) {
                 Decimal.abs(b.valueOf())
             ).mul(relTol),
             absTol))
+}
+
+function assertIsClose(a, b) {
+    assert(isClose(a, b), `${a} !~ ${b} by ${Decimal(a.valueOf()).sub(b).abs().div(Decimal.max(
+                Decimal.abs(a.valueOf()),
+                Decimal.abs(b.valueOf())
+            ))}`)
 }
 
 async function requireRejection(q, msg) {
@@ -156,10 +163,11 @@ describe('Gnosis', function () {
     })
 
     describe('.lmsr', () => {
-        let gnosis, oracle, event, ipfsHash, market, netOutcomeTokensSold, funding
+        let gnosis, oracle, event, ipfsHash, market, netOutcomeTokensSold, funding, feeFactor
 
         beforeEach(async () => {
             netOutcomeTokensSold = [0, 0]
+            feeFactor = 5000 // 0.5%
 
             gnosis = await Gnosis.create(options)
             ipfsHash = await gnosis.publishEventDescription(description)
@@ -173,7 +181,7 @@ describe('Gnosis', function () {
                 marketFactory: gnosis.standardMarketFactory,
                 event: event,
                 marketMaker: gnosis.lmsrMarketMaker,
-                fee: 0, // 0%
+                fee: feeFactor, // 0%
             })
 
             funding = 1e18
@@ -193,9 +201,11 @@ describe('Gnosis', function () {
                 funding,
                 outcomeTokenIndex,
                 outcomeTokenCount,
+                feeFactor,
             })
 
             let chainCalculatedCost = await gnosis.lmsrMarketMaker.calcCost(market.address, outcomeTokenIndex, outcomeTokenCount)
+            chainCalculatedCost = chainCalculatedCost.add(await market.calcMarketFee(chainCalculatedCost))
             assert(isClose(localCalculatedCost.valueOf(), chainCalculatedCost.valueOf()))
             assert(localCalculatedCost.gte(chainCalculatedCost.valueOf()))
 
@@ -217,7 +227,8 @@ describe('Gnosis', function () {
                 netOutcomeTokensSold,
                 funding,
                 outcomeTokenIndex,
-                cost: localCalculatedCost
+                cost: localCalculatedCost,
+                feeFactor,
             })
 
             assert(isClose(outcomeTokenCount.valueOf(), calculatedOutcomeTokenCount.valueOf()))
@@ -232,7 +243,8 @@ describe('Gnosis', function () {
                 netOutcomeTokensSold,
                 funding,
                 outcomeTokenIndex,
-                outcomeTokenCount
+                outcomeTokenCount,
+                feeFactor,
             })
 
             requireEventFromTXResult(await gnosis.etherToken.deposit({ value: localCalculatedCost }), 'Deposit')
@@ -254,10 +266,12 @@ describe('Gnosis', function () {
                 funding,
                 outcomeTokenIndex,
                 outcomeTokenCount: numOutcomeTokensToSell,
+                feeFactor,
             })
 
             let chainCalculatedProfit = await gnosis.lmsrMarketMaker.calcProfit(market.address, outcomeTokenIndex, numOutcomeTokensToSell)
-            assert(isClose(localCalculatedProfit.valueOf(), chainCalculatedProfit.valueOf()))
+            chainCalculatedProfit = chainCalculatedProfit.sub(await market.calcMarketFee(chainCalculatedProfit))
+            assertIsClose(localCalculatedProfit.valueOf(), chainCalculatedProfit.valueOf())
             assert(localCalculatedProfit.lte(chainCalculatedProfit.valueOf()))
 
             let outcomeToken = gnosis.contracts.Token.at(await gnosis.contracts.Event.at(await market.eventContract()).outcomeTokens(outcomeTokenIndex))
@@ -283,11 +297,13 @@ describe('Gnosis', function () {
                 funding,
                 outcomeTokenIndex,
                 outcomeTokenCount: numOutcomeTokensToSell,
+                feeFactor,
             })
 
             actualProfit = await gnosis.sellOutcomeTokens({
                 market, outcomeTokenIndex,
-                outcomeTokenCount: numOutcomeTokensToSell
+                outcomeTokenCount: numOutcomeTokensToSell,
+                feeFactor,
             })
             assert(isClose(localCalculatedProfit.valueOf(), actualProfit.valueOf()))
             assert(localCalculatedProfit.lte(actualProfit.valueOf()))
@@ -319,6 +335,7 @@ describe('Gnosis', function () {
             let outcomeTokenCount = 1e18
 
             let chainCalculatedCost = await gnosis.lmsrMarketMaker.calcCost(market.address, outcomeTokenIndex, outcomeTokenCount)
+            chainCalculatedCost = chainCalculatedCost.add(await market.calcMarketFee(chainCalculatedCost))
             requireEventFromTXResult(await gnosis.etherToken.deposit({ value: chainCalculatedCost }), 'Deposit')
             requireEventFromTXResult(await gnosis.etherToken.approve(market.address, chainCalculatedCost), 'Approval')
             requireEventFromTXResult(await market.buy(outcomeTokenIndex, outcomeTokenCount, chainCalculatedCost), 'OutcomeTokenPurchase')

@@ -6,19 +6,24 @@ import { Decimal, normalizeWeb3Args } from './utils'
  * @param {(number|string|BigNumber)} opts.funding - The amount of funding market has
  * @param {(number|string|BigNumber)} opts.outcomeTokenIndex - The index of the outcome
  * @param {(number|string|BigNumber)} opts.outcomeTokenCount - The number of outcome tokens to buy
+ * @param {(number|string|BigNumber)} opts.feeFactor - The fee factor. Specifying 1,000,000 corresponds to 100%, 50,000 corresponds to 5%, etc.
  * @returns {Decimal} The cost of the outcome tokens in event collateral tokens
  * @alias Gnosis.calcLMSRCost
  */
 export function calcLMSRCost () {
-    let [[netOutcomeTokensSold, funding, outcomeTokenIndex, outcomeTokenCount]] =
+    let [[netOutcomeTokensSold, funding, outcomeTokenIndex, outcomeTokenCount, feeFactor]] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'calcLMSRCost',
             functionInputs: [
                 { name: 'netOutcomeTokensSold', type: 'int256[]' },
-                { name: 'funding', type: 'uint256'},
-                { name: 'outcomeTokenIndex', type: 'uint8'},
-                { name: 'outcomeTokenCount', type: 'uint256'},
-            ]
+                { name: 'funding', type: 'uint256' },
+                { name: 'outcomeTokenIndex', type: 'uint8' },
+                { name: 'outcomeTokenCount', type: 'uint256' },
+                { name: 'feeFactor', type: 'uint24' },
+            ],
+            defaults: {
+                feeFactor: 0,
+            },
         })
 
     outcomeTokenCount = new Decimal(outcomeTokenCount.toString())
@@ -38,7 +43,8 @@ export function calcLMSRCost () {
                 .dividedBy(b)
                 .exp()),
             new Decimal(0)).ln()
-        )).times(1+1e-9).ceil() // TODO: Standardize this 1e-9 and 1e9 in isClose of tests
+        )).times(new Decimal(1).plus(new Decimal(feeFactor).dividedBy(1e6)))
+        .times(1+1e-9).ceil()   // TODO: Standardize this 1e-9 and 1e9 in isClose of tests
                                 //       This is necessary because of rounding errors due to
                                 //       series truncation in solidity implementation.
 }
@@ -49,19 +55,24 @@ export function calcLMSRCost () {
  * @param {(number|string|BigNumber)} opts.funding - The amount of funding market has
  * @param {(number|string|BigNumber)} opts.outcomeTokenIndex - The index of the outcome
  * @param {(number|string|BigNumber)} opts.outcomeTokenCount - The number of outcome tokens to sell
+ * @param {(number|string|BigNumber)} opts.feeFactor - The fee factor. Specifying 1,000,000 corresponds to 100%, 50,000 corresponds to 5%, etc.
  * @returns {Decimal} The profit from selling outcome tokens in event collateral tokens
  * @alias Gnosis.calcLMSRProfit
  */
 export function calcLMSRProfit () {
-    let [[netOutcomeTokensSold, funding, outcomeTokenIndex, outcomeTokenCount]] =
+    let [[netOutcomeTokensSold, funding, outcomeTokenIndex, outcomeTokenCount, feeFactor]] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'calcLMSRProfit',
             functionInputs: [
                 { name: 'netOutcomeTokensSold', type: 'int256[]' },
-                { name: 'funding', type: 'uint256'},
-                { name: 'outcomeTokenIndex', type: 'uint8'},
-                { name: 'outcomeTokenCount', type: 'uint256'},
-            ]
+                { name: 'funding', type: 'uint256' },
+                { name: 'outcomeTokenIndex', type: 'uint8' },
+                { name: 'outcomeTokenCount', type: 'uint256' },
+                { name: 'feeFactor', type: 'uint24' },
+            ],
+            defaults: {
+                feeFactor: 0,
+            },
         })
 
     outcomeTokenCount = new Decimal(outcomeTokenCount.toString())
@@ -81,9 +92,10 @@ export function calcLMSRProfit () {
                 .dividedBy(b)
                 .exp()),
             new Decimal(0)).ln()
-        )).dividedBy(1+1e-9).floor() // TODO: Standardize this 1e-9 and 1e9 in isClose of tests
-                                     //       This is necessary because of rounding errors due to
-                                     //       series truncation in solidity implementation.
+        )).times(new Decimal(1).minus(new Decimal(feeFactor).dividedBy(1e6)))
+        .dividedBy(1+1e-9).floor()  // TODO: Standardize this 1e-9 and 1e9 in isClose of tests
+                                    //       This is necessary because of rounding errors due to
+                                    //       series truncation in solidity implementation.
 }
 
 /**
@@ -97,7 +109,7 @@ export function calcLMSRProfit () {
  */
 export function calcLMSROutcomeTokenCount () {
     // decimal.js making this reaaally messy :/
-    let [[netOutcomeTokensSold, funding, outcomeTokenIndex, cost]] =
+    let [[netOutcomeTokensSold, funding, outcomeTokenIndex, cost, feeFactor]] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'calcLMSROutcomeTokenCount',
             functionInputs: [
@@ -105,7 +117,11 @@ export function calcLMSROutcomeTokenCount () {
                 { name: 'funding', type: 'uint256'},
                 { name: 'outcomeTokenIndex', type: 'uint8'},
                 { name: 'cost', type: 'uint256'},
-            ]
+                { name: 'feeFactor', type: 'uint24' },
+            ],
+            defaults: {
+                feeFactor: 0,
+            },
         })
 
     cost = new Decimal(cost.toString())
@@ -115,7 +131,7 @@ export function calcLMSROutcomeTokenCount () {
         netOutcomeTokensSold.reduce((acc, numShares) =>
             acc.plus(
                 new Decimal(numShares.toString())
-                .plus(cost)
+                .plus(cost.dividedBy(new Decimal(1).plus(new Decimal(feeFactor).dividedBy(1e6))))
                 .dividedBy(b)
                 .exp()),
             new Decimal(0))
