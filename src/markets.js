@@ -44,7 +44,7 @@ export const createMarket = wrapWeb3Function((self, opts) => ({
 export async function buyOutcomeTokens() {
     const [[marketAddress, outcomeTokenIndex, outcomeTokenCount]] =
         normalizeWeb3Args(Array.from(arguments), {
-            methodName: 'calcLMSRCost',
+            methodName: 'buyOutcomeTokens',
             functionInputs: [
                 { name: 'market', type: 'address' },
                 { name: 'outcomeTokenIndex', type: 'uint8'},
@@ -88,7 +88,7 @@ export async function buyOutcomeTokens() {
 export async function sellOutcomeTokens() {
     const [[marketAddress, outcomeTokenIndex, outcomeTokenCount]] =
         normalizeWeb3Args(Array.from(arguments), {
-            methodName: 'calcLMSRCost',
+            methodName: 'sellOutcomeTokens',
             functionInputs: [
                 { name: 'market', type: 'address' },
                 { name: 'outcomeTokenIndex', type: 'uint8'},
