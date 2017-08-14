@@ -1,6 +1,7 @@
 import assert from 'assert'
 import _ from 'lodash'
 import Gnosis from '../src/index'
+import TestRPC from 'ethereumjs-testrpc'
 
 const options = process.env.GNOSIS_OPTIONS ? JSON.parse(process.env.GNOSIS_OPTIONS) : null
 
@@ -56,6 +57,13 @@ describe('Gnosis', function () {
             ethereum: 'http://localhost:8545',
             ipfs: '',
             gnosisdb: 'https:/db.gnosis.pm'
+        })
+        assert(gnosis)
+    })
+
+    it('initializes with a provider', async () => {
+        let gnosis = await Gnosis.create({
+            ethereum: TestRPC.provider(),
         })
         assert(gnosis)
     })
