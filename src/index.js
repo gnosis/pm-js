@@ -24,7 +24,7 @@ const contractInfo = _.fromPairs([
         ['UltimateOracle'],
         ['UltimateOracleFactory', { gas: parseInt('900 000') }],
         ['LMSRMarketMaker'],
-        ['Market', { gas: parseInt('300 000') }],
+        ['Market', { gas: parseInt('500 000') }],
         ['MarketFactory'],
         ['StandardMarketFactory', { gas: parseInt('2 000 000') }]
 ].map(([name, defaults]) => [name, {
