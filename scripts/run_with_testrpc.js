@@ -2,7 +2,7 @@
 
 const { spawn, execSync } = require('child_process');
 
-const testrpc = spawn('testrpc')
+const testrpc = spawn('testrpc', ['-l', '40000000'])
 const cmd = process.argv.slice(2)
 if(cmd.length !== 1)
     throw new Error(`Expected single argument but got ${cmd}!`)

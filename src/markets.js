@@ -17,9 +17,9 @@ import {
  */
 export const createMarket = wrapWeb3Function((self, opts) => ({
     callerContract: opts.marketFactory,
-    callerABI: self.contracts.MarketFactory.abi,
+    callerABI: self.contracts.StandardMarketFactory.abi,
     methodName: 'createMarket',
-    eventName: 'MarketCreation',
+    eventName: 'StandardMarketCreation',
     eventArgName: 'market',
     resultContract: self.contracts.Market,
     argAliases: {
@@ -63,13 +63,12 @@ export async function buyOutcomeTokens() {
 
     requireEventFromTXResult(await collateralToken.approve(marketAddress, outcomeTokenCount), 'Approval')
 
-    return await sendTransactionAndGetResult({
-        callerContract: market,
-        methodName: 'buy',
-        methodArgs: [outcomeTokenIndex, outcomeTokenCount, cost],
-        eventName: 'OutcomeTokenPurchase',
-        eventArgName: 'cost',
-    })
+    const purchaseEvent = requireEventFromTXResult(
+        await market.buy(outcomeTokenIndex, outcomeTokenCount, cost),
+        'OutcomeTokenPurchase'
+    )
+
+    return purchaseEvent.args.outcomeTokenCost.plus(purchaseEvent.args.marketFees)
 }
 
 /**
@@ -107,11 +106,9 @@ export async function sellOutcomeTokens() {
 
     requireEventFromTXResult(await outcomeToken.approve(marketAddress, outcomeTokenCount), 'Approval')
 
-    return await sendTransactionAndGetResult({
-        callerContract: market,
-        methodName: 'sell',
-        methodArgs: [outcomeTokenIndex, outcomeTokenCount, minProfit],
-        eventName: 'OutcomeTokenSale',
-        eventArgName: 'profit',
-    })
+    const saleEvent = requireEventFromTXResult(
+        await market.sell(outcomeTokenIndex, outcomeTokenCount, minProfit),
+        'OutcomeTokenSale'
+    )
+    return saleEvent.args.outcomeTokenProfit.minus(saleEvent.args.marketFees)
 }
