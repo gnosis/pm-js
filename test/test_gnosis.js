@@ -239,13 +239,11 @@ describe('Gnosis', function () {
 
             requireEventFromTXResult(await gnosis.etherToken.deposit({ value: localCalculatedCost }), 'Deposit')
             requireEventFromTXResult(await gnosis.etherToken.approve(market.address, localCalculatedCost), 'Approval')
-            let actualCost = await sendTransactionAndGetResult({
-                callerContract: market,
-                methodName: 'buy',
-                methodArgs: [outcomeTokenIndex, outcomeTokenCount, localCalculatedCost],
-                eventName: 'OutcomeTokenPurchase',
-                eventArgName: 'cost',
-            })
+            let purchaseEvent = requireEventFromTXResult(
+                await market.buy(outcomeTokenIndex, outcomeTokenCount, localCalculatedCost),
+                'OutcomeTokenPurchase'
+            )
+            let actualCost = purchaseEvent.args.outcomeTokenCost.plus(purchaseEvent.args.marketFees)
             assert(isClose(localCalculatedCost.valueOf(), actualCost.valueOf()))
             assert(localCalculatedCost.gte(actualCost.valueOf()))
 
@@ -304,13 +302,11 @@ describe('Gnosis', function () {
 
             let outcomeToken = gnosis.contracts.Token.at(await gnosis.contracts.Event.at(await market.eventContract()).outcomeTokens(outcomeTokenIndex))
             requireEventFromTXResult(await outcomeToken.approve(market.address, numOutcomeTokensToSell), 'Approval')
-            let actualProfit = await sendTransactionAndGetResult({
-                callerContract: market,
-                methodName: 'sell',
-                methodArgs: [outcomeTokenIndex, numOutcomeTokensToSell, localCalculatedProfit],
-                eventName: 'OutcomeTokenSale',
-                eventArgName: 'profit',
-            })
+            let saleEvent = requireEventFromTXResult(
+                await market.sell(outcomeTokenIndex, numOutcomeTokensToSell, localCalculatedProfit),
+                'OutcomeTokenSale'
+            )
+            let actualProfit = saleEvent.args.outcomeTokenProfit.minus(saleEvent.args.marketFees)
             assert(isClose(localCalculatedProfit.valueOf(), actualProfit.valueOf()))
             assert(localCalculatedProfit.lte(actualProfit.valueOf()))
 

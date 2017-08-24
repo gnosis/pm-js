@@ -22,10 +22,9 @@ const contractInfo = _.fromPairs([
         ['CentralizedOracle'],
         ['CentralizedOracleFactory', { gas: parseInt('400 000') }],
         ['UltimateOracle'],
-        ['UltimateOracleFactory', { gas: parseInt('900 000') }],
+        ['UltimateOracleFactory', { gas: parseInt('1 000 000') }],
         ['LMSRMarketMaker'],
         ['Market', { gas: parseInt('500 000') }],
-        ['MarketFactory'],
         ['StandardMarketFactory', { gas: parseInt('2 000 000') }]
 ].map(([name, defaults]) => [name, {
     artifact: require(`@gnosis.pm/gnosis-core-contracts/build/contracts/${name}.json`),
