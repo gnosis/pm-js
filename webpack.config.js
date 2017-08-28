@@ -20,8 +20,12 @@ module.exports = {
                 use: [ 'style-loader', 'css-loader' ]
             },
             {
-                test: /\.json$/,
+                test: /\/contracts\/\w+\.json$/,
                 use: ['json-loader', 'json-x-loader?exclude=unlinked_binary+networks.*.events+networks.*.links']
+            },
+            {
+                test: /\/gas-stats.json$/,
+                use: ['json-loader', 'json-x-loader?exclude=*.*.data']
             },
             {
                 test: /\.js$/,

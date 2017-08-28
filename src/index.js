@@ -11,6 +11,8 @@ import * as markets from './markets'
 
 const parseInt = (s) => Number(s.replace(/ /g, ''))
 
+const gasStats = require('@gnosis.pm/gnosis-core-contracts/build/gas-stats.json')
+
 const contractInfo = _.fromPairs([
         ['Math'],
         ['Event'],
