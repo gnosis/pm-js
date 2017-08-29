@@ -228,6 +228,15 @@ describe('Gnosis', function () {
             assert.equal(actualUsingRPC, await gnosis.createCategoricalEvent.estimateGas(Object.assign({ using: 'rpc' }, eventArgs)))
             assert.equal(actualUsingStats, await gnosis.createCategoricalEvent.estimateGas({ using: 'stats' }))
         })
+
+        it('estimates gas usage for event resolution', async () => {
+            let event = await gnosis.createCategoricalEvent({
+                collateralToken: gnosis.etherToken,
+                oracle: oracle,
+                outcomeCount: 2
+            })
+            assert(await gnosis.resolveEvent.estimateGas({ using: 'stats' }) > 0)
+        })
     })
 
     describe('#markets', () => {
@@ -487,6 +496,15 @@ describe('Gnosis', function () {
 
             assert.deepStrictEqual(netOutcomeTokensSoldCopy, netOutcomeTokensSold)
             assert.deepStrictEqual(lmsrOptionsCopy, lmsrOptions)
+        })
+
+        it('estimates buying and selling gas costs', async () => {
+            let outcomeTokenIndex = 0
+            let outcomeTokenCount = 1e18
+
+            assert(await gnosis.buyOutcomeTokens.estimateGas({ using: 'stats' }) > 0)
+
+            assert(await gnosis.sellOutcomeTokens.estimateGas({ using: 'stats' }) > 0)
         })
 
     })

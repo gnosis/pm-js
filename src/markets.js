@@ -71,6 +71,15 @@ export async function buyOutcomeTokens() {
     return purchaseEvent.args.outcomeTokenCost.plus(purchaseEvent.args.marketFees)
 }
 
+buyOutcomeTokens.estimateGas = async function({ using }) {
+    if(using === 'stats') {
+        return this.contracts.Token.gasStats.approve.averageGasUsed +
+            this.contracts.Market.gasStats.buy.averageGasUsed
+    }
+    throw new Error(`unsupported gas estimation source ${using}`)
+}
+
+
 /**
  * Sells outcome tokens. If transacting with a market which deals with EtherToken as collateral,
  * will need additional step of sending a withdraw(uint amount) transaction to the EtherToken
@@ -111,4 +120,12 @@ export async function sellOutcomeTokens() {
         'OutcomeTokenSale'
     )
     return saleEvent.args.outcomeTokenProfit.minus(saleEvent.args.marketFees)
+}
+
+sellOutcomeTokens.estimateGas = async function({ using }) {
+    if(using === 'stats') {
+        return this.contracts.Token.gasStats.approve.averageGasUsed +
+            this.contracts.Market.gasStats.sell.averageGasUsed
+    }
+    throw new Error(`unsupported gas estimation source ${using}`)
 }

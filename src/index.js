@@ -107,9 +107,10 @@ class Gnosis {
             Object.keys(module).forEach((instanceProp) => {
                 if(
                     this[instanceProp] != null &&
-                    typeof this[instanceProp].initWrappedWeb3Fn === 'function'
-                )
-                    this[instanceProp].initWrappedWeb3Fn(this)
+                    typeof this[instanceProp].estimateGas === 'function'
+                ) {
+                    this[instanceProp].estimateGas = this[instanceProp].estimateGas.bind(this)
+                }
             })
         })
     }

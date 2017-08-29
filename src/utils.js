@@ -227,10 +227,6 @@ export function wrapWeb3Function(spec) {
         )
     }
 
-    wrappedFn.initWrappedWeb3Fn = function(gnosisInstance) {
-        this.estimateGas = this.estimateGas.bind(gnosisInstance)
-    }
-
     wrappedFn.estimateGas = async function() {
         const opts = getOptsFromArgs(arguments)
         const speccedOpts = spec(this, opts)
