@@ -228,12 +228,12 @@ export function wrapWeb3Function(spec) {
     }
 
     wrappedFn.initWrappedWeb3Fn = function(gnosisInstance) {
-        this.gnosisInstance = gnosisInstance
+        this.estimateGas = this.estimateGas.bind(gnosisInstance)
     }
 
     wrappedFn.estimateGas = async function() {
         const opts = getOptsFromArgs(arguments)
-        const speccedOpts = spec(this.gnosisInstance, opts)
+        const speccedOpts = spec(this, opts)
         const { callerContract, methodName } = speccedOpts
 
         if(opts.using === 'stats') {
