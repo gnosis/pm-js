@@ -61,7 +61,7 @@ export async function buyOutcomeTokens() {
     const baseCost = await this.lmsrMarketMaker.calcCost(marketAddress, outcomeTokenIndex, outcomeTokenCount)
     const cost = baseCost.add(await market.calcMarketFee(baseCost))
 
-    requireEventFromTXResult(await collateralToken.approve(marketAddress, outcomeTokenCount), 'Approval')
+    requireEventFromTXResult(await collateralToken.approve(marketAddress, cost), 'Approval')
 
     const purchaseEvent = requireEventFromTXResult(
         await market.buy(outcomeTokenIndex, outcomeTokenCount, cost),
