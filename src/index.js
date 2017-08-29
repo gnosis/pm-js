@@ -11,7 +11,7 @@ import * as markets from './markets'
 
 const parseInt = (s) => Number(s.replace(/ /g, ''))
 
-const gasStats = require('@gnosis.pm/gnosis-core-contracts/build/gas-stats.json')
+const gasStatsData = require('@gnosis.pm/gnosis-core-contracts/build/gas-stats.json')
 
 const contractInfo = _.fromPairs([
         ['Math'],
@@ -72,7 +72,13 @@ class Gnosis {
         this.ipfs = utils.promisifyAll(new IPFS(opts.ipfs))
 
         this.contracts = _.mapValues(contractInfo, (info) => {
-            let c = TruffleContract(info.artifact)
+            const c = TruffleContract(info.artifact)
+            const name = c.contract_name
+
+            if(gasStatsData[name] != null) {
+                c.prototype.gasStats = gasStatsData[name]
+                c.addProp('gasStats', () => gasStatsData[name])
+            }
 
             if (info.defaults != null) {
                 c.defaults(info.defaults)

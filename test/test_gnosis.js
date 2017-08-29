@@ -68,6 +68,17 @@ describe('Gnosis', function () {
         assert(gnosis)
     })
 
+    it('initializes with contracts containing gas stats', async () => {
+        let gnosis = await Gnosis.create()
+        assert(gnosis)
+        assert(gnosis.contracts)
+        assert(gnosis.contracts.CentralizedOracle.gasStats)
+        assert(Object.keys(gnosis.contracts.CentralizedOracle.gasStats)
+            .every((k) => gnosis.contracts.CentralizedOracle.abi
+                .find(({ type, name }) => type === 'function' && name === k)))
+        assert(gnosis.standardMarketFactory.gasStats)
+    })
+
     describe('#oracles', () => {
         let gnosis, ipfsHash
 
