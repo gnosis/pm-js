@@ -9,29 +9,31 @@ import * as oracles from './oracles'
 import * as events from './events'
 import * as markets from './markets'
 
-const parseInt = (s) => Number(s.replace(/ /g, ''))
-
 const gasStatsData = require('@gnosis.pm/gnosis-core-contracts/build/gas-stats.json')
+const gasLimit = 4e6
+const gasDefaultMaxMultiplier = 1.5
 
-const contractInfo = _.fromPairs([
-        ['Math'],
-        ['Event'],
-        ['CategoricalEvent'],
-        ['ScalarEvent'],
-        ['EventFactory', { gas: parseInt('3 000 000') }],
-        ['Token'],
-        ['EtherToken'],
-        ['CentralizedOracle'],
-        ['CentralizedOracleFactory', { gas: parseInt('400 000') }],
-        ['UltimateOracle'],
-        ['UltimateOracleFactory', { gas: parseInt('1 000 000') }],
-        ['LMSRMarketMaker'],
-        ['Market', { gas: parseInt('500 000') }],
-        ['StandardMarketFactory', { gas: parseInt('2 000 000') }]
-].map(([name, defaults]) => [name, {
-    artifact: require(`@gnosis.pm/gnosis-core-contracts/build/contracts/${name}.json`),
-    defaults: defaults
-}]))
+const implementationInterfaceMap = {
+    StandardMarket: ['Market'],
+}
+
+const contractArtifacts = [
+    'Math',
+    'Event',
+    'CategoricalEvent',
+    'ScalarEvent',
+    'EventFactory',
+    'Token',
+    'EtherToken',
+    'CentralizedOracle',
+    'CentralizedOracleFactory',
+    'UltimateOracle',
+    'UltimateOracleFactory',
+    'LMSRMarketMaker',
+    'Market',
+    'StandardMarket',
+    'StandardMarketFactory',
+].map((name) => require(`@gnosis.pm/gnosis-core-contracts/build/contracts/${name}.json`))
 
 /**
  * Represents the gnosis.js API
@@ -71,8 +73,8 @@ class Gnosis {
         // IPFS instantiation
         this.ipfs = utils.promisifyAll(new IPFS(opts.ipfs))
 
-        this.contracts = _.mapValues(contractInfo, (info) => {
-            const c = TruffleContract(info.artifact)
+        this.contracts = _.fromPairs(contractArtifacts.map((artifact) => {
+            const c = TruffleContract(artifact)
             const name = c.contract_name
 
             if(gasStatsData[name] != null) {
@@ -80,11 +82,21 @@ class Gnosis {
                 c.addProp('gasStats', () => gasStatsData[name])
             }
 
-            if (info.defaults != null) {
-                c.defaults(info.defaults)
-            }
+            return [name, c]
+        }))
 
-            return c
+        _.forEach(this.contracts, (c, name, cs) => {
+            const maxGasCost = Math.max(
+                ...Object.values(c.gasStats || {}).map(
+                    (fnStats) => fnStats.max != null ? fnStats.max.gasUsed : -Infinity),
+                ..._.flatMap(implementationInterfaceMap[name] || [],
+                    (implName) => Object.values(cs[implName].gasStats || {}).map(
+                        (fnStats) => fnStats.max != null ? fnStats.max.gasUsed : -Infinity))
+            )
+
+            if(maxGasCost > 0) {
+                c.defaults({ gas: Math.min(gasLimit, (1.5 * maxGasCost) | 0) })
+            }
         })
 
         this.TruffleContract = TruffleContract
