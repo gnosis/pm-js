@@ -70,7 +70,6 @@ describe('Gnosis', function () {
 
     it('initializes with contracts containing gas stats', async () => {
         let gnosis = await Gnosis.create()
-        assert(gnosis)
         assert(gnosis.contracts)
         assert(gnosis.contracts.CentralizedOracle.gasStats)
         assert(Object.keys(gnosis.contracts.CentralizedOracle.gasStats)
@@ -92,6 +91,15 @@ describe('Gnosis', function () {
             assert(oracle)
         })
 
+        it('estimates gas usage for centralized oracle creation', async () => {
+            let centralizedOracleFactory = await gnosis.contracts.CentralizedOracleFactory.deployed()
+            let actualUsingRPC = await centralizedOracleFactory.createCentralizedOracle.estimateGas(ipfsHash)
+            let actualUsingStats = centralizedOracleFactory.gasStats.createCentralizedOracle.averageGasUsed
+
+            assert.equal(actualUsingRPC, await gnosis.createCentralizedOracle.estimateGas(ipfsHash, { using: 'rpc' }))
+            assert.equal(actualUsingStats, await gnosis.createCentralizedOracle.estimateGas({ using: 'stats' }))
+        })
+
         it('errors with sensible message when creating centralized oracle incorrectly', async () => {
             let error = await requireRejection(gnosis.createCentralizedOracle('???'))
             assert.equal(error.toString(), 'Error: expected ipfsHash ??? to have length 46')
@@ -108,6 +116,33 @@ describe('Gnosis', function () {
                 frontRunnerPeriod: 60
             })
             assert(ultOracle)
+        })
+
+        it('estimates gas usage for ultimate oracle creation', async () => {
+            let cenOracle = await gnosis.createCentralizedOracle(ipfsHash)
+
+            let ultimateOracleFactory = await gnosis.contracts.UltimateOracleFactory.deployed()
+            let ultOracleArgs = {
+                forwardedOracle: cenOracle,
+                collateralToken: gnosis.etherToken,
+                spreadMultiplier: 2,
+                challengePeriod: 3600,
+                challengeAmount: 1000,
+                frontRunnerPeriod: 60
+            }
+
+            let actualUsingRPC = await ultimateOracleFactory.createUltimateOracle.estimateGas(
+                ultOracleArgs.forwardedOracle.address,
+                ultOracleArgs.collateralToken.address,
+                ultOracleArgs.spreadMultiplier,
+                ultOracleArgs.challengePeriod,
+                ultOracleArgs.challengeAmount,
+                ultOracleArgs.frontRunnerPeriod
+            )
+            let actualUsingStats = ultimateOracleFactory.gasStats.createUltimateOracle.averageGasUsed
+
+            assert.equal(actualUsingRPC, await gnosis.createUltimateOracle.estimateGas(Object.assign({ using: 'rpc' }, ultOracleArgs)))
+            assert.equal(actualUsingStats, await gnosis.createUltimateOracle.estimateGas({ using: 'stats' }))
         })
 
         it('publishes event descriptions and loads them', async () => {
@@ -173,6 +208,25 @@ describe('Gnosis', function () {
 
             assert(await oracle.isOutcomeSet())
             assert(await event.isOutcomeSet())
+        })
+
+        it('estimates gas usage for categorical event creation', async () => {
+            let eventFactory = await gnosis.contracts.EventFactory.deployed()
+            let eventArgs = {
+                collateralToken: gnosis.etherToken,
+                oracle: oracle,
+                outcomeCount: 2
+            }
+
+            let actualUsingRPC = await eventFactory.createCategoricalEvent.estimateGas(
+                eventArgs.collateralToken.address,
+                eventArgs.oracle.address,
+                eventArgs.outcomeCount
+            )
+            let actualUsingStats = eventFactory.gasStats.createCategoricalEvent.averageGasUsed
+
+            assert.equal(actualUsingRPC, await gnosis.createCategoricalEvent.estimateGas(Object.assign({ using: 'rpc' }, eventArgs)))
+            assert.equal(actualUsingStats, await gnosis.createCategoricalEvent.estimateGas({ using: 'stats' }))
         })
     })
 

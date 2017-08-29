@@ -112,6 +112,10 @@ function makeWeb3Compatible(value, type, argName) {
     throw new Error(`unsupported type ${type} for ${argName}`)
 }
 
+function getOptsFromArgs(args) {
+    return typeof args[args.length - 1] === 'object' ? args[args.length - 1] : {}
+}
+
 function getTruffleArgsFromOptions (argInfo, opts, argAliases) {
     opts = opts == null ? {} : _.clone(opts)
 
@@ -174,48 +178,83 @@ export function normalizeWeb3Args(args, opts) {
     return [methodArgs, methodOpts]
 }
 
-export function wrapWeb3Function(spec) {
-    return async function() {
-        let args = Array.from(arguments)
-        let opts = typeof args[args.length - 1] === 'object' ? args[args.length - 1] : {}
+function getWeb3CallMetadata(args, opts, speccedOpts) {
+    let {
+        callerContract, callerABI, methodName,
+        eventName, eventArgName, resultContract,
+        argAliases, validators
+    } = speccedOpts
 
-        let {
-            callerContract, callerABI, methodName,
-            eventName, eventArgName, resultContract,
-            argAliases, validators
-        } = spec(this, opts)
-
-        if(callerABI == null) {
-            callerABI = callerContract.abi
-        }
-
-        const functionCandidates = callerABI.filter(({ name }) => name === methodName)
-
-        if(functionCandidates.length === 0) {
-            throw new Error(`could not find function ${methodName} in abi ${callerABI}`)
-        } else if(functionCandidates.length > 1) {
-            // eslint-disable-next-line no-console
-            console.warn(`function ${methodName} has multiple candidates in abi ${callerABI} -- using last candidate`)
-        }
-
-        const functionInputs = functionCandidates.pop().inputs
-
-        let [methodArgs, methodOpts] = normalizeWeb3Args(args, { functionInputs, methodName, argAliases })
-
-        if(validators != null) {
-            validators.forEach((validator) => { validator(methodArgs) })
-        }
-
-        // Pass extra options down to the web3 layer
-        if(methodOpts != null) {
-            methodArgs.push(_.pick(methodOpts, ['from', 'to', 'value', 'gas', 'gasPrice']))
-        }
-
-        return await sendTransactionAndGetResult({
-            callerContract, methodName, methodArgs,
-            eventName, eventArgName, resultContract
-        })
+    if(callerABI == null) {
+        callerABI = callerContract.abi
     }
+
+    const functionCandidates = callerABI.filter(({ name }) => name === methodName)
+
+    if(functionCandidates.length === 0) {
+        throw new Error(`could not find function ${methodName} in abi ${callerABI}`)
+    } else if(functionCandidates.length > 1) {
+        // eslint-disable-next-line no-console
+        console.warn(`function ${methodName} has multiple candidates in abi ${callerABI} -- using last candidate`)
+    }
+
+    const functionInputs = functionCandidates.pop().inputs
+
+    let [methodArgs, methodOpts] = normalizeWeb3Args(args, { functionInputs, methodName, argAliases })
+
+    if(validators != null) {
+        validators.forEach((validator) => { validator(methodArgs) })
+    }
+
+    // Pass extra options down to the web3 layer
+    if(methodOpts != null) {
+        methodArgs.push(_.pick(methodOpts, ['from', 'to', 'value', 'gas', 'gasPrice']))
+    }
+
+    return {
+        callerContract, methodName, methodArgs,
+        eventName, eventArgName, resultContract,
+    }
+}
+
+export function wrapWeb3Function(spec) {
+    const wrappedFn = async function() {
+        const opts = getOptsFromArgs(arguments)
+        const speccedOpts = spec(this, opts)
+
+        return await sendTransactionAndGetResult(
+            getWeb3CallMetadata(arguments, opts, speccedOpts)
+        )
+    }
+
+    wrappedFn.initWrappedWeb3Fn = function(gnosisInstance) {
+        this.gnosisInstance = gnosisInstance
+    }
+
+    wrappedFn.estimateGas = async function() {
+        const opts = getOptsFromArgs(arguments)
+        const speccedOpts = spec(this.gnosisInstance, opts)
+        const { callerContract, methodName } = speccedOpts
+
+        if(opts.using === 'stats') {
+            return callerContract.gasStats[methodName].averageGasUsed
+        }
+
+        if(opts.using === 'rpc') {
+            const { methodArgs } = getWeb3CallMetadata(arguments, opts, speccedOpts)
+
+            let caller = callerContract
+            if (_.has(caller, 'deployed')) {
+                caller = await caller.deployed()
+            }
+
+            return await caller[methodName].estimateGas(...methodArgs)
+        }
+
+        throw new Error(`unsupported gas estimation source ${using}`)
+    }
+
+    return wrappedFn
 }
 
 export function requireEventFromTXResult (result, eventName) {

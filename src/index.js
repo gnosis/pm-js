@@ -35,6 +35,8 @@ const contractArtifacts = [
     'StandardMarketFactory',
 ].map((name) => require(`@gnosis.pm/gnosis-core-contracts/build/contracts/${name}.json`))
 
+const instanceModules = [oracles, events, markets]
+
 /**
  * Represents the gnosis.js API
  */
@@ -100,6 +102,16 @@ class Gnosis {
         })
 
         this.TruffleContract = TruffleContract
+
+        instanceModules.forEach((module) => {
+            Object.keys(module).forEach((instanceProp) => {
+                if(
+                    this[instanceProp] != null &&
+                    typeof this[instanceProp].initWrappedWeb3Fn === 'function'
+                )
+                    this[instanceProp].initWrappedWeb3Fn(this)
+            })
+        })
     }
 
     async initialized (opts) {
@@ -165,7 +177,7 @@ class Gnosis {
     }
 }
 
-_.assign(Gnosis.prototype, oracles, events, markets)
+_.assign(Gnosis.prototype, ...instanceModules)
 _.assign(Gnosis, lmsr, utils)
 
 export default Gnosis
