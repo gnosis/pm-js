@@ -98,3 +98,11 @@ export async function resolveEvent() {
     requireEventFromTXResult(await oracle.setOutcome(outcome, txOpts), 'OutcomeAssignment')
     requireEventFromTXResult(await event.setOutcome(txOpts), 'OutcomeAssignment')
 }
+
+resolveEvent.estimateGas = async function({ using }) {
+    if(using === 'stats') {
+        return this.contracts.CentralizedOracle.gasStats.setOutcome.averageGasUsed +
+            this.contracts.Event.gasStats.setOutcome.averageGasUsed
+    }
+    throw new Error(`unsupported gas estimation source ${using}`)
+}

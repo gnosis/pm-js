@@ -36,6 +36,26 @@ Run `npm run dev` to run the dev server and serve the examples. The library sour
 
 Run `npm test` to run test suite. This should run without the need of an RPC provider running on localhost:8545. If you already have such a provider running and wish to run the test suite without automatically spinning up TestRPC and causing a chain migration, use `npm run test-manual`.
 
+You may also provide mocha options through the `MOCHA_OPTS` environment variable, e.g. `MOCHA_OPTS='-g estimate' npm test`.
+
 ### Running the docs
 
 Run `npm run doc` to run and open the jsdocs in your browser.
+
+## Additional docs
+
+### Web3 options
+
+The methods on the API can be provided with `from`, `to`, `value`, `gas`, and `gasPrice` options which get passed down to the `web3.js` layer.
+
+### Gas estimations
+
+Many of the methods on the gnosis API also have an asynchronous `estimateGas` property which you can use, while allowing you to specify the gas estimation source. For example:
+
+```javascript
+// using the estimateGas RPC
+await gnosis.createCentralizedOracle.estimateGas(ipfsHash, { using: 'rpc' }))
+
+// using stats derived from gnosis-contracts
+await gnosis.createCentralizedOracle.estimateGas({ using: 'stats' }))
+```
