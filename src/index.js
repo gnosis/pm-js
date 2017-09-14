@@ -9,6 +9,19 @@ import * as oracles from './oracles'
 import * as events from './events'
 import * as markets from './markets'
 
+const windowLoaded = new Promise((accept, reject) => {
+    if(typeof window === 'undefined')
+        return accept()
+
+    if(typeof window.addEventListener !== 'function')
+        return reject(new Error('expected to be able to register event listener'))
+
+    window.addEventListener('load', function loadHandler(event) {
+        window.removeEventListener('load', loadHandler, false)
+        return accept(event)
+    }, false)
+})
+
 const gasStatsData = require('@gnosis.pm/gnosis-core-contracts/build/gas-stats.json')
 const gasLimit = 4e6
 const gasDefaultMaxMultiplier = 1.5
@@ -129,6 +142,9 @@ class Gnosis {
     async setWeb3Provider (provider) {
         if (provider == null) {
             // Prefer Web3 injected by the browser (Mist/MetaMask)
+            // Window must be loaded first so that there isn't a race condition for resolving injected Web3 instance
+            await windowLoaded
+
             if (typeof web3 !== 'undefined') {
                 this.web3 = new Web3(web3.currentProvider)
             } else {
