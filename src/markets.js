@@ -38,17 +38,19 @@ export const createMarket = wrapWeb3Function((self, opts) => ({
  * @param {(Contract|string)} opts.market - The market to buy tokens from
  * @param {(number|string|BigNumber)} opts.outcomeTokenIndex - The index of the outcome
  * @param {(number|string|BigNumber)} opts.outcomeTokenCount - Number of outcome tokens to buy
+ * @param {(number|string|BigNumber)} [opts.approvalAmount] - Amount of collateral to allow market to spend. By default will be the cost of this transaction
  * @returns {BigNumber} How much collateral tokens caller paid
  * @alias Gnosis#buyOutcomeTokens
  */
 export async function buyOutcomeTokens() {
-    const [[marketAddress, outcomeTokenIndex, outcomeTokenCount]] =
+    const [[marketAddress, outcomeTokenIndex, outcomeTokenCount, approvalAmount]] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'buyOutcomeTokens',
             functionInputs: [
                 { name: 'market', type: 'address' },
                 { name: 'outcomeTokenIndex', type: 'uint8'},
                 { name: 'outcomeTokenCount', type: 'uint256'},
+                { name: 'approvalAmount', type: 'uint256'},
             ]
         })
 
@@ -61,7 +63,11 @@ export async function buyOutcomeTokens() {
     const baseCost = await this.lmsrMarketMaker.calcCost(marketAddress, outcomeTokenIndex, outcomeTokenCount)
     const cost = baseCost.add(await market.calcMarketFee(baseCost))
 
-    requireEventFromTXResult(await collateralToken.approve(marketAddress, cost), 'Approval')
+    if(approvalAmount == null) {
+        requireEventFromTXResult(await collateralToken.approve(marketAddress, cost), 'Approval')
+    } else {
+        requireEventFromTXResult(await collateralToken.approve(marketAddress, approvalAmount), 'Approval')
+    }
 
     const purchaseEvent = requireEventFromTXResult(
         await market.buy(outcomeTokenIndex, outcomeTokenCount, cost),
@@ -90,17 +96,19 @@ buyOutcomeTokens.estimateGas = async function({ using }) {
  * @param {(Contract|string)} opts.market - The market to sell tokens to
  * @param {(number|string|BigNumber)} opts.outcomeTokenIndex - The index of the outcome
  * @param {(number|string|BigNumber)} opts.outcomeTokenCount - Number of outcome tokens to sell
+ * @param {(number|string|BigNumber)} [opts.approvalAmount] - Amount of outcome tokens to allow market to handle. By default will be the amount specified to sell.
  * @returns {BigNumber} How much collateral tokens caller received from sale
  * @alias Gnosis#sellOutcomeTokens
  */
 export async function sellOutcomeTokens() {
-    const [[marketAddress, outcomeTokenIndex, outcomeTokenCount]] =
+    const [[marketAddress, outcomeTokenIndex, outcomeTokenCount, approvalAmount]] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'sellOutcomeTokens',
             functionInputs: [
                 { name: 'market', type: 'address' },
                 { name: 'outcomeTokenIndex', type: 'uint8'},
                 { name: 'outcomeTokenCount', type: 'uint256'},
+                { name: 'approvalAmount', type: 'uint256'},
             ]
         })
 
@@ -113,7 +121,11 @@ export async function sellOutcomeTokens() {
     const baseProfit = await this.lmsrMarketMaker.calcProfit(marketAddress, outcomeTokenIndex, outcomeTokenCount)
     const minProfit = baseProfit.sub(await market.calcMarketFee(baseProfit))
 
-    requireEventFromTXResult(await outcomeToken.approve(marketAddress, outcomeTokenCount), 'Approval')
+    if(approvalAmount == null) {
+        requireEventFromTXResult(await outcomeToken.approve(marketAddress, outcomeTokenCount), 'Approval')
+    } else {
+        requireEventFromTXResult(await outcomeToken.approve(marketAddress, approvalAmount), 'Approval')
+    }
 
     const saleEvent = requireEventFromTXResult(
         await market.sell(outcomeTokenIndex, outcomeTokenCount, minProfit),
