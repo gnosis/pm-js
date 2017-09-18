@@ -43,16 +43,17 @@ export const createMarket = wrapWeb3Function((self, opts) => ({
  * @alias Gnosis#buyOutcomeTokens
  */
 export async function buyOutcomeTokens() {
-    const [[marketAddress, outcomeTokenIndex, outcomeTokenCount, approvalAmount]] =
+    const [[marketAddress, outcomeTokenIndex, outcomeTokenCount], opts] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'buyOutcomeTokens',
             functionInputs: [
                 { name: 'market', type: 'address' },
                 { name: 'outcomeTokenIndex', type: 'uint8'},
                 { name: 'outcomeTokenCount', type: 'uint256'},
-                { name: 'approvalAmount', type: 'uint256'},
             ]
         })
+
+    const approvalAmount = opts && opts.approvalAmount || null
 
     const market = this.contracts.Market.at(marketAddress)
     const collateralToken = this.contracts.Token.at(
@@ -101,16 +102,17 @@ buyOutcomeTokens.estimateGas = async function({ using }) {
  * @alias Gnosis#sellOutcomeTokens
  */
 export async function sellOutcomeTokens() {
-    const [[marketAddress, outcomeTokenIndex, outcomeTokenCount, approvalAmount]] =
+    const [[marketAddress, outcomeTokenIndex, outcomeTokenCount], opts] =
         normalizeWeb3Args(Array.from(arguments), {
             methodName: 'sellOutcomeTokens',
             functionInputs: [
                 { name: 'market', type: 'address' },
                 { name: 'outcomeTokenIndex', type: 'uint8'},
                 { name: 'outcomeTokenCount', type: 'uint256'},
-                { name: 'approvalAmount', type: 'uint256'},
             ]
         })
+
+    const approvalAmount = opts && opts.approvalAmount || null
 
     const market = this.contracts.Market.at(marketAddress)
     const outcomeToken = this.contracts.Token.at(
