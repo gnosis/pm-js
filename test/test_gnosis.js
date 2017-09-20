@@ -311,10 +311,10 @@ describe('Gnosis', function () {
             assert(isClose(localCalculatedCost.valueOf(), chainCalculatedCost.valueOf()))
             assert(localCalculatedCost.gte(chainCalculatedCost.valueOf()))
 
-            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: localCalculatedCost }), 'Deposit')
-            requireEventFromTXResult(await gnosis.etherToken.approve(market.address, localCalculatedCost), 'Approval')
+            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: localCalculatedCost.valueOf() }), 'Deposit')
+            requireEventFromTXResult(await gnosis.etherToken.approve(market.address, localCalculatedCost.valueOf()), 'Approval')
             let purchaseEvent = requireEventFromTXResult(
-                await market.buy(outcomeTokenIndex, outcomeTokenCount, localCalculatedCost),
+                await market.buy(outcomeTokenIndex, outcomeTokenCount, localCalculatedCost.valueOf()),
                 'OutcomeTokenPurchase'
             )
             let actualCost = purchaseEvent.args.outcomeTokenCost.plus(purchaseEvent.args.marketFees)
@@ -327,7 +327,7 @@ describe('Gnosis', function () {
                 netOutcomeTokensSold,
                 funding,
                 outcomeTokenIndex,
-                cost: localCalculatedCost,
+                cost: localCalculatedCost.valueOf(),
                 feeFactor,
             })
 
@@ -347,7 +347,7 @@ describe('Gnosis', function () {
                 feeFactor,
             })
 
-            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: localCalculatedCost }), 'Deposit')
+            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: localCalculatedCost.valueOf() }), 'Deposit')
             actualCost = await gnosis.buyOutcomeTokens({
                 market, outcomeTokenIndex, outcomeTokenCount
             })
@@ -377,7 +377,7 @@ describe('Gnosis', function () {
             let outcomeToken = gnosis.contracts.Token.at(await gnosis.contracts.Event.at(await market.eventContract()).outcomeTokens(outcomeTokenIndex))
             requireEventFromTXResult(await outcomeToken.approve(market.address, numOutcomeTokensToSell), 'Approval')
             let saleEvent = requireEventFromTXResult(
-                await market.sell(outcomeTokenIndex, numOutcomeTokensToSell, localCalculatedProfit),
+                await market.sell(outcomeTokenIndex, numOutcomeTokensToSell, localCalculatedProfit.valueOf()),
                 'OutcomeTokenSale'
             )
             let actualProfit = saleEvent.args.outcomeTokenProfit.minus(saleEvent.args.marketFees)
