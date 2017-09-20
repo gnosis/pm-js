@@ -66,7 +66,8 @@ export async function buyOutcomeTokens() {
 
     if(approvalAmount == null) {
         requireEventFromTXResult(await collateralToken.approve(marketAddress, cost), 'Approval')
-    } else {
+    } else if(approvalAmount > 0) {
+        console.log('approving', approvalAmount.valueOf())
         requireEventFromTXResult(await collateralToken.approve(marketAddress, approvalAmount), 'Approval')
     }
 
@@ -125,7 +126,7 @@ export async function sellOutcomeTokens() {
 
     if(approvalAmount == null) {
         requireEventFromTXResult(await outcomeToken.approve(marketAddress, outcomeTokenCount), 'Approval')
-    } else {
+    } else if(approvalAmount > 0) {
         requireEventFromTXResult(await outcomeToken.approve(marketAddress, approvalAmount), 'Approval')
     }
 

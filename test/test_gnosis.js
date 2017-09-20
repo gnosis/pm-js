@@ -432,7 +432,7 @@ describe('Gnosis', function () {
         })
 
         it('can do buying and selling with custom approve amounts', async () => {
-            const approvalAmount = 1e18
+            const approvalAmount = 2e18
             const outcomeTokenIndex = 0
             const outcomeTokenCount = 1e18
 
@@ -447,15 +447,35 @@ describe('Gnosis', function () {
             const balanceBefore = await gnosis.etherToken.balanceOf(gnosis.defaultAccount)
             const allowanceBefore = await gnosis.etherToken.allowance(gnosis.defaultAccount, market.address)
 
+            console.log('balance/allowance', balanceBefore.valueOf(), allowanceBefore.valueOf())
+
             const actualCost = await gnosis.buyOutcomeTokens({
                 market, outcomeTokenIndex, outcomeTokenCount, approvalAmount
             })
 
+            console.log('buy with cost', actualCost.valueOf())
+
             const balanceAfter = await gnosis.etherToken.balanceOf(gnosis.defaultAccount)
             const allowanceAfter = await gnosis.etherToken.allowance(gnosis.defaultAccount, market.address)
 
+            console.log('balance/allowance', balanceAfter.valueOf(), allowanceAfter.valueOf())
+
             assert.equal(balanceBefore.sub(balanceAfter).valueOf(), actualCost.valueOf())
             assert.equal(allowanceAfter.sub(allowanceBefore).valueOf(), actualCost.sub(approvalAmount).neg().valueOf())
+
+            const actualCost2 = await gnosis.buyOutcomeTokens({
+                market, outcomeTokenIndex, outcomeTokenCount, approvalAmount: 0
+            })
+
+            console.log('buy with cost', actualCost2.valueOf())
+
+            const balanceAfter2 = await gnosis.etherToken.balanceOf(gnosis.defaultAccount)
+            const allowanceAfter2 = await gnosis.etherToken.allowance(gnosis.defaultAccount, market.address)
+
+            console.log('balance/allowance', balanceAfter2.valueOf(), allowanceAfter2.valueOf())
+
+            assert.equal(balanceAfter.sub(balanceAfter2).valueOf(), actualCost2.valueOf())
+            assert.equal(allowanceAfter.sub(allowanceAfter2).valueOf(), actualCost2.valueOf())
 
             const amountToSell = 5e17
 
