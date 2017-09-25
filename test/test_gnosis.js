@@ -467,7 +467,7 @@ describe('Gnosis', function () {
             assert.equal(balanceAfter.sub(balanceAfter2).valueOf(), actualCost2.valueOf())
             assert.equal(allowanceAfter.sub(allowanceAfter2).valueOf(), actualCost2.valueOf())
 
-            const amountToSell = 5e17
+            const amountToSell = 3e17
 
             const outcomeBalanceBefore = await outcomeToken.balanceOf(gnosis.defaultAccount)
             const outcomeAllowanceBefore = await outcomeToken.allowance(gnosis.defaultAccount, market.address)
@@ -480,7 +480,17 @@ describe('Gnosis', function () {
             const outcomeAllowanceAfter = await outcomeToken.allowance(gnosis.defaultAccount, market.address)
 
             assert.equal(outcomeBalanceBefore.sub(outcomeBalanceAfter).valueOf(), amountToSell)
-            assert.equal(outcomeAllowanceAfter.sub(outcomeAllowanceBefore).valueOf(), outcomeTokenCount - amountToSell)
+            assert.equal(outcomeAllowanceAfter.valueOf(), outcomeTokenCount - amountToSell)
+
+            const profit2 = await gnosis.sellOutcomeTokens({
+                market, outcomeTokenIndex, outcomeTokenCount: amountToSell, approvalAmount: 0
+            })
+
+            const outcomeBalanceAfter2 = await outcomeToken.balanceOf(gnosis.defaultAccount)
+            const outcomeAllowanceAfter2 = await outcomeToken.allowance(gnosis.defaultAccount, market.address)
+
+            assert.equal(outcomeBalanceAfter.sub(outcomeBalanceAfter2).valueOf(), amountToSell)
+            assert.equal(outcomeAllowanceAfter2.valueOf(), outcomeTokenCount - 2 * amountToSell)
         })
 
         it('accepts strings for outcome token index', async () => {
