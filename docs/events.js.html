@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: events.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: events.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import _ from 'lodash'
+import { wrapWeb3Function, normalizeWeb3Args, requireEventFromTXResult } from './utils'
+
+/**
+ * Creates a categorical event.
+ *
+ * Note: this method is asynchronous and will return a Promise
+ *
+ * @function
+ * @param {(Contract|string)} opts.collateralToken - The collateral token contract or its address
+ * @param {(Contract|string)} opts.oracle - The oracle responsible for resolving this event
+ * @param {(number|string|BigNumber)} opts.outcomeCount - The number of outcomes of this event
+ * @returns {Contract} The created categorical event
+ * @alias Gnosis#createCategoricalEvent
+ */
+export const createCategoricalEvent = wrapWeb3Function((self) => ({
+    callerContract: self.contracts.EventFactory,
+    methodName: 'createCategoricalEvent',
+    eventName: 'CategoricalEventCreation',
+    eventArgName: 'categoricalEvent',
+    resultContract: self.contracts.CategoricalEvent
+}))
+
+/**
+ * Creates a scalar event.
+ *
+ * Note: this method is asynchronous and will return a Promise
+ *
+ * @function
+ * @param {(Contract|string)} opts.collateralToken - The collateral token contract or its address
+ * @param {(Contract|string)} opts.oracle - The oracle responsible for resolving this event
+ * @param {(number|string|BigNumber)} opts.lowerBound - The lower bound for the event outcome
+ * @param {(number|string|BigNumber)} opts.upperBound - The upper bound for the event outcome
+ * @returns {Contract} The created scalar event
+ * @alias Gnosis#createScalarEvent
+ */
+export const createScalarEvent = wrapWeb3Function((self) => ({
+    callerContract: self.contracts.EventFactory,
+    methodName: 'createScalarEvent',
+    eventName: 'ScalarEventCreation',
+    eventArgName: 'scalarEvent',
+    resultContract: self.contracts.ScalarEvent
+}))
+
+/**
+ * Publishes an event description onto IPFS.
+ *
+ * Note: this method is asynchronous and will return a Promise
+ *
+ * @param {Object} eventDescription - A POD object describing the event
+ * @param {string} eventDescription.title - A string describing the title of the event
+ * @param {string} eventDescription.description - A string describing the purpose of the event
+ * @param {string} eventDescription.resolutionDate - A string containing the resolution date of the event
+ * @param {string[]} eventDescription.outcomes - A string array containing the outcomes of the event
+ * @returns {string} The IPFS hash locating the published event
+ * @alias Gnosis#publishEventDescription
+ */
+export async function publishEventDescription (description) {
+    return await this.ipfs.addJSONAsync(description)
+}
+
+/**
+ * Loads an event description from IPFS.
+ *
+ * Note: this method is asynchronous and will return a Promise
+ *
+ * @param {string} ipfsHash - The IPFS hash locating the published event
+ * @returns {Object} A POD object describing the event
+ * @alias Gnosis#loadEventDescription
+ */
+export async function loadEventDescription (ipfsHash) {
+    return await this.ipfs.catJSONAsync(ipfsHash)
+}
+
+/**
+ * Resolves an event. Assumes event is backed solely by a centralized oracle controlled by you
+ *
+ * Note: this method is asynchronous and will return a Promise
+ *
+ * @param {(Contract|string)} opts.event - The event address or instance
+ * @param {(number|string|BigNumber)} opts.outcome - The outcome to set this event to. This is the zero-based index of the outcome for categorical events and the decimals-adjusted value of the outcome for scalar events.
+ * @alias Gnosis#resolveEvent
+ */
+export async function resolveEvent() {
+    const [[eventAddress, outcome], opts] =
+        normalizeWeb3Args(Array.from(arguments), {
+            methodName: 'resolveEvent',
+            functionInputs: [
+                { name: 'event', type: 'address' },
+                { name: 'outcome', type: 'int256'},
+            ]
+        })
+
+    const txOpts = _.pick(opts, ['from', 'to', 'value', 'gas', 'gasPrice'])
+
+    const event = this.contracts.Event.at(eventAddress)
+    const oracle = this.contracts.CentralizedOracle.at(await event.oracle(txOpts))
+    requireEventFromTXResult(await oracle.setOutcome(outcome, txOpts), 'OutcomeAssignment')
+    requireEventFromTXResult(await event.setOutcome(txOpts), 'OutcomeAssignment')
+}
+
+resolveEvent.estimateGas = async function({ using }) {
+    if(using === 'stats') {
+        return this.contracts.CentralizedOracle.gasStats.setOutcome.averageGasUsed +
+            this.contracts.Event.gasStats.setOutcome.averageGasUsed
+    }
+    throw new Error(`unsupported gas estimation source ${using}`)
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Gnosis.html">Gnosis</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Sep 25 2017 13:59:38 GMT-0500 (CDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

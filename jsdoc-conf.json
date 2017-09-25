@@ -4,7 +4,7 @@
     },
     "plugins": ["node_modules/jsdoc-strip-async-await", "plugins/markdown"],
     "opts": {
-        "destination": "doc",
+        "destination": "docs",
         "readme": "README.md"
     }
 }
