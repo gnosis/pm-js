@@ -67,9 +67,6 @@ typings/
 # build output directory
 dist/
 
-# documentation output directory
-docs/
-
 
 ###########################################################
 # OS generated files
