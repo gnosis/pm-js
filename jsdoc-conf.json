@@ -5,6 +5,7 @@
     "plugins": ["node_modules/jsdoc-strip-async-await", "plugins/markdown"],
     "opts": {
         "destination": "docs",
-        "readme": "README.md"
+        "readme": "README.md",
+        "tutorials": "tutorials"
     }
 }
