@@ -65,9 +65,14 @@ export async function buyOutcomeTokens() {
     const cost = baseCost.add(await market.calcMarketFee(baseCost))
 
     if(approvalAmount == null) {
-        requireEventFromTXResult(await collateralToken.approve(marketAddress, cost), 'Approval')
+        const buyer = opts.from || this.defaultAccount
+        const marketAllowance = await collateralToken.allowance(buyer, marketAddress)
+
+        if(marketAllowance.lt(cost)) {
+            requireEventFromTXResult(await collateralToken.approve(marketAddress, cost), 'Approval')
+        }
+
     } else if(approvalAmount > 0) {
-        console.log('approving', approvalAmount.valueOf())
         requireEventFromTXResult(await collateralToken.approve(marketAddress, approvalAmount), 'Approval')
     }
 
