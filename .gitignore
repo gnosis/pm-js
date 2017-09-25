@@ -68,7 +68,7 @@ typings/
 dist/
 
 # documentation output directory
-doc/
+docs/
 
 
 ###########################################################
