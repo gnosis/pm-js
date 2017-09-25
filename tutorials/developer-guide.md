@@ -16,13 +16,18 @@ In order to follow this guide, you will need to be comfortable working in your O
    
        npm install --save @gnosis.pm/gnosisjs
    
-   Be sure to issue this command with the exact spelling.
+   Be sure to issue this command with this exact spelling.
 
-   This command installs the Gnosis JavaScript library and its dependencies into the `node_modules` directory. The `@gnosis.pm/gnosisjs` package contains the ES6 source of the library in `src` which can also be found on the [repository](https://github.com/gnosis/gnosis.js), compiled versions of the modules which can be run on Node.js as well as webpacked standalone `gnosis[.min].js` files ready for use by web clients in the `dist` directory, and API documentation in `docs` directory.
+   This command installs the Gnosis JavaScript library and its dependencies into the `node_modules` directory. The `@gnosis.pm/gnosisjs` package contains the following:
+
+   * ES6 source of the library in `src` which can also be found on the [repository](https://github.com/gnosis/gnosis.js)
+   * Compiled versions of the modules which can be run on Node.js
+   * Webpacked standalone `gnosis[.min].js` files ready for use by web clients in the `dist` directory
+   * API documentation in the `docs` directory
 
 ### Node "server-side" setup
 
-Notice that the library refers to the `dist/index` module as the `package.json` main. This is because Node.js natively does not support the use of ES6 imports yet (see [this issue](https://github.com/nodejs/help/issues/53)), so the modules are transpiled with [Babel](https://babeljs.io/).
+Notice that the library refers to the `dist/index` module as the `package.json` main. This is because even though Node.js does support many new JavaScript features, it natively does not support the use of ES6 imports yet (see [this issue](https://github.com/nodejs/help/issues/53)), so the modules are transpiled with [Babel](https://babeljs.io/) for Node interoperability.
 
 In the project directory, you can experiment with the Gnosis API by opening up a `node` shell and importing the library like so:
 
@@ -30,3 +35,4 @@ In the project directory, you can experiment with the Gnosis API by opening up a
 const Gnosis = require('@gnosis.pm/gnosisjs')
 ```
 
+This will import the library with `dist/index`, which exports the {@link Gnosis} class.
