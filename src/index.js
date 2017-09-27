@@ -88,6 +88,29 @@ class Gnosis {
         // IPFS instantiation
         this.ipfs = utils.promisifyAll(new IPFS(opts.ipfs))
 
+        /**
+         * A collection of Truffle contract abstractions for the following Gnosis contracts:
+         *
+         * - [Math](https://gnosis.github.io/gnosis-contracts/docs/Math)
+         * - [Event](https://gnosis.github.io/gnosis-contracts/docs/Event)
+         * - [CategoricalEvent](https://gnosis.github.io/gnosis-contracts/docs/CategoricalEvent)
+         * - [ScalarEvent](https://gnosis.github.io/gnosis-contracts/docs/ScalarEvent)
+         * - [EventFactory](https://gnosis.github.io/gnosis-contracts/docs/EventFactory)
+         * - [Token](https://gnosis.github.io/gnosis-contracts/docs/Token)
+         * - [EtherToken](https://gnosis.github.io/gnosis-contracts/docs/EtherToken)
+         * - [CentralizedOracle](https://gnosis.github.io/gnosis-contracts/docs/CentralizedOracle)
+         * - [CentralizedOracleFactory](https://gnosis.github.io/gnosis-contracts/docs/CentralizedOracleFactory)
+         * - [UltimateOracle](https://gnosis.github.io/gnosis-contracts/docs/UltimateOracle)
+         * - [UltimateOracleFactory](https://gnosis.github.io/gnosis-contracts/docs/UltimateOracleFactory)
+         * - [LMSRMarketMaker](https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker)
+         * - [Market](https://gnosis.github.io/gnosis-contracts/docs/Market)
+         * - [StandardMarket](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket)
+         * - [StandardMarketFactory](https://gnosis.github.io/gnosis-contracts/docs/StandardMarketFactory)
+         *
+         * These are configured to use the web3 provider specified in {@link Gnosis.create} or subsequently modified with {@link Gnosis#setWeb3Provider}. The default gas costs for these abstractions are set to the maximum cost of their respective entries found in the `gas-stats.json` file built from the [core contracts](https://github.com/gnosis/gnosis-contracts#readme). Additionally, the default message sender (i.e. `from` address) is set to the first account (coinbase) reported by the web3 provider.
+         *
+         * @member {Object} Gnosis#contracts
+         */
         this.contracts = _.fromPairs(contractArtifacts.map((artifact) => {
             const c = TruffleContract(artifact)
             const name = c.contract_name
@@ -183,6 +206,7 @@ class Gnosis {
             }
         }
     }
+
 
     setDefaultAccount (account) {
         this.defaultAccount = account

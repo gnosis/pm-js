@@ -2,10 +2,10 @@
     "developer-guide": {
         "title": "Developer Guide",
         "children": [
-            "getting-started",
+            "installation",
             "api-overview"
         ]
     },
-    "getting-started": { "title": "Getting Started" },
+    "installation": { "title": "Installation" },
     "api-overview": { "title": "API Overview" }
 }

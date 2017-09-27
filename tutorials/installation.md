@@ -1,7 +1,3 @@
-### Prerequisites
-
-In order to follow this guide, you will need to be comfortable working in your OS's shell, writing JavaScript, and working with [npm](https://www.npmjs.com/). A working knowledge of [Ethereum](https://www.ethereum.org/), [Solidity](https://github.com/ethereum/solidity), and [Truffle](http://truffleframework.com/) would greatly ease the use of this library, but is not strictly necessary for getting started. The usage of a VCS such as [Git](https://git-scm.com/) is also encouraged, but is not explained here.
-
 ### Setting up a project using npm
 
 1. Create a project directory, open a terminal or command line, and change directory into the project directory.
@@ -14,7 +10,7 @@ In order to follow this guide, you will need to be comfortable working in your O
    
    Be sure to issue this command with this exact spelling.
 
-   This command installs the Gnosis JavaScript library and its dependencies into the `node_modules` directory. The `@gnosis.pm/gnosisjs` package contains the following:
+   This command installs the Gnosis JavaScript library and its dependencies into the `node_modules` directory. The [`@gnosis.pm/gnosisjs`](https://www.npmjs.com/package/@gnosis.pm/gnosisjs) package contains the following:
 
    * ES6 source of the library in `src` which can also be found on the [repository](https://github.com/gnosis/gnosis.js)
    * Compiled versions of the modules which can be run on Node.js in the `dist` directory
@@ -31,7 +27,7 @@ In the project directory, you can experiment with the Gnosis API by opening up a
 const Gnosis = require('@gnosis.pm/gnosisjs')
 ```
 
-This will import the library with `dist/index`, which exports the {@link Gnosis} class.
+This will import the transpiled library through the `dist/index` entry point, which exports the {@link Gnosis} class.
 
 ### Browser use
 
@@ -40,7 +36,7 @@ The `gnosis.js` file and its minified version `gnosis.min.js` are self-contained
 ```html
 <script src="gnosis.min.js"></script>
 <script>
-// Gnosis should be available as a global after the above script import, so this script block can make use of the API.
+// Gnosis should be available as a global after the above script import, so this subsequent script tag can make use of the API.
 </script>
 ```
 
