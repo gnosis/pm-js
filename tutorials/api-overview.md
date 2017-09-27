@@ -20,7 +20,7 @@ const ONE = Math.pow(2, 64)
 Gnosis.create()
     .then(gnosis => gnosis.contracts.Math.deployed())
     .then(math => math.ln(3 * ONE))
-    .then(result => console.log('Math.ln(3) returned', result.div(ONE).valueOf()))
+    .then(result => console.log('Math.ln(3) returned', result.valueOf() / ONE))
 ```
 
 Although it is not strictly necessary, usage of [`async/await`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) syntax is encouraged for simplifying the use of thenable programming, especially in complex flow scenarios.
