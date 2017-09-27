@@ -60,7 +60,6 @@
     "run-with-testrpc": "^0.2.1",
     "style-loader": "^0.18.2",
     "truffle": "^3.4.9",
-    "truffle-contract": "^3.0.0",
     "webpack": "^3.6.0",
     "webpack-dev-server": "^2.8.2"
   },
@@ -71,6 +70,7 @@
     "decimal.js": "^7.2.4",
     "ipfs-mini": "^1.1.2",
     "lodash": "^4.17.4",
+    "truffle-contract": "^3.0.0",
     "web3": "^0.20.2"
   }
 }
