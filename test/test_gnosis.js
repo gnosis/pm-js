@@ -431,6 +431,68 @@ describe('Gnosis', function () {
             assert.equal(balanceAfter.sub(balanceBefore).valueOf(), winnings.valueOf())
         })
 
+        it('can do buying and selling with custom approve amounts', async () => {
+            const approvalAmount = 2e18
+            const outcomeTokenIndex = 0
+            const outcomeTokenCount = 1e18
+
+            const outcomeToken = gnosis.contracts.Token.at(
+                await gnosis.contracts.Event.at(
+                    await market.eventContract()
+                ).outcomeTokens(outcomeTokenIndex)
+            )
+
+            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: approvalAmount }), 'Deposit')
+
+            const balanceBefore = await gnosis.etherToken.balanceOf(gnosis.defaultAccount)
+            const allowanceBefore = await gnosis.etherToken.allowance(gnosis.defaultAccount, market.address)
+
+            const actualCost = await gnosis.buyOutcomeTokens({
+                market, outcomeTokenIndex, outcomeTokenCount, approvalAmount
+            })
+
+            const balanceAfter = await gnosis.etherToken.balanceOf(gnosis.defaultAccount)
+            const allowanceAfter = await gnosis.etherToken.allowance(gnosis.defaultAccount, market.address)
+
+            assert.equal(balanceBefore.sub(balanceAfter).valueOf(), actualCost.valueOf())
+            assert.equal(allowanceAfter.sub(allowanceBefore).valueOf(), actualCost.sub(approvalAmount).neg().valueOf())
+
+            const actualCost2 = await gnosis.buyOutcomeTokens({
+                market, outcomeTokenIndex, outcomeTokenCount, approvalAmount: 0
+            })
+
+            const balanceAfter2 = await gnosis.etherToken.balanceOf(gnosis.defaultAccount)
+            const allowanceAfter2 = await gnosis.etherToken.allowance(gnosis.defaultAccount, market.address)
+
+            assert.equal(balanceAfter.sub(balanceAfter2).valueOf(), actualCost2.valueOf())
+            assert.equal(allowanceAfter.sub(allowanceAfter2).valueOf(), actualCost2.valueOf())
+
+            const amountToSell = 3e17
+
+            const outcomeBalanceBefore = await outcomeToken.balanceOf(gnosis.defaultAccount)
+            const outcomeAllowanceBefore = await outcomeToken.allowance(gnosis.defaultAccount, market.address)
+
+            const profit = await gnosis.sellOutcomeTokens({
+                market, outcomeTokenIndex, outcomeTokenCount: amountToSell, approvalAmount: outcomeTokenCount
+            })
+
+            const outcomeBalanceAfter = await outcomeToken.balanceOf(gnosis.defaultAccount)
+            const outcomeAllowanceAfter = await outcomeToken.allowance(gnosis.defaultAccount, market.address)
+
+            assert.equal(outcomeBalanceBefore.sub(outcomeBalanceAfter).valueOf(), amountToSell)
+            assert.equal(outcomeAllowanceAfter.valueOf(), outcomeTokenCount - amountToSell)
+
+            const profit2 = await gnosis.sellOutcomeTokens({
+                market, outcomeTokenIndex, outcomeTokenCount: amountToSell, approvalAmount: 0
+            })
+
+            const outcomeBalanceAfter2 = await outcomeToken.balanceOf(gnosis.defaultAccount)
+            const outcomeAllowanceAfter2 = await outcomeToken.allowance(gnosis.defaultAccount, market.address)
+
+            assert.equal(outcomeBalanceAfter.sub(outcomeBalanceAfter2).valueOf(), amountToSell)
+            assert.equal(outcomeAllowanceAfter2.valueOf(), outcomeTokenCount - 2 * amountToSell)
+        })
+
         it('accepts strings for outcome token index', async () => {
             let outcomeTokenIndex = 0
             let outcomeTokenCount = 1000000000
