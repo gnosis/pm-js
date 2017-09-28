@@ -24,3 +24,5 @@ Gnosis.create()
 ```
 
 Although it is not strictly necessary, usage of [`async/await`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) syntax is encouraged for simplifying the use of thenable programming, especially in complex flow scenarios.
+
+Gnosis.js also exposes a number of convenience methods wrapping contract operations such as {@link Gnosis#createCentralizedOracle} and {@link Gnosis#createScalarEvent}.
