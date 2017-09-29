@@ -36,7 +36,7 @@ Gnosis.js also exposes a number of convenience methods wrapping contract operati
 
 ### Questions About the Future, Oracles, and Trust
 
-A prediction predicts the outcome of a future event. For example, the event might be "the U.S. presidential election of 2016." There may be predictions associated with each of the possible outcomes, but this event only had one of these outcome. Events like these with a discrete set of outcomes are considered to be "categorical events." They may be phrased as a question with a choice of answers, e.g.:
+A prediction predicts the outcome of a future event. For example, the event might be "the U.S. presidential election of 2016." There may be predictions associated with each of the possible outcomes, but this event only had one of these outcome. Events like these with a discrete set of outcomes are considered to be categorical events. They may be phrased as a question with a choice of answers, e.g.:
 
 Who will win the U.S. presidential election of 2016?
 * Clinton
@@ -79,7 +79,7 @@ Once an oracle is created, an event contract may defer to the oracle's judgment.
 
 Note that ether is *not* an ERC20-compliant token at the moment of this writing. It may be converted into an ERC20-compliant variant with an adaptor contract like [EtherToken](https://gnosis.github.io/gnosis-contracts/docs/EtherToken/) though. There is a deployed instance of EtherToken available in the API as {@link Gnosis#etherToken}.
 
-In order to create a categorical event contract instance backed by an specific `oracle`, use {@link Gnosis#createCategoricalEvent}. For example, a categorical event with three outcomes like the earlier example trading on EtherToken can be made like this:
+In order to create a categorical event contract instance backed by an specific `oracle`, use {@link Gnosis#createCategoricalEvent}. For example, a categorical event with three outcomes like the earlier example can be made like this:
 
 ```js
 const event = await gnosis.createCategoricalEvent({
@@ -88,3 +88,21 @@ const event = await gnosis.createCategoricalEvent({
     outcomeCount: 3,
 })
 ```
+
+Note that EtherToken is traded with this particular event instance.
+
+Finally, if you are the centralized oracle for an `event` contract which refers to the 2016 U.S. presidential election as set up above, you can report the outcome of the event as "Trump" and allow stakeholders to settle their claims with {@link Gnosis#resolveEvent}:
+
+```js
+await gnosis.resolveEvent({ event, outcome: 1 })
+```
+
+Note that you must pass in the 0-based index of the outcome corresponding to the event description published on IPFS ("Trump" has index 1 in the example `['Clinton', 'Trump', 'Other']`),
+
+If you are a stakeholder in this `event` contract instance, you can redeem your winnings with [`CategoricalEvent.redeemWinnings`](https://gnosis.github.io/gnosis-contracts/docs/CategoricalEvent/):
+
+```js
+await event.redeemWinnings()
+```
+
+### Markets and Automated Market Makers
