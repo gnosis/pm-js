@@ -34,7 +34,7 @@ console.log('Math.ln(3) =', (await math.ln(3 * ONE)).valueOf() / ONE)
 
 Gnosis.js also exposes a number of convenience methods wrapping contract operations such as {@link Gnosis#createCentralizedOracle} and {@link Gnosis#createScalarEvent}.
 
-### Events, Oracles, and Trust
+### Questions About the Future, Oracles, and Trust
 
 A prediction predicts the outcome of a future event. For example, the event might be "the U.S. presidential election of 2016." There may be predictions associated with each of the possible outcomes, but this event only had one of these outcome. Events like these with a discrete set of outcomes are considered to be "categorical events." They may be phrased as a question with a choice of answers, e.g.:
 
@@ -69,4 +69,22 @@ To create a centralized oracle, use {@link Gnosis#createCentralizedOracle}:
 const oracle = await gnosis.createCentralizedOracle(ipfsHash)
 ```
 
-After calling that, the owner of the CentralizedOracle contract instance created will be the message sender, or the default account for all transactions in the Gnosis instance (which is normally set to the first account exposed by the Web3 provider).
+After `createCentralizedOracle` finishes, the owner of the CentralizedOracle contract instance created will be the message sender, or the default account for all transactions in the Gnosis instance (which is normally set to the first account exposed by the Web3 provider).
+
+By no means is the CentralizedOracle the only possible oracle design which can be used with Gnosis. Any oracle which implements the [`Oracle`](https://github.com/gnosis/gnosis-contracts/blob/master/contracts/Oracles/Oracle.sol) contract interface may be used.
+
+### Events and Collateral
+
+Once an oracle is created, an event contract may defer to the oracle's judgment. The [`CategoricalEvent`](https://gnosis.github.io/gnosis-contracts/docs/CategoricalEvent/) and [`ScalarEvent`](https://gnosis.github.io/gnosis-contracts/docs/ScalarEvent/) contracts represent an event. They also mint sets of outcome tokens corresponding to a collateral of an ERC20-compliant token. Once the relied-on oracle reports an outcome to the event, the outcome token corresponding to the reported outcome may be exchanged for the original collateral token.
+
+Note that ether is *not* an ERC20-compliant token at the moment of this writing. It may be converted into an ERC20-compliant variant with an adaptor contract like [EtherToken](https://gnosis.github.io/gnosis-contracts/docs/EtherToken/) though. There is a deployed instance of EtherToken available in the API as {@link Gnosis#etherToken}.
+
+In order to create a categorical event contract instance backed by an specific `oracle`, use {@link Gnosis#createCategoricalEvent}. For example, a categorical event with three outcomes like the earlier example trading on EtherToken can be made like this:
+
+```js
+const event = await gnosis.createCategoricalEvent({
+    collateralToken: gnosis.etherToken,
+    oracle,
+    outcomeCount: 3,
+})
+```
