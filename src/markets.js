@@ -12,11 +12,12 @@ import {
  * @param {(Contract|string)} opts.event - The forwarded oracle contract or its address
  * @param {(Contract|string)} opts.marketMaker - The collateral token contract or its address
  * @param {(number|string|BigNumber)} opts.fee - The fee factor. Specifying 1,000,000 corresponds to 100%, 50,000 corresponds to 5%, etc.
+ * @param {(Contract|string)} [opts.marketFactory={@link Gnosis#standardMarketFactory}] - The factory contract
  * @returns {Contract} The created market contract instance
  * @alias Gnosis#createMarket
  */
 export const createMarket = wrapWeb3Function((self, opts) => ({
-    callerContract: opts.marketFactory,
+    callerContract: opts.marketFactory || self.standardMarketFactory,
     callerABI: self.contracts.StandardMarketFactory.abi,
     methodName: 'createMarket',
     eventName: 'StandardMarketCreation',

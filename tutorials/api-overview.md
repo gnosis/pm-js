@@ -75,7 +75,7 @@ By no means is the CentralizedOracle the only possible oracle design which can b
 
 ### Events and Collateral
 
-Once an oracle is created, an event contract may defer to the oracle's judgment. The [`CategoricalEvent`](https://gnosis.github.io/gnosis-contracts/docs/CategoricalEvent/) and [`ScalarEvent`](https://gnosis.github.io/gnosis-contracts/docs/ScalarEvent/) contracts represent an event. They also mint sets of outcome tokens corresponding to a collateral of an ERC20-compliant token. Once the relied-on oracle reports an outcome to the event, the outcome token corresponding to the reported outcome may be exchanged for the original collateral token.
+Once an oracle is created, an event contract may defer to the oracle's judgment. The [`CategoricalEvent`](https://gnosis.github.io/gnosis-contracts/docs/CategoricalEvent/) and [`ScalarEvent`](https://gnosis.github.io/gnosis-contracts/docs/ScalarEvent/) contracts represent an event. They also mint sets of outcome tokens corresponding to a collateral of an [ERC20](https://theethereum.wiki/w/index.php/ERC20_Token_Standard)-compliant token. Once the relied-on oracle reports an outcome to the event, the outcome token corresponding to the reported outcome may be exchanged for the original collateral token.
 
 Note that ether is *not* an ERC20-compliant token at the moment of this writing. It may be converted into an ERC20-compliant variant with an adaptor contract like [EtherToken](https://gnosis.github.io/gnosis-contracts/docs/EtherToken/) though. There is a deployed instance of EtherToken available in the API as {@link Gnosis#etherToken}.
 
@@ -90,6 +90,28 @@ const event = await gnosis.createCategoricalEvent({
 ```
 
 Note that EtherToken is traded with this particular event instance.
+
+When an event has been created, users can convert their collateral into sets of outcome tokens. For example, suppose a user buys 4 ETH worth of outcome tokens from `event`:
+
+```js
+await Promise.all([
+    gnosis.etherToken.deposit({ value: 4e18 }),
+    gnosis.etherToken.approve(event.address, 4e18),
+    event.buyAllOutcomes(4e18),
+])
+```
+
+That user would then have `4e18` units of each [`OutcomeToken`](https://gnosis.github.io/gnosis-contracts/docs/OutcomeToken/):
+
+```js
+const { Token } = gnosis.contracts
+const outcomeCount = (await event.getOutcomeCount()).valueOf()
+
+for(let i = 0; i < outcomeCount; i++) {
+    const outcomeToken = Token.at(await event.outcomeTokens(i))
+    console.log('Have', (await outcomeToken.balanceOf(gnosis.defaultAccount)).valueOf(), 'units of outcome', i)
+}
+```
 
 Finally, if you are the centralized oracle for an `event` contract which refers to the 2016 U.S. presidential election as set up above, you can report the outcome of the event as "Trump" and allow stakeholders to settle their claims with {@link Gnosis#resolveEvent}:
 
@@ -106,3 +128,18 @@ await event.redeemWinnings()
 ```
 
 ### Markets and Automated Market Makers
+
+Suppose that Alice believed Clinton would win the 2016 U.S. election, but Bob believed Trump would win that election. With the machinery we've developed thus far, both Alice and Bob would have to buy outcome tokens and then trade each other based on their beliefs. Alice would give Trump tokens to Bob in exchange for Clinton tokens. When the oracle reports that the outcome of the election was Trump, the Trump tokens held by Bob can be exchanged for the collateral used to back those tokens.
+
+However, it may be difficult to coordinate the trade. In order to create liquidity, an automated market maker may be used to operate an on-chain market. These markets also aggregate information from participants about their beliefs about the likeliness of outcomes.
+
+Gnosis contracts contain market and market maker contract interfaces, a [standard market implementation](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/), and an [implementation](https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker/) of the [logarithmic market scoring rule (LMSR)](http://mason.gmu.edu/~rhanson/mktscore.pdf), an automated market maker. This can be leveraged with the {@link Gnosis#createMarket} method. For example, given an `event`, you can create a `StandardMarket` which uses the LMSR market maker with the following:
+
+```js
+await gnosis.createMarket({
+    event,
+    marketMaker: gnosis.lmsrMarketMaker,
+    50000, // signifies a 5% fee on transactions
+           // see docs for {@link Gnosis#createMarket} for more info
+})
+```

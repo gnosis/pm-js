@@ -190,8 +190,25 @@ class Gnosis {
         }
 
         await Promise.all([
+            /**
+             * If [EtherToken](https://gnosis.github.io/gnosis-contracts/docs/EtherToken/) is deployed to the current network, this will be set to an EtherToken contract abstraction pointing at the deployment address.
+             *
+             * @member {Contract} Gnosis#etherToken
+             */
             this.trySettingContractInstance('etherToken', this.contracts.EtherToken),
+
+            /**
+             * If [StandardMarketFactory](https://gnosis.github.io/gnosis-contracts/docs/StandardMarketFactory/) is deployed to the current network, this will be set to an StandardMarketFactory contract abstraction pointing at the deployment address.
+             *
+             * @member {Contract} Gnosis#standardMarketFactory
+             */
             this.trySettingContractInstance('standardMarketFactory', this.contracts.StandardMarketFactory),
+
+            /**
+             * If [LMSRMarketMaker](https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker/) is deployed to the current network, this will be set to an LMSRMarketMaker contract abstraction pointing at the deployment address.
+             *
+             * @member {Contract} Gnosis#lmsrMarketMaker
+             */
             this.trySettingContractInstance('lmsrMarketMaker', this.contracts.LMSRMarketMaker),
         ])
     }

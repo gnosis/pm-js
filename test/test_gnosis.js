@@ -255,7 +255,6 @@ describe('Gnosis', function () {
 
         it('creates markets', async () => {
             let market = await gnosis.createMarket({
-                marketFactory: gnosis.standardMarketFactory,
                 event: event,
                 marketMaker: gnosis.lmsrMarketMaker,
                 fee: 100,
@@ -280,7 +279,6 @@ describe('Gnosis', function () {
                 outcomeCount: netOutcomeTokensSold.length
             })
             market = await gnosis.createMarket({
-                marketFactory: gnosis.standardMarketFactory,
                 event: event,
                 marketMaker: gnosis.lmsrMarketMaker,
                 fee: feeFactor, // 0%
