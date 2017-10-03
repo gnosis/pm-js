@@ -291,6 +291,7 @@ export async function sendTransactionAndGetResult (opts) {
 }
 
 // I know bluebird does this, but it's heavy
+// Also, as of Node v8.5.0, `util.promisify` doesn't call the function with the same `this`
 export function promisify (fn) {
     return new Proxy(fn, {
         apply: (target, thisArg, args) => {
