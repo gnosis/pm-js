@@ -85,6 +85,7 @@ In order to create a categorical event contract instance backed by an specific `
 const event = await gnosis.createCategoricalEvent({
     collateralToken: gnosis.etherToken,
     oracle,
+    // Note the outcomeCount must match the length of the outcomes array published on IPFS
     outcomeCount: 3,
 })
 ```
@@ -218,3 +219,44 @@ Finally, if you are the creator of a [`StandardMarket`](https://gnosis.github.io
 Gnosis.requireEventFromTXResult(await market.close(), 'MarketClose')
 Gnosis.requireEventFromTXResult(await market.withdrawFees(), 'MarketFeeWithdrawal')
 ```
+
+### Events with Scalar Outcomes
+
+The discussion up to this point has been about an instance of an event with categorical outcomes. However, some events may be better expressed as an event with a scalar outcome. For example, you can ask the following question using {@link Gnosis#createScalarEvent}:
+
+```js
+const lowerBound = '80'
+const upperBound = '100'
+
+const ipfsHash = await gnosis.publishEventDescription({
+    title: 'What will be the annual global land and ocean temperature anomaly for 2017?',
+    description: 'The anomaly is with respect to the average temperature for the 20th century and is as reported by the National Centers for Environmental Services...',
+    resolutionDate: '2017-01-01T00:00:00+00:00',
+    lowerBound,
+    upperBound,
+    decimals: 2,
+    unit: '°C',
+})
+
+const oracle = await gnosis.createCentralizedOracle(ipfsHash)
+
+const event = await gnosis.createScalarEvent({
+    collateralToken: gnosis.etherToken,
+    oracle,
+    // Note that these bounds should match the values published on IPFS
+    lowerBound,
+    upperBound,
+})
+```
+
+This sets up an event with a lower bound of 0.80°C and an upper bound of 1.00°C. Note that the values are passed in as whole integers and adjusted to the right order of magnitude according to the `decimals` property of the event description.
+
+There are two outcome tokens associated with this event: a short token for the lower bound and a long token for the upper bound. The short tokens associated with the lower bound have index 0, as opposed to the long tokens associated with the upper bound which have index 1. In other words, other than their value at resolution, they have the same mechanics as a categorical event with two outcomes. For example, a `market` may be created for this event in the same way, and outcome tokens traded on that market may also be traded in the same way.
+
+Now let's say that the NCES reports that the average global temperature anomaly for 2017 is 0.89°C. If you are the centralized oracle for this event as above, you can report this result to the chain like so:
+
+```js
+await gnosis.resolveEvent({ event, outcome: '89' })
+```
+
+This will value each unit of the short outcome at \\(1 - {0.89 - 0.80 \over 1.00 - 0.80} = 0.55\\) units of the collateral, and the long outcome at \\(0.45\\) units of the collateral. Thus, if you held 50 units of the short outcome and 100 units of the long outcome, [`ScalarEvent.redeemWinnings`](https://gnosis.github.io/gnosis-contracts/docs/ScalarEvent/) would net you \\(\lfloor 50 \times 0.55 + 100 \times 0.45 \rfloor = 72\\) units of collateral. Hopefully you'll have paid less than that for those outcomes.
