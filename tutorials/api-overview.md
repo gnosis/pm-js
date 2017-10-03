@@ -94,11 +94,21 @@ Note that EtherToken is traded with this particular event instance.
 When an event has been created, users can convert their collateral into sets of outcome tokens. For example, suppose a user buys 4 ETH worth of outcome tokens from `event`:
 
 ```js
-await Promise.all([
+const txResults = await Promise.all([
     gnosis.etherToken.deposit({ value: 4e18 }),
     gnosis.etherToken.approve(event.address, 4e18),
     event.buyAllOutcomes(4e18),
 ])
+
+// Make sure everything worked
+const expectedEvents = [
+    'Deposit',
+    'Approval',
+    'OutcomeTokenSetIssuance',
+]
+txResults.forEach((txResult, i) => {
+    Gnosis.requireEventFromTXResult(txResult, expectedEvents[i])
+})
 ```
 
 That user would then have `4e18` units of each [`OutcomeToken`](https://gnosis.github.io/gnosis-contracts/docs/OutcomeToken/):
@@ -108,7 +118,7 @@ const { Token } = gnosis.contracts
 const outcomeCount = (await event.getOutcomeCount()).valueOf()
 
 for(let i = 0; i < outcomeCount; i++) {
-    const outcomeToken = Token.at(await event.outcomeTokens(i))
+    const outcomeToken = await Token.at(await event.outcomeTokens(i))
     console.log('Have', (await outcomeToken.balanceOf(gnosis.defaultAccount)).valueOf(), 'units of outcome', i)
 }
 ```
@@ -124,7 +134,7 @@ Note that you must pass in the 0-based index of the outcome corresponding to the
 If you are a stakeholder in this `event` contract instance, you can redeem your winnings with [`CategoricalEvent.redeemWinnings`](https://gnosis.github.io/gnosis-contracts/docs/CategoricalEvent/):
 
 ```js
-await event.redeemWinnings()
+Gnosis.requireEventFromTXResult(await event.redeemWinnings(), 'WinningsRedemption')
 ```
 
 ### Markets and Automated Market Makers
@@ -133,13 +143,78 @@ Suppose that Alice believed Clinton would win the 2016 U.S. election, but Bob be
 
 However, it may be difficult to coordinate the trade. In order to create liquidity, an automated market maker may be used to operate an on-chain market. These markets also aggregate information from participants about their beliefs about the likeliness of outcomes.
 
-Gnosis contracts contain market and market maker contract interfaces, a [standard market implementation](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/), and an [implementation](https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker/) of the [logarithmic market scoring rule (LMSR)](http://mason.gmu.edu/~rhanson/mktscore.pdf), an automated market maker. This can be leveraged with the {@link Gnosis#createMarket} method. For example, given an `event`, you can create a `StandardMarket` which uses the LMSR market maker with the following:
+Gnosis contracts contain market and market maker contract interfaces, a [standard market implementation](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/), and an [implementation](https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker/) of the [logarithmic market scoring rule (LMSR)](http://mason.gmu.edu/~rhanson/mktscore.pdf), an automated market maker. This can be leveraged with the {@link Gnosis#createMarket} method. For example, given an `event`, you can create a [`StandardMarket`](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/) operated by the LMSR market maker with the following:
 
 ```js
-await gnosis.createMarket({
+const market = await gnosis.createMarket({
     event,
     marketMaker: gnosis.lmsrMarketMaker,
     50000, // signifies a 5% fee on transactions
-           // see docs for {@link Gnosis#createMarket} for more info
+           // see docs at {@link Gnosis#createMarket} for more info
 })
+```
+
+Once a `market` has been created, it needs to be funded with the collateral token in order for it to provide liquidity. The market creator funds the market according to the maximum loss acceptable to them, which is possible since LMSR guarantees a bounded loss:
+
+```js
+// Fund the market with 4 ETH
+await Promise.all([
+    gnosis.etherToken.deposit({ value: 4e18 }),
+    gnosis.etherToken.approve(event.address, 4e18),
+    market.fund(4e18),
+])
+
+const expectedEvents = [
+    'Deposit',
+    'Approval',
+    'MarketFunding',
+]
+txResults.forEach((txResult, i) => {
+    Gnosis.requireEventFromTXResult(txResult, expectedEvents[i])
+})
+```
+
+Furthermore, the outcome tokens sold by the market are guaranteed to be backed by collateral because the ultimate source of these outcome tokens are from the event contract, which only allow buying collateral-backed sets of outcome tokens.
+
+Let's suppose there is a `market` on the 2016 presidential election as indicated above, and that you are wondering if "Other" outcome tokens (which have index 2) are worth it at its price point. You can estimate how much it would cost to buy `1e18` units of those outcome tokens with [`LMSRMarketMaker.calcCost`](https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker/):
+
+```js
+const cost = await gnosis.lmsrMarketMaker.calcCost(market.address, 2, 1e18)
+console.log(cost.valueOf())
+```
+
+Let's say now that you've decided that these outcome tokens are worth it. Gnosis.js contains convenience functions for buying and selling outcome tokens from a market backed by an LMSR market maker. They are {@link Gnosis#buyOutcomeTokens} and {@link Gnosis#sellOutcomeTokens}. To buy these outcome tokens, you can use the following code:
+
+```js
+await gnosis.buyOutcomeTokens({
+    market,
+    outcomeTokenIndex: 2,
+    outcomeTokenCount: 1e18,
+})
+```
+
+Similarly, you can see how much these outcome tokens are worth to the `market` with [`LMSRMarketMaker.calcProfit`](https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker/):
+
+```js
+const profit = await gnosis.lmsrMarketMaker.calcProfit(market.address, 2, 1e18)
+console.log(calcProfit.valueOf())
+```
+
+If you want to sell the outcome tokens you have bought, you can do the following:
+
+```js
+await gnosis.sellOutcomeTokens({
+    market,
+    outcomeTokenIndex: 2,
+    outcomeTokenCount: 1e18,
+})
+```
+
+Oftentimes prediction markets aggregate predictions into more accurate predictions. Because of this, without a fee, the investor can expect to take a loss on their investments. However, too high of a fee would discourage participation in the market. Discerning the best fee factor for markets is outside the scope of this document.
+
+Finally, if you are the creator of a [`StandardMarket`](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/), you can close the market and obtain all of its outcome token holdings with `StandardMarket.close` and/or withdraw the trading fees paid with `StandardMarket.withdrawFees`:
+
+```js
+Gnosis.requireEventFromTXResult(await market.close(), 'MarketClose')
+Gnosis.requireEventFromTXResult(await market.withdrawFees(), 'MarketFeeWithdrawal')
 ```

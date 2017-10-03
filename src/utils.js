@@ -253,6 +253,14 @@ export function wrapWeb3Function(spec) {
     return wrappedFn
 }
 
+/**
+ * Looks for a single event in the logs of a transaction result. If no such events or multiple matching events are found, throws an error. Otherwise returns the matching event log.
+ *
+ * @param {Transaction} result Result of sending a transaction
+ * @param {string} eventName Name of the event
+ * @return {Object} The matching event log found
+ * @alias Gnosis.requireEventFromTXResult
+ */
 export function requireEventFromTXResult (result, eventName) {
     let matchingLogs = _.filter(result.logs, (l) => l.event === eventName)
 
