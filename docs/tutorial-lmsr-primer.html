@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>LMSR Primer - Documentation</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-developer-guide.html">Developer Guide</a></li><ol class="nav-tut-list"><li class="nav-item"><a href="tutorial-installation.html">Installation</a></li><li class="nav-item"><a href="tutorial-api-overview.html">API Overview</a></li><li class="nav-item"><a href="tutorial-events-oracles-and-markets.html">Events, Oracles, and Markets</a></li><li class="nav-item"><a href="tutorial-lmsr-primer.html">LMSR Primer</a></li></ol><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Gnosis.html">Gnosis</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSRCost">calcLMSRCost</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSRMarginalPrice">calcLMSRMarginalPrice</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSROutcomeTokenCount">calcLMSROutcomeTokenCount</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSRProfit">calcLMSRProfit</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.create">create</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.requireEventFromTXResult">requireEventFromTXResult</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#buyOutcomeTokens">buyOutcomeTokens</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createCategoricalEvent">createCategoricalEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createCentralizedOracle">createCentralizedOracle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createMarket">createMarket</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createScalarEvent">createScalarEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createUltimateOracle">createUltimateOracle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#loadEventDescription">loadEventDescription</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#publishEventDescription">publishEventDescription</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#resolveEvent">resolveEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#sellOutcomeTokens">sellOutcomeTokens</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#setWeb3Provider">setWeb3Provider</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">LMSR Primer</h1>
+    
+
+    <section>
+
+<header>
+    
+</header>
+
+<article>
+    <p>The Gnosis.js implementation of the logarithmic market scoring rule mostly follows the <a href="http://mason.gmu.edu/~rhanson/mktscore.pdf">original specification</a>. It is based on the following cost function:</p>
+<p>$$ C(\vec{q}) = b \log \left( \sum_i \exp \left( { q_i \over b } \right) \right) $$</p>
+<p>where</p>
+<ul>
+<li>\(\vec{q}\) is a vector of <em>net</em> quantities of outcome tokens <em>sold</em>. What this means is that although the market selling outcome tokens increases the net quantity sold, the market <em>buying</em> outcome tokens <em>decreases</em> the net quantity sold. </li>
+<li>\(b\) is a liquidity parameter which controls the bounded loss of the LMSR. That bounded loss for the market maker means that the liquidity parameter can be expressed in terms of the number of outcomes and the funding required to guarantee all outcomes sold by the market maker can be backed by collateral (this will be derived later).</li>
+<li>\(\log\) and \(\exp\) are the natural logarithm and exponential functions respectively</li>
+</ul>
+<p>The cost function is used to determine the cost of a transaction in the following way: suppose \(\vec{q_1}\) is the state of net quantities sold before the transaction and \(\vec{q_2}\) is this state afterwards. Then the cost of the transaction \(\nu\) is</p>
+<p>$$ \nu = C(\vec{q_2}) - C(\vec{q_1}) $$</p>
+<p>For example, suppose there is a LMSR-operated market with a \(b\) of 5 and two outcomes. If this market has bought 10 tokens for outcome A and sold 4 tokens for outcome B, it would have a cost level of:</p>
+<p>$$ C \begin{pmatrix} -10 \\ 4 \end{pmatrix} = 5 \log \left( \exp(-10/5) + \exp(4/5) \right) \approx 4.295 $$</p>
+<p>Buying 5 tokens for outcome A (or having the market sell you those tokens) would change the cost level to:</p>
+<p>$$ C \begin{pmatrix} -10 + 5 \\ 4 \end{pmatrix} = 5 \log \left( \exp(-5/5) + \exp(4/5) \right) \approx 4.765 $$</p>
+<p>So the cost of buying 5 tokens for outcome A from this market is:</p>
+<p>$$ \nu = C \begin{pmatrix} -5 \\ 4 \end{pmatrix} - C \begin{pmatrix} -10 \\ 4 \end{pmatrix} \approx 4.765 - 4.295 = 0.470 $$</p>
+<p>Similarly, selling 2 tokens for outcome B (or having the market buy those tokens from you) would yield a cost of:</p>
+<p>$$ \nu = C \begin{pmatrix} -10 \\ 2 \end{pmatrix} - C \begin{pmatrix} -10 \\ 4 \end{pmatrix} \approx -1.861 $$</p>
+<p>That is to say, the market will buy 2 tokens of outcome B for 1.861 units of collateral.</p>
+<h3>Bounded Loss from the \(b\) Parameter</h3><p>Here is the worst scenario for the market maker: everybody but the market maker already knows which one of the \(n\) outcomes will occur. Without loss of generality, let the answer be the first outcome token. Everybody buys outcome one tokens from the market maker while selling off every other worthless outcome token they hold. The cost function for the market maker goes from</p>
+<p>$$ C \begin{pmatrix} 0 \\ 0 \\ 0 \\ \vdots \end{pmatrix} = b \log n $$</p>
+<p>to</p>
+<p>$$ C \begin{pmatrix} q_1 \\ -\infty \\ -\infty \\ \vdots \end{pmatrix} = b \log \left( \exp \left( {q_1 \over b} \right) \right) = q_1 $$</p>
+<p>The market sells \(q_1\) shares of outcome one and buys shares for every other outcome until those outcome tokens become worthless to the market maker. This costs the participants \((q_1 - b \log n)\) in collateral, and thus, when the participants gain \(q_1\) from redeeming their winnings, this nets the participants \((b \log n)\) in collateral. This gain for the participant is equal to the market's loss.</p>
+<p>Thus, in order to guarantee that a market can operate with a liquidity parameter of \(b\), it must be funded with \((F = b \log n)\) of collateral. Another way to look at this is that the market's funding determines its \(b\) parameter:</p>
+<p>$$ b = {F \over \log n} $$</p>
+<p>In the Gnosis implementation, the <a href="https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker/">LMSR market maker contract</a> is provided with the <code>funding</code> \(F\) through inspection of the <code>market</code>, and \(b\) is derived accordingly.</p>
+<h3>Marginal Price of Outcome Tokens</h3><p>Because the cost function is nonlinear, there isn't a price for outcome tokens which scales with the quantity being purchased. However, the cost function <em>is</em> differentiable, so a marginal price can be quoted for infinitesimal quantities of outcome tokens:</p>
+<p>$$ P_i = {\partial C(\vec{q}) \over \partial q_i} = \frac{\exp(q_i / b)}{\sum_k \exp(q_k / b)} $$</p>
+<p>In the context of prediction markets, this marginal price can also be interpreted as the market's estimation of the odds of that outcome occurring.</p>
+<h3>LMSR Calculation Functions</h3><p>The functions <a href="Gnosis.html#.calcLMSRCost">Gnosis.calcLMSRCost</a> and <a href="Gnosis.html#.calcLMSRProfit">Gnosis.calcLMSRProfit</a> estimate the cost of buying outcome tokens and the profit from selling outcome tokens respectively. The <a href="Gnosis.html#.calcLMSROutcomeTokenCount">Gnosis.calcLMSROutcomeTokenCount</a> estimates the quantity of an outcome token which can be bought given an amount of collateral and serves as a sort of &quot;inverse calculation&quot; to Gnosis.calcLMSRCost. Finally, <a href="Gnosis.html#.calcLMSRMarginalPrice">Gnosis.calcLMSRMarginalPrice</a> can be used to get the marginal price of an outcome token.</p>
+</article>
+
+</section>
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 04 2017 01:19:56 GMT-0500 (CDT) using the Minami theme.
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

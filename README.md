@@ -1,6 +1,6 @@
 # Gnosis.js Library 
 
-[![Logo](assets/logo.png)](https://gnosis.pm/)
+[![Logo](https://raw.githubusercontent.com/gnosis/gnosis.js/master/assets/logo.png)](https://gnosis.pm/)
 
 [![Build Status](https://travis-ci.org/gnosis/gnosis.js.svg?branch=master)](https://travis-ci.org/gnosis/gnosis.js)
 
@@ -38,11 +38,13 @@ Run `npm test` to run test suite. This should run without the need of an RPC pro
 
 You may also provide mocha options through the `MOCHA_OPTS` environment variable, e.g. `MOCHA_OPTS='-g estimate' npm test`.
 
+## Documentation
+
+API documentation and tutorials can be found hosted online at https://gnosis.github.io/gnosis.js/
+
 ### Running the docs
 
-Run `npm run doc` to run and open the jsdocs in your browser.
-
-## Additional docs
+Run `npm run doc` to build and open a local build of the documentation in your browser.
 
 ### Web3 options
 

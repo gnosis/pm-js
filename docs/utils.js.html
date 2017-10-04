@@ -1,8 +1,51 @@
-import _ from 'lodash'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>utils.js - Documentation</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-developer-guide.html">Developer Guide</a></li><ol class="nav-tut-list"><li class="nav-item"><a href="tutorial-installation.html">Installation</a></li><li class="nav-item"><a href="tutorial-api-overview.html">API Overview</a></li><li class="nav-item"><a href="tutorial-events-oracles-and-markets.html">Events, Oracles, and Markets</a></li><li class="nav-item"><a href="tutorial-lmsr-primer.html">LMSR Primer</a></li></ol><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Gnosis.html">Gnosis</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSRCost">calcLMSRCost</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSRMarginalPrice">calcLMSRMarginalPrice</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSROutcomeTokenCount">calcLMSROutcomeTokenCount</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSRProfit">calcLMSRProfit</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.create">create</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.requireEventFromTXResult">requireEventFromTXResult</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#buyOutcomeTokens">buyOutcomeTokens</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createCategoricalEvent">createCategoricalEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createCentralizedOracle">createCentralizedOracle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createMarket">createMarket</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createScalarEvent">createScalarEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createUltimateOracle">createUltimateOracle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#loadEventDescription">loadEventDescription</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#publishEventDescription">publishEventDescription</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#resolveEvent">resolveEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#sellOutcomeTokens">sellOutcomeTokens</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#setWeb3Provider">setWeb3Provider</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">utils.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import _ from 'lodash'
 import DecimalJS from 'decimal.js'
 
 function constructorName(obj) {
-    return obj != null && obj.constructor != null ? obj.constructor.name : null
+    return obj != null &amp;&amp; obj.constructor != null ? obj.constructor.name : null
 }
 
 function makeWeb3Compatible(value, type, argName) {
@@ -16,7 +59,7 @@ function makeWeb3Compatible(value, type, argName) {
             throw new Error(`expected ${value} to be convertable to ${type} ${argName}`)
         }
 
-        if(match[2] !== '' && value.length !== Number(match[2])) {
+        if(match[2] !== '' &amp;&amp; value.length !== Number(match[2])) {
             throw new Error(`${value} has ${value.length} items but should be ${type} ${argName}`)
         }
 
@@ -90,16 +133,16 @@ function makeWeb3Compatible(value, type, argName) {
             value = value.valueOf()
         }
 
-        if(_.isString(value) && /^-?(0x[\da-f]+|\d+)$/i.test(value) || _.isNumber(value)) {
+        if(_.isString(value) &amp;&amp; /^-?(0x[\da-f]+|\d+)$/i.test(value) || _.isNumber(value)) {
             if(
-                _.isString(value) && value.startsWith('0x') &&
+                _.isString(value) &amp;&amp; value.startsWith('0x') &amp;&amp;
                 value.slice(2) === Number(value).toString(16) ||
                 value == Number(value).toString()
             ) {
                 value = Number(value)
             }
 
-            if(!signed && value.toString().startsWith('-')) {
+            if(!signed &amp;&amp; value.toString().startsWith('-')) {
                 throw new Error(`cannot pass negative value ${value} for ${type} ${argName}`)
             }
 
@@ -148,10 +191,10 @@ export function normalizeWeb3Args(args, opts) {
 
     // Format arguments in a way that web3 likes
     let methodArgs, methodOpts
-    if(functionInputs.length === 1 && args.length === 1) {
+    if(functionInputs.length === 1 &amp;&amp; args.length === 1) {
         // if there is one input, user could have supplied either the argument with no options
         // or the argument inside of an options object
-        if(typeof args[0] === 'object' && _.has(args[0], functionInputs[0].name)) {
+        if(typeof args[0] === 'object' &amp;&amp; _.has(args[0], functionInputs[0].name)) {
             // we consider argument to be an options object if it has the parameter name as a key on it
             methodOpts = _.defaults(_.clone(args[0]), defaults)
             methodArgs = getTruffleArgsFromOptions(functionInputs, methodOpts, argAliases)
@@ -162,11 +205,11 @@ export function normalizeWeb3Args(args, opts) {
     } else if(functionInputs.length === args.length) {
         methodOpts = null
         methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
-    } else if(functionInputs.length + 1 === args.length && typeof args[functionInputs.length] === 'object') {
+    } else if(functionInputs.length + 1 === args.length &amp;&amp; typeof args[functionInputs.length] === 'object') {
         methodOpts = args[args.length - 1]
         // this map should not hit the last element of args
         methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
-    } else if(args.length === 1 && typeof args[0] === 'object') {
+    } else if(args.length === 1 &amp;&amp; typeof args[0] === 'object') {
         methodOpts = _.defaults(_.clone(args[0]), defaults)
         methodArgs = getTruffleArgsFromOptions(functionInputs, methodOpts, argAliases)
     } else {
@@ -264,7 +307,7 @@ export function wrapWeb3Function(spec) {
 export function requireEventFromTXResult (result, eventName) {
     let matchingLogs = _.filter(result.logs, (l) => l.event === eventName)
 
-    if (matchingLogs.length < 1) {
+    if (matchingLogs.length &lt; 1) {
         throw new Error(`could not find any logs in result ${result} corresponding to event ${eventName}`)
     } else if (matchingLogs.length > 1) {
         throw new Error(`found too many logs in result ${result} corresponding to event ${eventName}`)
@@ -319,3 +362,22 @@ export function promisifyAll (obj) {
     })
     return obj
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 04 2017 01:19:56 GMT-0500 (CDT) using the Minami theme.
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
