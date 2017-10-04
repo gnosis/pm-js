@@ -3,9 +3,11 @@
         "title": "Developer Guide",
         "children": [
             "installation",
-            "api-overview"
+            "api-overview",
+            "lmsr-primer"
         ]
     },
     "installation": { "title": "Installation" },
-    "api-overview": { "title": "API Overview" }
+    "api-overview": { "title": "API Overview" },
+    "lmsr-primer": { "title": "LMSR Primer" }
 }
