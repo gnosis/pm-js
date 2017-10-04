@@ -1,6 +1,6 @@
 # Gnosis.js Library 
 
-[![Logo](assets/logo.png)](https://gnosis.pm/)
+[![Logo](https://raw.githubusercontent.com/gnosis/gnosis.js/master/assets/logo.png)](https://gnosis.pm/)
 
 [![Build Status](https://travis-ci.org/gnosis/gnosis.js.svg?branch=master)](https://travis-ci.org/gnosis/gnosis.js)
 
