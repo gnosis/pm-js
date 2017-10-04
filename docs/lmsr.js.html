@@ -2,22 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: lmsr.js</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>lmsr.js - Documentation</title>
 
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
 </head>
-
 <body>
 
-<div id="main">
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
 
-    <h1 class="page-title">Source: lmsr.js</h1>
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-developer-guide.html">Developer Guide</a></li><ol class="nav-tut-list"><li class="nav-item"><a href="tutorial-installation.html">Installation</a></li><li class="nav-item"><a href="tutorial-api-overview.html">API Overview</a></li><li class="nav-item"><a href="tutorial-events-oracles-and-markets.html">Events, Oracles, and Markets</a></li><li class="nav-item"><a href="tutorial-lmsr-primer.html">LMSR Primer</a></li></ol><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Gnosis.html">Gnosis</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSRCost">calcLMSRCost</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSRMarginalPrice">calcLMSRMarginalPrice</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSROutcomeTokenCount">calcLMSROutcomeTokenCount</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSRProfit">calcLMSRProfit</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.create">create</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.requireEventFromTXResult">requireEventFromTXResult</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#buyOutcomeTokens">buyOutcomeTokens</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createCategoricalEvent">createCategoricalEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createCentralizedOracle">createCentralizedOracle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createMarket">createMarket</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createScalarEvent">createScalarEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createUltimateOracle">createUltimateOracle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#loadEventDescription">loadEventDescription</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#publishEventDescription">publishEventDescription</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#resolveEvent">resolveEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#sellOutcomeTokens">sellOutcomeTokens</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#setWeb3Provider">setWeb3Provider</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">lmsr.js</h1>
+    
 
     
 
@@ -211,17 +226,13 @@ export function calcLMSRMarginalPrice() {
 
 </div>
 
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Gnosis.html">Gnosis</a></li></ul>
-</nav>
-
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Sep 25 2017 15:01:08 GMT-0500 (CDT)
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 04 2017 01:19:56 GMT-0500 (CDT) using the Minami theme.
 </footer>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="scripts/linenumber.js"></script>
 </body>
 </html>

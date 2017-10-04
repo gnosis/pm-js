@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>utils.js - Documentation</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-developer-guide.html">Developer Guide</a></li><ol class="nav-tut-list"><li class="nav-item"><a href="tutorial-installation.html">Installation</a></li><li class="nav-item"><a href="tutorial-api-overview.html">API Overview</a></li><li class="nav-item"><a href="tutorial-events-oracles-and-markets.html">Events, Oracles, and Markets</a></li><li class="nav-item"><a href="tutorial-lmsr-primer.html">LMSR Primer</a></li></ol><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Gnosis.html">Gnosis</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSRCost">calcLMSRCost</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSRMarginalPrice">calcLMSRMarginalPrice</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSROutcomeTokenCount">calcLMSROutcomeTokenCount</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.calcLMSRProfit">calcLMSRProfit</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.create">create</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#.requireEventFromTXResult">requireEventFromTXResult</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#buyOutcomeTokens">buyOutcomeTokens</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createCategoricalEvent">createCategoricalEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createCentralizedOracle">createCentralizedOracle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createMarket">createMarket</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createScalarEvent">createScalarEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#createUltimateOracle">createUltimateOracle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#loadEventDescription">loadEventDescription</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#publishEventDescription">publishEventDescription</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#resolveEvent">resolveEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#sellOutcomeTokens">sellOutcomeTokens</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Gnosis.html#setWeb3Provider">setWeb3Provider</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">utils.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import _ from 'lodash'
+import DecimalJS from 'decimal.js'
+
+function constructorName(obj) {
+    return obj != null &amp;&amp; obj.constructor != null ? obj.constructor.name : null
+}
+
+function makeWeb3Compatible(value, type, argName) {
+    if(type == null) {
+        throw new Error(`type must be specified for argument ${argName}`)
+    }
+
+    let match = /^(.*)\[(\d*)\]$/.exec(type)
+    if(match != null) {
+        if(!_.isArray(value)) {
+            throw new Error(`expected ${value} to be convertable to ${type} ${argName}`)
+        }
+
+        if(match[2] !== '' &amp;&amp; value.length !== Number(match[2])) {
+            throw new Error(`${value} has ${value.length} items but should be ${type} ${argName}`)
+        }
+
+        return value.map((v) => makeWeb3Compatible(v, match[1], argName))
+    }
+
+    if(type === 'address') {
+        // if it quacks like a TruffleContract
+        if (_.has(value, 'address')) {
+            value = value.address
+        }
+
+        if(!_.isString(value)) {
+            throw new Error(`${value} must be string for ${type} ${argName}`)
+        }
+
+        if(!/^(0x)?[0-9a-f]{40}$/i.test(value)) {
+            throw new Error(`${value} has wrong format for ${type} ${argName}`)
+        }
+
+        return value
+    }
+
+    if(type === 'bool') {
+        if(!_.isBoolean(value)) {
+            throw new Error(`expected ${value} to be a bool for ${type} ${argName}`)
+        }
+
+        return value
+    }
+
+    if(type === 'bytes' || type === 'string') {
+        if(_.isString(value)) {
+            return value
+        }
+
+        throw new Error(`could not format ${value} for ${type} ${argName}`)
+    }
+
+    match = /^bytes(\d+)$/.exec(type)
+    if(match != null) {
+        let bytesLength = Number(match[1])
+        if(bytesLength > 32 || bytesLength === 0 || match[1].startsWith('0')) {
+            throw new Error(`invalid type ${type} specified for ${argName}`)
+        }
+
+        if(_.isString(value)) {
+            // TODO: refine this check to account for things like '\uACDC'.length
+            if(value.length > bytesLength) {
+                throw new Error(`value ${value} too long for ${type} ${argName}`)
+            }
+            return value
+        }
+
+        throw new Error(`could not format ${value} for ${type} ${argName}`)
+    }
+
+    match = /^(u?)int(\d+)$/.exec(type)
+    if(match != null) {
+        let signed = match[1] === ''
+        let numBits = Number(match[2])
+        if(numBits % 8 !== 0) {
+            throw new Error(`number of bits for ${type} ${argName} not divisible by 8`)
+        }
+
+        if(numBits > 256) {
+            throw new Error(`number of bits for ${type} ${argName} is too large`)
+        }
+
+        if(constructorName(value) === 'BigNumber' || constructorName(value) === 'Decimal') {
+            value = value.valueOf()
+        }
+
+        if(_.isString(value) &amp;&amp; /^-?(0x[\da-f]+|\d+)$/i.test(value) || _.isNumber(value)) {
+            if(
+                _.isString(value) &amp;&amp; value.startsWith('0x') &amp;&amp;
+                value.slice(2) === Number(value).toString(16) ||
+                value == Number(value).toString()
+            ) {
+                value = Number(value)
+            }
+
+            if(!signed &amp;&amp; value.toString().startsWith('-')) {
+                throw new Error(`cannot pass negative value ${value} for ${type} ${argName}`)
+            }
+
+            return value
+        }
+
+        throw new Error(`could not normalize ${value} for ${type} ${argName}`)
+    }
+
+    throw new Error(`unsupported type ${type} for ${argName}`)
+}
+
+function getOptsFromArgs(args) {
+    return typeof args[args.length - 1] === 'object' ? args[args.length - 1] : {}
+}
+
+function getTruffleArgsFromOptions (argInfo, opts, argAliases) {
+    opts = opts == null ? {} : _.clone(opts)
+
+    if(argAliases != null) {
+        _.forOwn(argAliases, (name, alias) => {
+            if(_.has(opts, alias)) {
+                if(_.has(opts, name)) {
+                    throw new Error(`both name ${name} and its alias ${alias} specified in ${opts}`)
+                }
+                opts[name] = opts[alias]
+                delete opts[alias]
+            }
+        })
+    }
+
+    return argInfo.map(({ name, type }) => {
+        if (!_.has(opts, name)) {
+            throw new Error(`missing argument ${name}`)
+        }
+        return makeWeb3Compatible(opts[name], type, name)
+    })
+}
+
+export let Decimal = DecimalJS.clone({ precision: 80 })
+
+export function normalizeWeb3Args(args, opts) {
+    let {
+        functionInputs, methodName, argAliases, defaults
+    } = opts
+
+    // Format arguments in a way that web3 likes
+    let methodArgs, methodOpts
+    if(functionInputs.length === 1 &amp;&amp; args.length === 1) {
+        // if there is one input, user could have supplied either the argument with no options
+        // or the argument inside of an options object
+        if(typeof args[0] === 'object' &amp;&amp; _.has(args[0], functionInputs[0].name)) {
+            // we consider argument to be an options object if it has the parameter name as a key on it
+            methodOpts = _.defaults(_.clone(args[0]), defaults)
+            methodArgs = getTruffleArgsFromOptions(functionInputs, methodOpts, argAliases)
+        } else {
+            methodOpts = null
+            methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
+        }
+    } else if(functionInputs.length === args.length) {
+        methodOpts = null
+        methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
+    } else if(functionInputs.length + 1 === args.length &amp;&amp; typeof args[functionInputs.length] === 'object') {
+        methodOpts = args[args.length - 1]
+        // this map should not hit the last element of args
+        methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
+    } else if(args.length === 1 &amp;&amp; typeof args[0] === 'object') {
+        methodOpts = _.defaults(_.clone(args[0]), defaults)
+        methodArgs = getTruffleArgsFromOptions(functionInputs, methodOpts, argAliases)
+    } else {
+        throw new Error(`${methodName}(${
+            functionInputs.map(({ name, type }) => `${type} ${name}`).join(', ')
+        }) can't be called with args (${args.join(', ')})`)
+    }
+
+    return [methodArgs, methodOpts]
+}
+
+function getWeb3CallMetadata(args, opts, speccedOpts) {
+    let {
+        callerContract, callerABI, methodName,
+        eventName, eventArgName, resultContract,
+        argAliases, validators
+    } = speccedOpts
+
+    if(callerABI == null) {
+        callerABI = callerContract.abi
+    }
+
+    const functionCandidates = callerABI.filter(({ name }) => name === methodName)
+
+    if(functionCandidates.length === 0) {
+        throw new Error(`could not find function ${methodName} in abi ${callerABI}`)
+    } else if(functionCandidates.length > 1) {
+        // eslint-disable-next-line no-console
+        console.warn(`function ${methodName} has multiple candidates in abi ${callerABI} -- using last candidate`)
+    }
+
+    const functionInputs = functionCandidates.pop().inputs
+
+    let [methodArgs, methodOpts] = normalizeWeb3Args(args, { functionInputs, methodName, argAliases })
+
+    if(validators != null) {
+        validators.forEach((validator) => { validator(methodArgs) })
+    }
+
+    // Pass extra options down to the web3 layer
+    if(methodOpts != null) {
+        methodArgs.push(_.pick(methodOpts, ['from', 'to', 'value', 'gas', 'gasPrice']))
+    }
+
+    return {
+        callerContract, methodName, methodArgs,
+        eventName, eventArgName, resultContract,
+    }
+}
+
+export function wrapWeb3Function(spec) {
+    const wrappedFn = async function() {
+        const opts = getOptsFromArgs(arguments)
+        const speccedOpts = spec(this, opts)
+
+        return await sendTransactionAndGetResult(
+            getWeb3CallMetadata(arguments, opts, speccedOpts)
+        )
+    }
+
+    wrappedFn.estimateGas = async function() {
+        const opts = getOptsFromArgs(arguments)
+        const speccedOpts = spec(this, opts)
+        const { callerContract, methodName } = speccedOpts
+
+        if(opts.using === 'stats') {
+            return callerContract.gasStats[methodName].averageGasUsed
+        }
+
+        if(opts.using === 'rpc') {
+            const { methodArgs } = getWeb3CallMetadata(arguments, opts, speccedOpts)
+
+            let caller = callerContract
+            if (_.has(caller, 'deployed')) {
+                caller = await caller.deployed()
+            }
+
+            return await caller[methodName].estimateGas(...methodArgs)
+        }
+
+        throw new Error(`unsupported gas estimation source ${using}`)
+    }
+
+    return wrappedFn
+}
+
+/**
+ * Looks for a single event in the logs of a transaction result. If no such events or multiple matching events are found, throws an error. Otherwise returns the matching event log.
+ *
+ * @param {Transaction} result Result of sending a transaction
+ * @param {string} eventName Name of the event
+ * @return {Object} The matching event log found
+ * @alias Gnosis.requireEventFromTXResult
+ */
+export function requireEventFromTXResult (result, eventName) {
+    let matchingLogs = _.filter(result.logs, (l) => l.event === eventName)
+
+    if (matchingLogs.length &lt; 1) {
+        throw new Error(`could not find any logs in result ${result} corresponding to event ${eventName}`)
+    } else if (matchingLogs.length > 1) {
+        throw new Error(`found too many logs in result ${result} corresponding to event ${eventName}`)
+    }
+
+    return matchingLogs[0]
+}
+
+export async function sendTransactionAndGetResult (opts) {
+    opts = opts || {}
+
+    let caller = opts.callerContract
+    if (_.has(caller, 'deployed')) {
+        caller = await caller.deployed()
+    }
+
+    let result = await caller[opts.methodName](...opts.methodArgs)
+    let matchingLog = requireEventFromTXResult(result, opts.eventName)
+
+    if(opts.resultContract == null)
+        return matchingLog.args[opts.eventArgName]
+    else
+        return await opts.resultContract.at(matchingLog.args[opts.eventArgName])
+}
+
+// I know bluebird does this, but it's heavy
+// Also, as of Node v8.5.0, `util.promisify` doesn't call the function with the same `this`
+export function promisify (fn) {
+    return new Proxy(fn, {
+        apply: (target, thisArg, args) => {
+            return new Promise((resolve, reject) => {
+                let newArgs = Array.from(args)
+                newArgs.push((err, result) => {
+                    if (err != null) {
+                        reject(new Error(`${err}${result == null ? '' : ` (${result})`}`))
+                    } else {
+                        resolve(result)
+                    }
+                })
+                target.apply(thisArg, newArgs)
+            })
+        }
+    })
+}
+
+export function promisifyAll (obj) {
+    _.functionsIn(obj).forEach((fnName) => {
+        let asyncFnName = fnName + 'Async'
+        if (!_.has(obj, asyncFnName)) {
+            obj[asyncFnName] = promisify(obj[fnName])
+        }
+    })
+    return obj
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 04 2017 01:19:56 GMT-0500 (CDT) using the Minami theme.
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
