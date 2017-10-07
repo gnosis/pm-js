@@ -13,11 +13,17 @@
    ```
    testrpc -d -i 437894314312
    ```
-3. Download [`gnosis.js`](https://raw.githubusercontent.com/gnosis/gnosis.js/master/dist/gnosis.js) and put it in an HTML file:
+3. Clone [Gnosis contracts](https://github.com/gnosis/gnosis-contracts), cd in there, and migrate the contracts onto the TestRPC instance with:
+   ```
+   cd path/to/gnosis-contracts
+   npm install
+   npm run migrate
+   ```
+4. Download [`gnosis.js`](https://raw.githubusercontent.com/gnosis/gnosis.js/master/dist/gnosis.js) and put it in an HTML file:
    ```
    <script src=gnosis.js></script>
    ```
-4. Follow some tutorials:
+5. Follow some tutorials:
    * [API Overview](https://gnosis.github.io/gnosis.js/tutorial-api-overview.html)
    * [Events, Oracles, and Markets](https://gnosis.github.io/gnosis.js/tutorial-events-oracles-and-markets.html)
 
