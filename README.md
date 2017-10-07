@@ -6,6 +6,22 @@
 
 [![Slack Status](https://slack.gnosis.pm/badge.svg)](https://slack.gnosis.pm)
 
+## Really quick start
+
+1. Get [TestRPC](https://github.com/ethereumjs/testrpc)
+2. Run this:
+   ```
+   testrpc -d -i 437894314312
+   ```
+3. Download [`gnosis.js`](https://raw.githubusercontent.com/gnosis/gnosis.js/master/dist/gnosis.js) and put it in an HTML file:
+   ```
+   <script src=gnosis.js></script>
+   ```
+4. Follow some tutorials:
+   * [API Overview](https://gnosis.github.io/gnosis.js/tutorial-api-overview.html)
+   * [Events, Oracles, and Markets](https://gnosis.github.io/gnosis.js/tutorial-events-oracles-and-markets.html)
+
+
 ## Installation
 
 Run `npm install` to install dependencies.
