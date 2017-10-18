@@ -235,7 +235,7 @@ describe('Gnosis', function () {
                 oracle: oracle,
                 outcomeCount: 2
             })
-            assert(await gnosis.resolveEvent.estimateGas({ using: 'stats' }) > 0)
+            assert(await gnosis.resolveEvent.estimateGas({ event, using: 'stats' }) > 0)
         })
     })
 
@@ -468,9 +468,8 @@ describe('Gnosis', function () {
             const amountToSell = 3e17
 
             const outcomeBalanceBefore = await outcomeToken.balanceOf(gnosis.defaultAccount)
-            const outcomeAllowanceBefore = await outcomeToken.allowance(gnosis.defaultAccount, market.address)
 
-            const profit = await gnosis.sellOutcomeTokens({
+            await gnosis.sellOutcomeTokens({
                 market, outcomeTokenIndex, outcomeTokenCount: amountToSell, approvalAmount: outcomeTokenCount
             })
 
@@ -480,7 +479,7 @@ describe('Gnosis', function () {
             assert.equal(outcomeBalanceBefore.sub(outcomeBalanceAfter).valueOf(), amountToSell)
             assert.equal(outcomeAllowanceAfter.valueOf(), outcomeTokenCount - amountToSell)
 
-            const profit2 = await gnosis.sellOutcomeTokens({
+            await gnosis.sellOutcomeTokens({
                 market, outcomeTokenIndex, outcomeTokenCount: amountToSell, approvalAmount: 0
             })
 
@@ -551,20 +550,28 @@ describe('Gnosis', function () {
 
             assert.deepStrictEqual(netOutcomeTokensSoldCopy, netOutcomeTokensSold)
             assert.deepStrictEqual(lmsrOptionsCopy, lmsrOptions)
+            assert(probability)
 
             const maximumWin = Gnosis.calcLMSROutcomeTokenCount(lmsrOptions)
 
             assert.deepStrictEqual(netOutcomeTokensSoldCopy, netOutcomeTokensSold)
             assert.deepStrictEqual(lmsrOptionsCopy, lmsrOptions)
+            assert(maximumWin)
         })
 
         it('estimates buying and selling gas costs', async () => {
             let outcomeTokenIndex = 0
             let outcomeTokenCount = 1e18
 
-            assert(await gnosis.buyOutcomeTokens.estimateGas({ using: 'stats' }) > 0)
+            assert(await gnosis.buyOutcomeTokens.estimateGas({
+                market, outcomeTokenIndex, outcomeTokenCount,
+                using: 'stats'
+            }) > 0)
 
-            assert(await gnosis.sellOutcomeTokens.estimateGas({ using: 'stats' }) > 0)
+            assert(await gnosis.sellOutcomeTokens.estimateGas({
+                market, outcomeTokenIndex, outcomeTokenCount,
+                using: 'stats'
+            }) > 0)
         })
 
     })
