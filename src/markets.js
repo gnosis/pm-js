@@ -64,7 +64,7 @@ export async function buyOutcomeTokens() {
     const market = this.contracts.Market.at(marketAddress)
     const collateralToken = this.contracts.Token.at(
         await this.contracts.Event.at(
-            await market.eventContract(opts)
+            await market.eventContract(txOpts)
         ).collateralToken()
     )
     const baseCost = await this.lmsrMarketMaker.calcCost(marketAddress, outcomeTokenIndex, outcomeTokenCount, txOpts)
@@ -135,7 +135,7 @@ export async function sellOutcomeTokens() {
     const market = this.contracts.Market.at(marketAddress)
     const outcomeToken = this.contracts.Token.at(
         await this.contracts.Event.at(
-            await market.eventContract()
+            await market.eventContract(txOpts)
         ).outcomeTokens(outcomeTokenIndex)
     )
     const baseProfit = await this.lmsrMarketMaker.calcProfit(marketAddress, outcomeTokenIndex, outcomeTokenCount, txOpts)
