@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import {
     normalizeWeb3Args,
     wrapWeb3Function,
@@ -56,34 +57,36 @@ export async function buyOutcomeTokens() {
             ]
         })
 
+    const txOpts = _.pick(opts, ['from', 'to', 'value', 'gas', 'gasPrice'])
+
     let { approvalAmount, approvalResetAmount } = opts || {}
 
     const market = this.contracts.Market.at(marketAddress)
     const collateralToken = this.contracts.Token.at(
         await this.contracts.Event.at(
-            await market.eventContract()
+            await market.eventContract(txOpts)
         ).collateralToken()
     )
-    const baseCost = await this.lmsrMarketMaker.calcCost(marketAddress, outcomeTokenIndex, outcomeTokenCount)
-    const cost = baseCost.add(await market.calcMarketFee(baseCost))
+    const baseCost = await this.lmsrMarketMaker.calcCost(marketAddress, outcomeTokenIndex, outcomeTokenCount, txOpts)
+    const cost = baseCost.add(await market.calcMarketFee(baseCost, txOpts))
 
     if(approvalResetAmount == null) {
         approvalResetAmount = cost
     }
 
     if(approvalAmount == null) {
-        const buyer = opts.from || this.defaultAccount
-        const marketAllowance = await collateralToken.allowance(buyer, marketAddress)
+        const buyer = txOpts.from || this.defaultAccount
+        const marketAllowance = await collateralToken.allowance(buyer, marketAddress, txOpts)
 
         if(marketAllowance.lt(cost)) {
-            requireEventFromTXResult(await collateralToken.approve(marketAddress, approvalResetAmount), 'Approval')
+            requireEventFromTXResult(await collateralToken.approve(marketAddress, approvalResetAmount, txOpts), 'Approval')
         }
     } else if(this.web3.toBigNumber(0).lt(approvalAmount)) {
-        requireEventFromTXResult(await collateralToken.approve(marketAddress, approvalAmount), 'Approval')
+        requireEventFromTXResult(await collateralToken.approve(marketAddress, approvalAmount, txOpts), 'Approval')
     }
 
     const purchaseEvent = requireEventFromTXResult(
-        await market.buy(outcomeTokenIndex, outcomeTokenCount, cost),
+        await market.buy(outcomeTokenIndex, outcomeTokenCount, cost, txOpts),
         'OutcomeTokenPurchase'
     )
 
@@ -125,34 +128,36 @@ export async function sellOutcomeTokens() {
             ]
         })
 
+    const txOpts = _.pick(opts, ['from', 'to', 'value', 'gas', 'gasPrice'])
+
     let { approvalAmount, approvalResetAmount } = opts || {}
 
     const market = this.contracts.Market.at(marketAddress)
     const outcomeToken = this.contracts.Token.at(
         await this.contracts.Event.at(
-            await market.eventContract()
+            await market.eventContract(txOpts)
         ).outcomeTokens(outcomeTokenIndex)
     )
-    const baseProfit = await this.lmsrMarketMaker.calcProfit(marketAddress, outcomeTokenIndex, outcomeTokenCount)
-    const minProfit = baseProfit.sub(await market.calcMarketFee(baseProfit))
+    const baseProfit = await this.lmsrMarketMaker.calcProfit(marketAddress, outcomeTokenIndex, outcomeTokenCount, txOpts)
+    const minProfit = baseProfit.sub(await market.calcMarketFee(baseProfit, txOpts))
 
     if(approvalResetAmount == null) {
         approvalResetAmount = outcomeTokenCount
     }
 
     if(approvalAmount == null) {
-        const seller = opts.from || this.defaultAccount
-        const marketAllowance = await outcomeToken.allowance(seller, marketAddress)
+        const seller = txOpts.from || this.defaultAccount
+        const marketAllowance = await outcomeToken.allowance(seller, marketAddress, txOpts)
 
         if(marketAllowance.lt(outcomeTokenCount)) {
-            requireEventFromTXResult(await outcomeToken.approve(marketAddress, approvalResetAmount), 'Approval')
+            requireEventFromTXResult(await outcomeToken.approve(marketAddress, approvalResetAmount, txOpts), 'Approval')
         }
     } else if(this.web3.toBigNumber(0).lt(approvalAmount)) {
-        requireEventFromTXResult(await outcomeToken.approve(marketAddress, approvalAmount), 'Approval')
+        requireEventFromTXResult(await outcomeToken.approve(marketAddress, approvalAmount, txOpts), 'Approval')
     }
 
     const saleEvent = requireEventFromTXResult(
-        await market.sell(outcomeTokenIndex, outcomeTokenCount, minProfit),
+        await market.sell(outcomeTokenIndex, outcomeTokenCount, minProfit, txOpts),
         'OutcomeTokenSale'
     )
     return saleEvent.args.outcomeTokenProfit.minus(saleEvent.args.marketFees)
