@@ -74,21 +74,28 @@ export async function buyOutcomeTokens() {
         approvalResetAmount = cost
     }
 
+    const txPromises = []
+    const txRequiredEventNames = []
+
     if(approvalAmount == null) {
         const buyer = txOpts.from || this.defaultAccount
         const marketAllowance = await collateralToken.allowance(buyer, marketAddress, txOpts)
 
         if(marketAllowance.lt(cost)) {
-            requireEventFromTXResult(await collateralToken.approve(marketAddress, approvalResetAmount, txOpts), 'Approval')
+            txPromises.push(collateralToken.approve(marketAddress, approvalResetAmount, txOpts))
+            txRequiredEventNames.push('Approval')
         }
     } else if(this.web3.toBigNumber(0).lt(approvalAmount)) {
-        requireEventFromTXResult(await collateralToken.approve(marketAddress, approvalAmount, txOpts), 'Approval')
+        txPromises.push(collateralToken.approve(marketAddress, approvalAmount, txOpts))
+        txRequiredEventNames.push('Approval')
     }
 
-    const purchaseEvent = requireEventFromTXResult(
-        await market.buy(outcomeTokenIndex, outcomeTokenCount, cost, txOpts),
-        'OutcomeTokenPurchase'
-    )
+    txPromises.push(market.buy(outcomeTokenIndex, outcomeTokenCount, cost, txOpts))
+    txRequiredEventNames.push('OutcomeTokenPurchase')
+
+    const txRequiredEvents = (await Promise.all(txPromises))
+        .map((res, i) => requireEventFromTXResult(res, txRequiredEventNames[i]))
+    const purchaseEvent = txRequiredEvents[txRequiredEvents.length - 1]
 
     return purchaseEvent.args.outcomeTokenCost.plus(purchaseEvent.args.marketFees)
 }
@@ -145,21 +152,29 @@ export async function sellOutcomeTokens() {
         approvalResetAmount = outcomeTokenCount
     }
 
+    const txPromises = []
+    const txRequiredEventNames = []
+
     if(approvalAmount == null) {
         const seller = txOpts.from || this.defaultAccount
         const marketAllowance = await outcomeToken.allowance(seller, marketAddress, txOpts)
 
         if(marketAllowance.lt(outcomeTokenCount)) {
-            requireEventFromTXResult(await outcomeToken.approve(marketAddress, approvalResetAmount, txOpts), 'Approval')
+            txPromises.push(outcomeToken.approve(marketAddress, approvalResetAmount, txOpts))
+            txRequiredEventNames.push('Approval')
         }
     } else if(this.web3.toBigNumber(0).lt(approvalAmount)) {
-        requireEventFromTXResult(await outcomeToken.approve(marketAddress, approvalAmount, txOpts), 'Approval')
+        txPromises.push(outcomeToken.approve(marketAddress, approvalAmount, txOpts))
+        txRequiredEventNames.push('Approval')
     }
 
-    const saleEvent = requireEventFromTXResult(
-        await market.sell(outcomeTokenIndex, outcomeTokenCount, minProfit, txOpts),
-        'OutcomeTokenSale'
-    )
+    txPromises.push(market.sell(outcomeTokenIndex, outcomeTokenCount, minProfit, txOpts))
+    txRequiredEventNames.push('OutcomeTokenSale')
+
+    const txRequiredEvents = (await Promise.all(txPromises))
+        .map((res, i) => requireEventFromTXResult(res, txRequiredEventNames[i]))
+    const saleEvent = txRequiredEvents[txRequiredEvents.length - 1]
+
     return saleEvent.args.outcomeTokenProfit.minus(saleEvent.args.marketFees)
 }
 
