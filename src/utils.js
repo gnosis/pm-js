@@ -247,7 +247,7 @@ export function wrapWeb3Function(spec) {
             return await caller[methodName].estimateGas(...methodArgs)
         }
 
-        throw new Error(`unsupported gas estimation source ${using}`)
+        throw new Error(`unsupported gas estimation source ${opts.using}`)
     }
 
     return wrappedFn
