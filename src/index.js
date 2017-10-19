@@ -133,7 +133,7 @@ class Gnosis {
             )
 
             if(maxGasCost > 0) {
-                c.defaults({ gas: Math.min(gasLimit, (1.5 * maxGasCost) | 0) })
+                c.defaults({ gas: Math.min(gasLimit, (gasDefaultMaxMultiplier * maxGasCost) | 0) })
             }
         })
 

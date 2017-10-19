@@ -1,6 +1,7 @@
 import {
-    normalizeWeb3Args, wrapWeb3Function,
-    requireEventFromTXResult, sendTransactionAndGetResult
+    normalizeWeb3Args,
+    wrapWeb3Function,
+    requireEventFromTXResult,
 } from './utils'
 
 /**
