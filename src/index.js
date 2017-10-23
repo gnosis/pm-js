@@ -37,6 +37,7 @@ const contractArtifacts = [
     'ScalarEvent',
     'EventFactory',
     'Token',
+    'HumanFriendlyToken',
     'EtherToken',
     'CentralizedOracle',
     'CentralizedOracleFactory',
