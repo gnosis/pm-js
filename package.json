@@ -1,6 +1,6 @@
 {
   "name": "@gnosis.pm/gnosisjs",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "A javascript library for building applications on top of Gnosis, the Ethereum prediction market platform",
   "scripts": {
     "lint": "eslint ./",
