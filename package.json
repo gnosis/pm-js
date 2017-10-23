@@ -1,6 +1,6 @@
 {
   "name": "@gnosis.pm/gnosisjs",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "description": "A javascript library for building applications on top of Gnosis, the Ethereum prediction market platform",
   "scripts": {
     "lint": "eslint ./",
@@ -32,7 +32,7 @@
     "market"
   ],
   "author": "Gnosis (https://gnosis.pm/)",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "homepage": "https://github.com/gnosis/gnosis.js#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
