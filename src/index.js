@@ -49,6 +49,8 @@ const contractArtifacts = [
     'StandardMarketFactory',
 ].map((name) => require(`@gnosis.pm/gnosis-core-contracts/build/contracts/${name}.json`))
 
+contractArtifacts.push(require('@gnosis.pm/olympia-token/build/contracts/OlympiaToken.json'))
+
 const instanceModules = [oracles, events, markets]
 
 /**
@@ -98,6 +100,7 @@ class Gnosis {
          * - [ScalarEvent](https://gnosis.github.io/gnosis-contracts/docs/ScalarEvent)
          * - [EventFactory](https://gnosis.github.io/gnosis-contracts/docs/EventFactory)
          * - [Token](https://gnosis.github.io/gnosis-contracts/docs/Token)
+         * - [HumanFriendlyToken](https://gnosis.github.io/gnosis-contracts/docs/HumanFriendlyToken)
          * - [EtherToken](https://gnosis.github.io/gnosis-contracts/docs/EtherToken)
          * - [CentralizedOracle](https://gnosis.github.io/gnosis-contracts/docs/CentralizedOracle)
          * - [CentralizedOracleFactory](https://gnosis.github.io/gnosis-contracts/docs/CentralizedOracleFactory)
@@ -107,6 +110,7 @@ class Gnosis {
          * - [Market](https://gnosis.github.io/gnosis-contracts/docs/Market)
          * - [StandardMarket](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket)
          * - [StandardMarketFactory](https://gnosis.github.io/gnosis-contracts/docs/StandardMarketFactory)
+         * - [OlympiaToken](https://github.com/gnosis/olympia-token)
          *
          * These are configured to use the web3 provider specified in {@link Gnosis.create} or subsequently modified with {@link Gnosis#setWeb3Provider}. The default gas costs for these abstractions are set to the maximum cost of their respective entries found in the `gas-stats.json` file built from the [core contracts](https://github.com/gnosis/gnosis-contracts#readme). Additionally, the default message sender (i.e. `from` address) is set to the first account reported by the web3 provider.
          *
@@ -211,6 +215,13 @@ class Gnosis {
              * @member {Contract} Gnosis#lmsrMarketMaker
              */
             this.trySettingContractInstance('lmsrMarketMaker', this.contracts.LMSRMarketMaker),
+
+            /**
+             * If [OlympiaToken](https://github.com/gnosis/olympia-token) is deployed to the current network (this should only work for Rinkeby), this will be set to an OlympiaToken contract abstraction pointing at the deployment address.
+             *
+             * @member {Contract} Gnosis#olympiaToken
+             */
+            this.trySettingContractInstance('olympiaToken', this.contracts.OlympiaToken),
         ])
     }
 
