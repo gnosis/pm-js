@@ -372,7 +372,7 @@ describe('Gnosis', function () {
             assertIsClose(localCalculatedProfit.valueOf(), chainCalculatedProfit.valueOf())
             assert(localCalculatedProfit.lte(chainCalculatedProfit.valueOf()))
 
-            let outcomeToken = gnosis.contracts.Token.at(await gnosis.contracts.Event.at(await market.eventContract()).outcomeTokens(outcomeTokenIndex))
+            let outcomeToken = await gnosis.contracts.Token.at(await gnosis.contracts.Event.at(await market.eventContract()).outcomeTokens(outcomeTokenIndex))
             requireEventFromTXResult(await outcomeToken.approve(market.address, numOutcomeTokensToSell), 'Approval')
             let saleEvent = requireEventFromTXResult(
                 await market.sell(outcomeTokenIndex, numOutcomeTokensToSell, localCalculatedProfit.valueOf()),
@@ -434,7 +434,7 @@ describe('Gnosis', function () {
             const outcomeTokenIndex = 0
             const outcomeTokenCount = 1e18
 
-            const outcomeToken = gnosis.contracts.Token.at(
+            const outcomeToken = await gnosis.contracts.Token.at(
                 await gnosis.contracts.Event.at(
                     await market.eventContract()
                 ).outcomeTokens(outcomeTokenIndex)
@@ -495,7 +495,7 @@ describe('Gnosis', function () {
             const outcomeTokenIndex = 0
             const outcomeTokenCount = 1e17
 
-            const outcomeToken = gnosis.contracts.Token.at(
+            const outcomeToken = await gnosis.contracts.Token.at(
                 await gnosis.contracts.Event.at(
                     await market.eventContract()
                 ).outcomeTokens(outcomeTokenIndex)
