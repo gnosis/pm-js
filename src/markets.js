@@ -61,8 +61,8 @@ export async function buyOutcomeTokens() {
 
     let { approvalAmount, approvalResetAmount } = opts || {}
 
-    const market = this.contracts.Market.at(marketAddress)
-    const collateralToken = this.contracts.Token.at(
+    const market = await this.contracts.Market.at(marketAddress)
+    const collateralToken = await this.contracts.Token.at(
         await this.contracts.Event.at(
             await market.eventContract(txOpts)
         ).collateralToken()
@@ -139,8 +139,8 @@ export async function sellOutcomeTokens() {
 
     let { approvalAmount, approvalResetAmount } = opts || {}
 
-    const market = this.contracts.Market.at(marketAddress)
-    const outcomeToken = this.contracts.Token.at(
+    const market = await this.contracts.Market.at(marketAddress)
+    const outcomeToken = await this.contracts.Token.at(
         await this.contracts.Event.at(
             await market.eventContract(txOpts)
         ).outcomeTokens(outcomeTokenIndex)
