@@ -63,6 +63,7 @@ class Gnosis {
      * Note: this method is asynchronous and will return a Promise
      *
      * @param {(string|Provider)} [opts.ethereum] - An instance of a Web3 provider or a URL of a Web3 HTTP provider. If not specified, Web3 provider will be either the browser-injected Web3 (Mist/MetaMask) or an HTTP provider looking at http://localhost:8545
+     * @param {string} [opts.defaultAccount] - The account to use as the default `from` address for ethereum transactions conducted through the Web3 instance. If unspecified, will be the first account found on Web3. See {@link Gnosis#setWeb3Provider} `defaultAccount` parameter for more info.
      * @param {Object} [opts.ipfs] - ipfs-mini configuration object
      * @param {string} [opts.ipfs.host='ipfs.infura.io'] - IPFS node address
      * @param {Number} [opts.ipfs.port=5001] - IPFS protocol port
@@ -112,7 +113,7 @@ class Gnosis {
          * - [StandardMarketFactory](https://gnosis.github.io/gnosis-contracts/docs/StandardMarketFactory)
          * - [OlympiaToken](https://github.com/gnosis/olympia-token)
          *
-         * These are configured to use the web3 provider specified in {@link Gnosis.create} or subsequently modified with {@link Gnosis#setWeb3Provider}. The default gas costs for these abstractions are set to the maximum cost of their respective entries found in the `gas-stats.json` file built from the [core contracts](https://github.com/gnosis/gnosis-contracts#readme). Additionally, the default message sender (i.e. `from` address) is set to the first account reported by the web3 provider.
+         * These are configured to use the web3 provider specified in {@link Gnosis.create} or subsequently modified with {@link Gnosis#setWeb3Provider}. The default gas costs for these abstractions are set to the maximum cost of their respective entries found in the `gas-stats.json` file built from the [core contracts](https://github.com/gnosis/gnosis-contracts#readme). Additionally, the default message sender (i.e. `from` address) is set via the optional `defaultAccount` param in {@link Gnosis#setWeb3Provider}.
          *
          * @member {Object} Gnosis#contracts
          */
@@ -157,7 +158,7 @@ class Gnosis {
     }
 
     async initialized (opts) {
-        await this.setWeb3Provider(opts.ethereum)
+        await this.setWeb3Provider(opts.ethereum, opts.defaultAccount)
     }
 
     /**
@@ -166,8 +167,9 @@ class Gnosis {
      * Note: this method is asynchronous and will return a Promise
      *
      * @param {(string|Provider)} [provider] - An instance of a Web3 provider or a URL of a Web3 HTTP provider. If not specified, Web3 provider will be either the browser-injected Web3 (Mist/MetaMask) or an HTTP provider looking at http://localhost:8545
+     * @param {(string)} [defaultAccount] - An address to be used as the default `from` account for conducting transactions using the associated Web3 instance. If not specified, will be inferred from Web3 using the first account obtained by `web3.eth.getAccounts`. If no such account exists, default account will not be set.
      */
-    async setWeb3Provider (provider) {
+    async setWeb3Provider (provider, defaultAccount) {
         if (provider == null) {
             // Prefer Web3 injected by the browser (Mist/MetaMask)
             // Window must be loaded first so that there isn't a race condition for resolving injected Web3 instance
@@ -188,10 +190,14 @@ class Gnosis {
 
         _.forOwn(this.contracts, (c) => { c.setProvider(this.web3.currentProvider) })
 
-        const accounts = await utils.promisify(this.web3.eth.getAccounts)()
+        if(defaultAccount == null) {
+            const accounts = await utils.promisify(this.web3.eth.getAccounts)()
 
-        if (accounts.length > 0) {
-            this.setDefaultAccount(accounts[0])
+            if (accounts.length > 0) {
+                this.setDefaultAccount(accounts[0])
+            }
+        } else {
+            this.setDefaultAccount(defaultAccount)
         }
 
         await Promise.all([
@@ -238,6 +244,11 @@ class Gnosis {
 
 
     setDefaultAccount (account) {
+        /**
+         * The default account to be used as the `from` address for transactions done with this Gnosis instance. If there is no account, this will not be set.
+         *
+         * @member {string} Gnosis#defaultAccount
+         */
         this.defaultAccount = account
         _.forOwn(this.contracts, (c) => {
             c.defaults({

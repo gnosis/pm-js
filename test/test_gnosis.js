@@ -56,9 +56,11 @@ describe('Gnosis', function () {
         let gnosis = await Gnosis.create({
             ethereum: 'http://localhost:8545',
             ipfs: '',
-            gnosisdb: 'https:/db.gnosis.pm'
+            gnosisdb: 'https:/db.gnosis.pm',
+            defaultAccount: '0x61315aec47febe497554a2a0f3a3e7ef287d052f',
         })
         assert(gnosis)
+        assert.equal(gnosis.defaultAccount, '0x61315aec47febe497554a2a0f3a3e7ef287d052f')
     })
 
     it('initializes with a provider', async () => {
