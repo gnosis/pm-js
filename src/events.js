@@ -93,8 +93,8 @@ export async function resolveEvent() {
 
     const txOpts = _.pick(opts, ['from', 'to', 'value', 'gas', 'gasPrice'])
 
-    const event = this.contracts.Event.at(eventAddress)
-    const oracle = this.contracts.CentralizedOracle.at(await event.oracle(txOpts))
+    const event = await this.contracts.Event.at(eventAddress)
+    const oracle = await this.contracts.CentralizedOracle.at(await event.oracle(txOpts))
     requireEventFromTXResult(await oracle.setOutcome(outcome, txOpts), 'OutcomeAssignment')
     requireEventFromTXResult(await event.setOutcome(txOpts), 'OutcomeAssignment')
 }
