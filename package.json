@@ -77,7 +77,7 @@
     "decimal.js": "^7.2.4",
     "ipfs-mini": "^1.1.2",
     "lodash": "^4.17.4",
-    "truffle-contract": "^3.0.0",
+    "truffle-contract": "github:cag/truffle-contract#split-tx-and-sync",
     "web3": "^0.20.2"
   }
 }
