@@ -265,9 +265,9 @@ export function requireEventFromTXResult (result, eventName) {
     let matchingLogs = _.filter(result.logs, (l) => l.event === eventName)
 
     if (matchingLogs.length < 1) {
-        throw new Error(`could not find any logs in result ${result} corresponding to event ${eventName}`)
+        throw new Error(`could not find any logs in transaction ${result.tx} corresponding to event ${eventName}`)
     } else if (matchingLogs.length > 1) {
-        throw new Error(`found too many logs in result ${result} corresponding to event ${eventName}`)
+        throw new Error(`found too many logs in transaction ${result.tx} corresponding to event ${eventName}`)
     }
 
     return matchingLogs[0]
