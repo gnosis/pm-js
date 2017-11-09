@@ -2347,7 +2347,7 @@ acquisition process defined by the token's contract.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="markets.js.html">markets.js</a>, <a href="markets.js.html#line49">line 49</a>
+        <a href="markets.js.html">markets.js</a>, <a href="markets.js.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -2382,6 +2382,8 @@ acquisition process defined by the token's contract.</p>
         <th>Attributes</th>
         
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -2418,6 +2420,10 @@ acquisition process defined by the token's contract.</p>
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last">
@@ -2459,6 +2465,10 @@ acquisition process defined by the token's contract.</p>
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">
                 <p>The index of the outcome</p>
@@ -2499,9 +2509,61 @@ acquisition process defined by the token's contract.</p>
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">
                 <p>Number of outcome tokens to buy</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opts.limitMargin</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+|
+
+<span class="param-type"><code>string</code></span>
+|
+
+<span class="param-type"><code>BigNumber</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
+
+            <td class="description last">
+                <p>Because transactions change prices, there is a chance that the cost limit for the buy, which is set to the cost according to the latest mined block, will prevent the buy transaction from succeeding. This parameter can be used to increase the cost limit by a fixed proportion. For example, specifying <code>limitMargin: 0.05</code> will make the cost limit increase by 5%.</p>
                 
             </td>
         </tr>
@@ -2540,6 +2602,10 @@ acquisition process defined by the token's contract.</p>
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last">
@@ -2582,6 +2648,10 @@ acquisition process defined by the token's contract.</p>
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last">
@@ -4583,7 +4653,7 @@ contract if raw ether is desired.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="markets.js.html">markets.js</a>, <a href="markets.js.html#line127">line 127</a>
+        <a href="markets.js.html">markets.js</a>, <a href="markets.js.html#line143">line 143</a>
     </li></ul></dd>
     
 
@@ -4618,6 +4688,8 @@ contract if raw ether is desired.</p>
         <th>Attributes</th>
         
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -4654,6 +4726,10 @@ contract if raw ether is desired.</p>
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last">
@@ -4695,6 +4771,10 @@ contract if raw ether is desired.</p>
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">
                 <p>The index of the outcome</p>
@@ -4735,9 +4815,61 @@ contract if raw ether is desired.</p>
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">
                 <p>Number of outcome tokens to sell</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opts.limitMargin</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+|
+
+<span class="param-type"><code>string</code></span>
+|
+
+<span class="param-type"><code>BigNumber</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
+
+            <td class="description last">
+                <p>Because transactions change profits, there is a chance that the profit limit for the sell, which is set to the profit according to the latest mined block, will prevent the sell transaction from succeeding. This parameter can be used to decrease the profit limit by a fixed proportion. For example, specifying <code>limitMargin: 0.05</code> will make the profit limit decrease by 5%.</p>
                 
             </td>
         </tr>
@@ -4776,6 +4908,10 @@ contract if raw ether is desired.</p>
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last">
@@ -4818,6 +4954,10 @@ contract if raw ether is desired.</p>
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last">
@@ -5076,7 +5216,7 @@ contract if raw ether is desired.</p>
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Oct 26 2017 12:23:18 GMT-0500 (CDT) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Nov 09 2017 16:20:44 GMT-0600 (CST) using the Minami theme.
 </footer>
 
 <script>hljs.initHighlightingOnLoad();</script>
