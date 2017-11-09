@@ -41,6 +41,7 @@ export const createMarket = wrapWeb3Function((self, opts) => ({
  * @param {(Contract|string)} opts.market - The market to buy tokens from
  * @param {(number|string|BigNumber)} opts.outcomeTokenIndex - The index of the outcome
  * @param {(number|string|BigNumber)} opts.outcomeTokenCount - Number of outcome tokens to buy
+ * @param {(number|string|BigNumber)} [opts.limitMargin=0] - Because transactions change prices, there is a chance that the cost limit for the buy, which is set to the cost according to the latest mined block, will prevent the buy transaction from succeeding. This parameter can be used to increase the cost limit by a fixed proportion. For example, specifying `limitMargin: 0.05` will make the cost limit increase by 5%.
  * @param {(number|string|BigNumber)} [opts.approvalAmount] - Amount of collateral to allow market to spend. If unsupplied or null, allowance will be reset to the `approvalResetAmount` only if necessary. If set to 0, the approval transaction will be skipped.
  * @param {(number|string|BigNumber)} [opts.approvalResetAmount] - Set to this amount when resetting market collateral allowance. If unsupplied or null, will be the cost of this transaction.
  * @returns {BigNumber} How much collateral tokens caller paid
@@ -59,7 +60,7 @@ export async function buyOutcomeTokens() {
 
     const txOpts = _.pick(opts, ['from', 'to', 'value', 'gas', 'gasPrice'])
 
-    let { approvalAmount, approvalResetAmount } = opts || {}
+    let { approvalAmount, approvalResetAmount, limitMargin } = opts || {}
 
     const market = await this.contracts.Market.at(marketAddress)
     const collateralToken = await this.contracts.Token.at(
@@ -67,8 +68,14 @@ export async function buyOutcomeTokens() {
             await market.eventContract(txOpts)
         ).collateralToken()
     )
+
+    if(limitMargin == null) {
+        limitMargin = 0
+    }
+
     const baseCost = await this.lmsrMarketMaker.calcCost(marketAddress, outcomeTokenIndex, outcomeTokenCount, txOpts)
-    const cost = baseCost.add(await market.calcMarketFee(baseCost, txOpts))
+    const baseCostWithFee = baseCost.add(await market.calcMarketFee(baseCost, txOpts))
+    const cost = baseCostWithFee.mul(this.web3.toBigNumber(1).add(limitMargin)).round()
 
     if(approvalResetAmount == null) {
         approvalResetAmount = cost
@@ -119,6 +126,7 @@ buyOutcomeTokens.estimateGas = async function({ using }) {
  * @param {(Contract|string)} opts.market - The market to sell tokens to
  * @param {(number|string|BigNumber)} opts.outcomeTokenIndex - The index of the outcome
  * @param {(number|string|BigNumber)} opts.outcomeTokenCount - Number of outcome tokens to sell
+ * @param {(number|string|BigNumber)} [opts.limitMargin=0] - Because transactions change profits, there is a chance that the profit limit for the sell, which is set to the profit according to the latest mined block, will prevent the sell transaction from succeeding. This parameter can be used to decrease the profit limit by a fixed proportion. For example, specifying `limitMargin: 0.05` will make the profit limit decrease by 5%.
  * @param {(number|string|BigNumber)} [opts.approvalAmount] - Amount of outcome tokens to allow market to handle. If unsupplied or null, allowance will be reset to the `approvalResetAmount` only if necessary. If set to 0, the approval transaction will be skipped.
  * @param {(number|string|BigNumber)} [opts.approvalResetAmount] - Set to this amount when resetting market outcome token allowance. If unsupplied or null, will be the sale amount specified by `outcomeTokenCount`.
  * @returns {BigNumber} How much collateral tokens caller received from sale
@@ -137,7 +145,7 @@ export async function sellOutcomeTokens() {
 
     const txOpts = _.pick(opts, ['from', 'to', 'value', 'gas', 'gasPrice'])
 
-    let { approvalAmount, approvalResetAmount } = opts || {}
+    let { approvalAmount, approvalResetAmount, limitMargin } = opts || {}
 
     const market = await this.contracts.Market.at(marketAddress)
     const outcomeToken = await this.contracts.Token.at(
@@ -145,8 +153,14 @@ export async function sellOutcomeTokens() {
             await market.eventContract(txOpts)
         ).outcomeTokens(outcomeTokenIndex)
     )
+
+    if(limitMargin == null) {
+        limitMargin = 0
+    }
+
     const baseProfit = await this.lmsrMarketMaker.calcProfit(marketAddress, outcomeTokenIndex, outcomeTokenCount, txOpts)
-    const minProfit = baseProfit.sub(await market.calcMarketFee(baseProfit, txOpts))
+    const baseProfitWithFee = baseProfit.sub(await market.calcMarketFee(baseProfit, txOpts))
+    const minProfit = baseProfitWithFee.mul(this.web3.toBigNumber(1).sub(limitMargin)).round()
 
     if(approvalResetAmount == null) {
         approvalResetAmount = outcomeTokenCount

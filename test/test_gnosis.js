@@ -266,13 +266,14 @@ describe('Gnosis', function () {
     })
 
     describe('.lmsr', () => {
-        let gnosis, oracle, event, ipfsHash, market, netOutcomeTokensSold, funding, feeFactor
+        let gnosis, oracle, event, ipfsHash, market, netOutcomeTokensSold, funding, feeFactor, participants
 
         beforeEach(async () => {
             netOutcomeTokensSold = [0, 0]
             feeFactor = 5000 // 0.5%
 
             gnosis = await Gnosis.create(options)
+            participants = gnosis.web3.eth.accounts.slice(0, 4)
             ipfsHash = await gnosis.publishEventDescription(description)
             oracle = await gnosis.createCentralizedOracle(ipfsHash)
             event = await gnosis.createCategoricalEvent({
@@ -401,7 +402,6 @@ describe('Gnosis', function () {
             actualProfit = await gnosis.sellOutcomeTokens({
                 market, outcomeTokenIndex,
                 outcomeTokenCount: numOutcomeTokensToSell,
-                feeFactor,
             })
             assert(isClose(localCalculatedProfit.valueOf(), actualProfit.valueOf()))
             assert(localCalculatedProfit.lte(actualProfit.valueOf()))
@@ -567,6 +567,37 @@ describe('Gnosis', function () {
 
             assert.equal(outcomeBalanceAfter.sub(outcomeBalanceAfter2).valueOf(), amountToSell)
             assert.equal(outcomeAllowanceAfter2.valueOf(), approvalResetAmount - 2 * amountToSell)
+        })
+
+        it('can buy and sell with a limit margin', async () => {
+            const outcomeTokenIndex = 0
+            const outcomeTokenCount = 4e16
+            const amountToStart = 1e18
+            const limitMargin = 0.05;
+
+            (await Promise.all(participants.map(
+                (p) => gnosis.etherToken.deposit({ value: amountToStart, from: p })
+            ))).forEach((res) => requireEventFromTXResult(res, 'Deposit'));
+
+            (await Promise.all(participants.map(
+                (p) => gnosis.etherToken.balanceOf(p)
+            ))).forEach((b) => assert(b.gte(amountToStart)));
+
+            (await Promise.all(participants.map(
+                (p) => gnosis.buyOutcomeTokens({
+                    market, outcomeTokenIndex, outcomeTokenCount,
+                    limitMargin,
+                    from: p,
+                })
+            )));
+
+            (await Promise.all(participants.map(
+                (p) => gnosis.sellOutcomeTokens({
+                    market, outcomeTokenIndex, outcomeTokenCount,
+                    limitMargin,
+                    from: p,
+                })
+            )))
         })
 
         it('accepts strings for outcome token index', async () => {
