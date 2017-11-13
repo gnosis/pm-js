@@ -1,10 +1,6 @@
 import _ from 'lodash'
 import DecimalJS from 'decimal.js'
 
-function constructorName(obj) {
-    return obj != null && obj.constructor != null ? obj.constructor.name : null
-}
-
 function makeWeb3Compatible(value, type, argName) {
     if(type == null) {
         throw new Error(`type must be specified for argument ${argName}`)
@@ -86,9 +82,7 @@ function makeWeb3Compatible(value, type, argName) {
             throw new Error(`number of bits for ${type} ${argName} is too large`)
         }
 
-        if(constructorName(value) === 'BigNumber' || constructorName(value) === 'Decimal') {
-            value = value.valueOf()
-        }
+        value = value.valueOf()
 
         if(_.isString(value) && /^-?(0x[\da-f]+|\d+)$/i.test(value) || _.isNumber(value)) {
             if(
