@@ -182,7 +182,11 @@ class Gnosis {
             }
         } else if (typeof provider === 'string') {
             this.web3 = new Web3(new Web3.providers.HttpProvider(provider))
-        } else if (typeof provider === 'object' && provider.constructor.name.toLowerCase().endsWith('provider')) {
+        } else if (
+            typeof provider === 'object' &&
+            typeof provider.send === 'function' &&
+            typeof provider.sendAsync === 'function'
+        ) {
             this.web3 = new Web3(provider)
         } else {
             throw new TypeError(`provider of type '${typeof provider}' not supported`)
