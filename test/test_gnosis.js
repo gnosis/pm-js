@@ -70,6 +70,18 @@ describe('Gnosis', function () {
         assert(gnosis)
     })
 
+    it('initializes with a provider that has a mangled name', async () => {
+        class Mangled extends TestRPC.provider().constructor {}
+
+        const provider = new Mangled()
+        assert(provider.constructor.name === 'Mangled')
+
+        let gnosis = await Gnosis.create({
+            ethereum: provider,
+        })
+        assert(gnosis)
+    })
+
     it('initializes with contracts containing gas stats', async () => {
         let gnosis = await Gnosis.create()
         assert(gnosis.contracts)
