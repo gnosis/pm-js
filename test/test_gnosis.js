@@ -443,6 +443,36 @@ describe('Gnosis', function () {
             assert.equal(balanceAfter.sub(balanceBefore).valueOf(), winnings.valueOf())
         })
 
+        it('can override cost and minProfit for buying and selling', async () => {
+            let outcomeTokenIndex = 0
+            let outcomeTokenCount = 1e18
+
+            let localCalculatedCost = Gnosis.calcLMSRCost({
+                netOutcomeTokensSold,
+                funding,
+                outcomeTokenIndex,
+                outcomeTokenCount,
+                feeFactor,
+            })
+
+            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: localCalculatedCost.valueOf() }), 'Deposit')
+            await requireRejection(gnosis.buyOutcomeTokens({
+                market, outcomeTokenIndex, outcomeTokenCount, cost: localCalculatedCost.div(10).valueOf()
+            }))
+
+            let localCalculatedProfit = Gnosis.calcLMSRProfit({
+                netOutcomeTokensSold,
+                funding,
+                outcomeTokenIndex,
+                outcomeTokenCount,
+                feeFactor,
+            })
+
+            await requireRejection(gnosis.sellOutcomeTokens({
+                market, outcomeTokenIndex, outcomeTokenCount, minProfit: localCalculatedProfit.mul(10).valueOf()
+            }))
+        })
+
         it('can do buying and selling with custom approve amounts', async () => {
             const approvalAmount = 2e18
             const outcomeTokenIndex = 0
