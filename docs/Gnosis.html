@@ -294,7 +294,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line247">line 247</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line251">line 251</a>
     </li></ul></dd>
     
 
@@ -368,7 +368,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line204">line 204</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line208">line 208</a>
     </li></ul></dd>
     
 
@@ -442,7 +442,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line218">line 218</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line222">line 222</a>
     </li></ul></dd>
     
 
@@ -516,7 +516,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line225">line 225</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line229">line 229</a>
     </li></ul></dd>
     
 
@@ -590,7 +590,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line211">line 211</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line215">line 215</a>
     </li></ul></dd>
     
 
@@ -2157,7 +2157,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line264">line 264</a>
+        <a href="utils.js.html">utils.js</a>, <a href="utils.js.html#line258">line 258</a>
     </li></ul></dd>
     
 
@@ -2347,7 +2347,7 @@ acquisition process defined by the token's contract.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="markets.js.html">markets.js</a>, <a href="markets.js.html#line50">line 50</a>
+        <a href="markets.js.html">markets.js</a>, <a href="markets.js.html#line51">line 51</a>
     </li></ul></dd>
     
 
@@ -2564,6 +2564,52 @@ acquisition process defined by the token's contract.</p>
 
             <td class="description last">
                 <p>Because transactions change prices, there is a chance that the cost limit for the buy, which is set to the cost according to the latest mined block, will prevent the buy transaction from succeeding. This parameter can be used to increase the cost limit by a fixed proportion. For example, specifying <code>limitMargin: 0.05</code> will make the cost limit increase by 5%.</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opts.cost</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+|
+
+<span class="param-type"><code>string</code></span>
+|
+
+<span class="param-type"><code>BigNumber</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">
+                <p>Overrides the cost limit supplied to the market contract which is derived from the latest block state of the market along with the <code>outcomeTokenCount</code> and <code>limitMargin</code> parameters.</p>
                 
             </td>
         </tr>
@@ -4653,7 +4699,7 @@ contract if raw ether is desired.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="markets.js.html">markets.js</a>, <a href="markets.js.html#line143">line 143</a>
+        <a href="markets.js.html">markets.js</a>, <a href="markets.js.html#line147">line 147</a>
     </li></ul></dd>
     
 
@@ -4870,6 +4916,52 @@ contract if raw ether is desired.</p>
 
             <td class="description last">
                 <p>Because transactions change profits, there is a chance that the profit limit for the sell, which is set to the profit according to the latest mined block, will prevent the sell transaction from succeeding. This parameter can be used to decrease the profit limit by a fixed proportion. For example, specifying <code>limitMargin: 0.05</code> will make the profit limit decrease by 5%.</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opts.minProfit</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+|
+
+<span class="param-type"><code>string</code></span>
+|
+
+<span class="param-type"><code>BigNumber</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">
+                <p>Overrides the minimum profit limit supplied to the market contract which is derived from the latest block state of the market along with the <code>outcomeTokenCount</code> and <code>limitMargin</code> parameters.</p>
                 
             </td>
         </tr>
@@ -5216,7 +5308,7 @@ contract if raw ether is desired.</p>
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Nov 09 2017 16:20:44 GMT-0600 (CST) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Nov 24 2017 11:06:23 GMT-0600 (CST) using the Minami theme.
 </footer>
 
 <script>hljs.initHighlightingOnLoad();</script>
