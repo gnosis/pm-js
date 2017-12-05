@@ -92,6 +92,36 @@ describe('Gnosis', function () {
         assert(gnosis.standardMarketFactory.gasStats)
     })
 
+    it('custom options to be passed to provider stuff', async () => {
+        let gnosis = await Gnosis.create(options)
+
+        const txParamObjects = []
+        const _sendAsync = gnosis.web3.currentProvider.sendAsync
+        gnosis.web3.currentProvider.sendAsync = function() {
+            const rpcMessage = arguments[0]
+            if(rpcMessage.method === 'eth_sendTransaction') {
+                txParamObjects.push(rpcMessage.params[0])
+            }
+            return _sendAsync.apply(this, arguments)
+        }
+
+        let ipfsHash = await gnosis.publishEventDescription(description)
+
+        let centralizedOracleFactory = await gnosis.contracts.CentralizedOracleFactory.deployed()
+        let oracle = await gnosis.createCentralizedOracle(ipfsHash)
+        let event = await gnosis.createCategoricalEvent({
+            collateralToken: gnosis.etherToken,
+            oracle: oracle,
+            outcomeCount: 2,
+        })
+        let market = await gnosis.createMarket({
+            event,
+            marketMaker: gnosis.lmsrMarketMaker,
+            fee: 5000,
+        })
+        assert.equal(txParamObjects[txParamObjects.length - 1].event, undefined)
+    })
+
     describe('#oracles', () => {
         let gnosis, ipfsHash
 
