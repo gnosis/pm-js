@@ -149,6 +149,7 @@ export function normalizeWeb3Args(args, opts) {
             // we consider argument to be an options object if it has the parameter name as a key on it
             methodOpts = _.defaults(_.clone(args[0]), defaults)
             methodArgs = getTruffleArgsFromOptions(functionInputs, methodOpts, argAliases)
+            functionInputs.forEach(({ name }) => { delete methodOpts[name] })
         } else {
             methodOpts = null
             methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
@@ -163,6 +164,7 @@ export function normalizeWeb3Args(args, opts) {
     } else if(args.length === 1 && typeof args[0] === 'object') {
         methodOpts = _.defaults(_.clone(args[0]), defaults)
         methodArgs = getTruffleArgsFromOptions(functionInputs, methodOpts, argAliases)
+        functionInputs.forEach(({ name }) => { delete methodOpts[name] })
     } else {
         throw new Error(`${methodName}(${
             functionInputs.map(({ name, type }) => `${type} ${name}`).join(', ')
@@ -202,7 +204,7 @@ function getWeb3CallMetadata(args, opts, speccedOpts) {
 
     // Pass extra options down to the web3 layer
     if(methodOpts != null) {
-        methodArgs.push(_.pick(methodOpts, ['from', 'to', 'value', 'gas', 'gasPrice']))
+        methodArgs.push(methodOpts)
     }
 
     return {
