@@ -45,6 +45,8 @@ export const createMarket = wrapWeb3Function((self, opts) => ({
  * @param {(number|string|BigNumber)} [opts.cost] - Overrides the cost limit supplied to the market contract which is derived from the latest block state of the market along with the `outcomeTokenCount` and `limitMargin` parameters.
  * @param {(number|string|BigNumber)} [opts.approvalAmount] - Amount of collateral to allow market to spend. If unsupplied or null, allowance will be reset to the `approvalResetAmount` only if necessary. If set to 0, the approval transaction will be skipped.
  * @param {(number|string|BigNumber)} [opts.approvalResetAmount] - Set to this amount when resetting market collateral allowance. If unsupplied or null, will be the cost of this transaction.
+ * @param {Object} [opts.approveTxOpts] - Extra transaction options for the approval transaction if it occurs. These options override the options specified in sibling properties of the parameter object.
+ * @param {Object} [opts.buyTxOpts] - Extra transaction options for the buy transaction. These options override the options specified in sibling properties of the parameter object.
  * @returns {BigNumber} How much collateral tokens caller paid
  * @alias Gnosis#buyOutcomeTokens
  */
@@ -59,7 +61,10 @@ export async function buyOutcomeTokens() {
             ]
         })
 
-    let { approvalAmount, approvalResetAmount, limitMargin, cost } = opts || {}
+    let { approvalAmount, approvalResetAmount, limitMargin, cost, approveTxOpts, buyTxOpts } = opts || {};
+    ['approvalAmount', 'approvalResetAmount', 'limitMargin', 'cost', 'approveTxOpts', 'buyTxOpts'].forEach(prop => { delete opts[prop] })
+    approveTxOpts = Object.assign({}, opts, approveTxOpts)
+    buyTxOpts = Object.assign({}, opts, buyTxOpts)
 
     const market = await this.contracts.Market.at(marketAddress)
     const collateralToken = await this.contracts.Token.at(
@@ -90,21 +95,21 @@ export async function buyOutcomeTokens() {
 
         if(marketAllowance.lt(cost)) {
             txInfo.push({
-                tx: await collateralToken.approve.sendTransaction(marketAddress, approvalResetAmount, opts),
+                tx: await collateralToken.approve.sendTransaction(marketAddress, approvalResetAmount, approveTxOpts),
                 contract: this.contracts.Token,
                 requiredEventName: 'Approval',
             })
         }
     } else if(this.web3.toBigNumber(0).lt(approvalAmount)) {
         txInfo.push({
-            tx: await collateralToken.approve.sendTransaction(marketAddress, approvalAmount, opts),
+            tx: await collateralToken.approve.sendTransaction(marketAddress, approvalAmount, approveTxOpts),
             contract: this.contracts.Token,
             requiredEventName: 'Approval',
         })
     }
 
     txInfo.push({
-        tx: await market.buy.sendTransaction(outcomeTokenIndex, outcomeTokenCount, cost, opts),
+        tx: await market.buy.sendTransaction(outcomeTokenIndex, outcomeTokenCount, cost, buyTxOpts),
         contract: this.contracts.Market,
         requiredEventName: 'OutcomeTokenPurchase',
     })
@@ -139,6 +144,8 @@ buyOutcomeTokens.estimateGas = async function({ using }) {
  * @param {(number|string|BigNumber)} [opts.minProfit] - Overrides the minimum profit limit supplied to the market contract which is derived from the latest block state of the market along with the `outcomeTokenCount` and `limitMargin` parameters.
  * @param {(number|string|BigNumber)} [opts.approvalAmount] - Amount of outcome tokens to allow market to handle. If unsupplied or null, allowance will be reset to the `approvalResetAmount` only if necessary. If set to 0, the approval transaction will be skipped.
  * @param {(number|string|BigNumber)} [opts.approvalResetAmount] - Set to this amount when resetting market outcome token allowance. If unsupplied or null, will be the sale amount specified by `outcomeTokenCount`.
+ * @param {Object} [opts.approveTxOpts] - Extra transaction options for the approval transaction if it occurs. These options override the options specified in sibling properties of the parameter object.
+ * @param {Object} [opts.sellTxOpts] - Extra transaction options for the sell transaction. These options override the options specified in sibling properties of the parameter object.
  * @returns {BigNumber} How much collateral tokens caller received from sale
  * @alias Gnosis#sellOutcomeTokens
  */
@@ -153,7 +160,10 @@ export async function sellOutcomeTokens() {
             ]
         })
 
-    let { approvalAmount, approvalResetAmount, limitMargin, minProfit } = opts || {}
+    let { approvalAmount, approvalResetAmount, limitMargin, minProfit, approveTxOpts, sellTxOpts } = opts || {};
+    ['approvalAmount', 'approvalResetAmount', 'limitMargin', 'minProfit', 'approveTxOpts', 'sellTxOpts'].forEach(prop => { delete opts[prop] })
+    approveTxOpts = Object.assign({}, opts, approveTxOpts)
+    sellTxOpts = Object.assign({}, opts, sellTxOpts)
 
     const market = await this.contracts.Market.at(marketAddress)
     const outcomeToken = await this.contracts.Token.at(
@@ -184,21 +194,21 @@ export async function sellOutcomeTokens() {
 
         if(marketAllowance.lt(outcomeTokenCount)) {
             txInfo.push({
-                tx: await outcomeToken.approve.sendTransaction(marketAddress, approvalResetAmount, opts),
+                tx: await outcomeToken.approve.sendTransaction(marketAddress, approvalResetAmount, approveTxOpts),
                 contract: this.contracts.Token,
                 requiredEventName: 'Approval',
             })
         }
     } else if(this.web3.toBigNumber(0).lt(approvalAmount)) {
         txInfo.push({
-            tx: await outcomeToken.approve.sendTransaction(marketAddress, approvalAmount, opts),
+            tx: await outcomeToken.approve.sendTransaction(marketAddress, approvalAmount, approveTxOpts),
             contract: this.contracts.Token,
             requiredEventName: 'Approval',
         })
     }
 
     txInfo.push({
-        tx: await market.sell.sendTransaction(outcomeTokenIndex, outcomeTokenCount, minProfit, opts),
+        tx: await market.sell.sendTransaction(outcomeTokenIndex, outcomeTokenCount, minProfit, sellTxOpts),
         contract: this.contracts.Market,
         requiredEventName: 'OutcomeTokenSale',
     })

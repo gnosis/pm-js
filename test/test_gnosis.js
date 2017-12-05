@@ -120,6 +120,65 @@ describe('Gnosis', function () {
             fee: 5000,
         })
         assert.equal(txParamObjects[txParamObjects.length - 1].event, undefined)
+
+        requireEventFromTXResult(await gnosis.etherToken.deposit({ value: 2e18 }), 'Deposit')
+
+        requireEventFromTXResult(await gnosis.etherToken.approve(market.address, 1e18), 'Approval')
+        requireEventFromTXResult(await market.fund(1e18), 'MarketFunding')
+
+        const numOutcomeTokens = await gnosis.buyOutcomeTokens({
+            market,
+            outcomeTokenIndex: 0,
+            outcomeTokenCount: 1e18,
+            custom: 'foo',
+            customApproveOverloaded: 'bar',
+            customBuyOverloaded: 'baz',
+            approveTxOpts: {
+                customApproveOverloaded: 'overbarred'
+            },
+            buyTxOpts: {
+                customBuyOverloaded: 'overbazzed'
+            },
+        })
+
+        let approveTxParamObj = txParamObjects[txParamObjects.length - 2]
+        const buyTxParamObj = txParamObjects[txParamObjects.length - 1]
+
+        assert.equal(approveTxParamObj.custom, 'foo')
+        assert.equal(approveTxParamObj.approveTxOpts, undefined)
+        assert.equal(approveTxParamObj.buyTxOpts, undefined)
+        assert.equal(approveTxParamObj.customApproveOverloaded, 'overbarred')
+        assert.equal(buyTxParamObj.custom, 'foo')
+        assert.equal(buyTxParamObj.approveTxOpts, undefined)
+        assert.equal(buyTxParamObj.buyTxOpts, undefined)
+        assert.equal(buyTxParamObj.customBuyOverloaded, 'overbazzed')
+
+        await gnosis.sellOutcomeTokens({
+            market,
+            outcomeTokenIndex: 0,
+            outcomeTokenCount: numOutcomeTokens,
+            custom2: 'foo',
+            custom2ApproveOverloaded: 'bar',
+            custom2BuyOverloaded: 'baz',
+            approveTxOpts: {
+                custom2ApproveOverloaded: 'overbarred'
+            },
+            sellTxOpts: {
+                custom2BuyOverloaded: 'overbazzed'
+            },
+        })
+
+        approveTxParamObj = txParamObjects[txParamObjects.length - 2]
+        const sellTxParamObj = txParamObjects[txParamObjects.length - 1]
+
+        assert.equal(approveTxParamObj.custom2, 'foo')
+        assert.equal(approveTxParamObj.approveTxOpts, undefined)
+        assert.equal(approveTxParamObj.sellTxOpts, undefined)
+        assert.equal(approveTxParamObj.custom2ApproveOverloaded, 'overbarred')
+        assert.equal(sellTxParamObj.custom2, 'foo')
+        assert.equal(sellTxParamObj.approveTxOpts, undefined)
+        assert.equal(sellTxParamObj.sellTxOpts, undefined)
+        assert.equal(sellTxParamObj.custom2BuyOverloaded, 'overbazzed')
     })
 
     describe('#oracles', () => {
