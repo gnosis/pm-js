@@ -263,6 +263,34 @@ describe('Gnosis', function () {
             let loadedDescription = await gnosis.loadEventDescription(newIpfsHash)
             assert.deepEqual(loadedDescription, description)
         })
+
+        it('errors on attempting to publish invalid event descriptions', async () => {
+            const scalarDesc = {
+                title: 'How many licks to the center of a Tootsie Pop?',
+                description: 'Is this a trademark violation?',
+                resolutionDate: description.resolutionDate,
+                decimals: 1,
+                unit: 'licks',
+            }
+
+            for(const badDesc of [
+                null,
+                {},
+                Object.assign({}, description, { title: '' }),
+                Object.assign({}, description, { description: '' }),
+                Object.assign({}, description, { resolutionDate: 'funky day' }),
+                { title: 'foo', description: 'bar', resolutionDate: description.resolutionDate },
+                Object.assign({}, description, { outcomes: [] }),
+                Object.assign({}, description, { outcomes: ['only choice'] }),
+                Object.assign({}, description, { outcomes: ['one', 2] }),
+                Object.assign({}, description, { outcomes: ['one', ''] }),
+                Object.assign({}, description, { outcomes: ['one', 'repeat', 'repeat'] }),
+                Object.assign({}, scalarDesc, { decimals: -1 })
+            ]) {
+                await requireRejection(gnosis.publishEventDescription(badDesc),
+                    `able to publish description for ${JSON.stringify(badDesc, null, 2)}`)
+            }
+        })
     })
 
     describe('#events', () => {

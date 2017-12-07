@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import Ajv from 'ajv'
 import { wrapWeb3Function, normalizeWeb3Args, requireEventFromTXResult } from './utils'
 
 /**
@@ -42,6 +43,55 @@ export const createScalarEvent = wrapWeb3Function((self) => ({
     resultContract: self.contracts.ScalarEvent
 }))
 
+const eventDescriptionValidator = new Ajv().compile({
+    title: 'Event Description',
+    type: 'object',
+    required: ['title', 'resolutionDate', 'description'],
+    properties: {
+        title: {
+            type: 'string',
+            minLength: 1,
+        },
+        resolutionDate: {
+            type: 'string',
+            format: 'date-time',
+        },
+        description: {
+            type: 'string',
+            minLength: 1,
+        },
+    },
+    oneOf: [
+        { $ref: '#/definitions/categoricalEventDescription' },
+        { $ref: '#/definitions/scalarEventDescription' },
+    ],
+    definitions: {
+        categoricalEventDescription: {
+            required: ['outcomes'],
+            properties: {
+                outcomes: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                        minLength: 1,
+                    },
+                    minItems: 2,
+                    uniqueItems: true,
+                },
+            },
+        },
+        scalarEventDescription: {
+            required: ['decimals', 'unit'],
+            properties: {
+                decimals: {
+                    type: 'number',
+                    minimum: 0,
+                },
+            },
+        },
+    },
+})
+
 /**
  * Publishes an event description onto IPFS.
  *
@@ -56,7 +106,12 @@ export const createScalarEvent = wrapWeb3Function((self) => ({
  * @alias Gnosis#publishEventDescription
  */
 export async function publishEventDescription (description) {
-    return await this.ipfs.addJSONAsync(description)
+    if(eventDescriptionValidator(description)) {
+        return await this.ipfs.addJSONAsync(description)
+    } else {
+        const errs = Array.from(eventDescriptionValidator.errors)
+        throw new Error(`event description ${JSON.stringify(description, null, 2)} has the following errors:\n  ${eventDescriptionValidator.errors.map(({ dataPath, message }) => `${dataPath ? dataPath + ': ' : ''}${message}`).join('\n  ')}`)
+    }
 }
 
 /**
