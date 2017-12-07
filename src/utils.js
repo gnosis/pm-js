@@ -110,8 +110,8 @@ function getOptsFromArgs(args) {
     return typeof args[args.length - 1] === 'object' ? args[args.length - 1] : {}
 }
 
-function getTruffleArgsFromOptions (argInfo, opts, argAliases) {
-    opts = opts == null ? {} : _.clone(opts)
+function getTruffleArgsWhileMutatingOptions (argInfo, opts, argAliases) {
+    opts = opts == null ? {} : opts
 
     if(argAliases != null) {
         _.forOwn(argAliases, (name, alias) => {
@@ -129,7 +129,9 @@ function getTruffleArgsFromOptions (argInfo, opts, argAliases) {
         if (!_.has(opts, name)) {
             throw new Error(`missing argument ${name}`)
         }
-        return makeWeb3Compatible(opts[name], type, name)
+        const ret = makeWeb3Compatible(opts[name], type, name)
+        delete opts[name]
+        return ret
     })
 }
 
@@ -148,8 +150,7 @@ export function normalizeWeb3Args(args, opts) {
         if(typeof args[0] === 'object' && _.has(args[0], functionInputs[0].name)) {
             // we consider argument to be an options object if it has the parameter name as a key on it
             methodOpts = _.defaults(_.clone(args[0]), defaults)
-            methodArgs = getTruffleArgsFromOptions(functionInputs, methodOpts, argAliases)
-            functionInputs.forEach(({ name }) => { delete methodOpts[name] })
+            methodArgs = getTruffleArgsWhileMutatingOptions(functionInputs, methodOpts, argAliases)
         } else {
             methodOpts = null
             methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
@@ -163,8 +164,7 @@ export function normalizeWeb3Args(args, opts) {
         methodArgs = functionInputs.map(({ name, type }, i) => makeWeb3Compatible(args[i], type, name))
     } else if(args.length === 1 && typeof args[0] === 'object') {
         methodOpts = _.defaults(_.clone(args[0]), defaults)
-        methodArgs = getTruffleArgsFromOptions(functionInputs, methodOpts, argAliases)
-        functionInputs.forEach(({ name }) => { delete methodOpts[name] })
+        methodArgs = getTruffleArgsWhileMutatingOptions(functionInputs, methodOpts, argAliases)
     } else {
         throw new Error(`${methodName}(${
             functionInputs.map(({ name, type }) => `${type} ${name}`).join(', ')
