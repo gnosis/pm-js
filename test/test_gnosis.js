@@ -532,6 +532,17 @@ describe('Gnosis', function () {
             assert.equal(balanceAfter.sub(balanceBefore).valueOf(), winnings.valueOf())
         })
 
+        it('lmsr functions return objects with integer string representations', async () => {
+            let localCalculatedCost = Gnosis.calcLMSRCost({
+                netOutcomeTokensSold: [0, 1.2e25],
+                funding: 1e27,
+                outcomeTokenIndex: 0,
+                outcomeTokenCount: 1e25,
+                feeFactor: 500,
+            })
+            assert(/^-?(0x[\da-f]+|\d+)$/i.test(localCalculatedCost))
+        })
+
         it('can override cost and minProfit for buying and selling', async () => {
             let outcomeTokenIndex = 0
             let outcomeTokenCount = 1e18

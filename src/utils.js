@@ -135,7 +135,7 @@ function getTruffleArgsWhileMutatingOptions (argInfo, opts, argAliases) {
     })
 }
 
-export let Decimal = DecimalJS.clone({ precision: 80 })
+export let Decimal = DecimalJS.clone({ precision: 80, toExpPos: 9999 })
 
 export function normalizeWeb3Args(args, opts) {
     let {
