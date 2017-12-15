@@ -88,6 +88,8 @@ export const createMarket = wrapWeb3Function((self, opts) => ({
  * @param {(number|string|BigNumber)} [opts.cost] - Overrides the cost limit supplied to the market contract which is derived from the latest block state of the market along with the `outcomeTokenCount` and `limitMargin` parameters.
  * @param {(number|string|BigNumber)} [opts.approvalAmount] - Amount of collateral to allow market to spend. If unsupplied or null, allowance will be reset to the `approvalResetAmount` only if necessary. If set to 0, the approval transaction will be skipped.
  * @param {(number|string|BigNumber)} [opts.approvalResetAmount] - Set to this amount when resetting market collateral allowance. If unsupplied or null, will be the cost of this transaction.
+ * @param {Object} [opts.approveTxOpts] - Extra transaction options for the approval transaction if it occurs. These options override the options specified in sibling properties of the parameter object.
+ * @param {Object} [opts.buyTxOpts] - Extra transaction options for the buy transaction. These options override the options specified in sibling properties of the parameter object.
  * @returns {BigNumber} How much collateral tokens caller paid
  * @alias Gnosis#buyOutcomeTokens
  */
@@ -102,14 +104,15 @@ export async function buyOutcomeTokens() {
             ]
         })
 
-    const txOpts = _.pick(opts, ['from', 'to', 'value', 'gas', 'gasPrice'])
-
-    let { approvalAmount, approvalResetAmount, limitMargin, cost } = opts || {}
+    let { approvalAmount, approvalResetAmount, limitMargin, cost, approveTxOpts, buyTxOpts } = opts || {};
+    ['approvalAmount', 'approvalResetAmount', 'limitMargin', 'cost', 'approveTxOpts', 'buyTxOpts'].forEach(prop => { delete opts[prop] })
+    approveTxOpts = Object.assign({}, opts, approveTxOpts)
+    buyTxOpts = Object.assign({}, opts, buyTxOpts)
 
     const market = await this.contracts.Market.at(marketAddress)
     const collateralToken = await this.contracts.Token.at(
         await this.contracts.Event.at(
-            await market.eventContract(txOpts)
+            await market.eventContract(opts)
         ).collateralToken()
     )
 
@@ -118,8 +121,8 @@ export async function buyOutcomeTokens() {
             limitMargin = 0
         }
 
-        const baseCost = await this.lmsrMarketMaker.calcCost(marketAddress, outcomeTokenIndex, outcomeTokenCount, txOpts)
-        const baseCostWithFee = baseCost.add(await market.calcMarketFee(baseCost, txOpts))
+        const baseCost = await this.lmsrMarketMaker.calcCost(marketAddress, outcomeTokenIndex, outcomeTokenCount, opts)
+        const baseCostWithFee = baseCost.add(await market.calcMarketFee(baseCost, opts))
         cost = baseCostWithFee.mul(this.web3.toBigNumber(1).add(limitMargin)).round()
     }
 
@@ -130,26 +133,26 @@ export async function buyOutcomeTokens() {
     const txInfo = []
 
     if(approvalAmount == null) {
-        const buyer = txOpts.from || this.defaultAccount
-        const marketAllowance = await collateralToken.allowance(buyer, marketAddress, txOpts)
+        const buyer = opts.from || this.defaultAccount
+        const marketAllowance = await collateralToken.allowance(buyer, marketAddress, opts)
 
         if(marketAllowance.lt(cost)) {
             txInfo.push({
-                tx: await collateralToken.approve.sendTransaction(marketAddress, approvalResetAmount, txOpts),
+                tx: await collateralToken.approve.sendTransaction(marketAddress, approvalResetAmount, approveTxOpts),
                 contract: this.contracts.Token,
                 requiredEventName: 'Approval',
             })
         }
     } else if(this.web3.toBigNumber(0).lt(approvalAmount)) {
         txInfo.push({
-            tx: await collateralToken.approve.sendTransaction(marketAddress, approvalAmount, txOpts),
+            tx: await collateralToken.approve.sendTransaction(marketAddress, approvalAmount, approveTxOpts),
             contract: this.contracts.Token,
             requiredEventName: 'Approval',
         })
     }
 
     txInfo.push({
-        tx: await market.buy.sendTransaction(outcomeTokenIndex, outcomeTokenCount, cost, txOpts),
+        tx: await market.buy.sendTransaction(outcomeTokenIndex, outcomeTokenCount, cost, buyTxOpts),
         contract: this.contracts.Market,
         requiredEventName: 'OutcomeTokenPurchase',
     })
@@ -184,6 +187,8 @@ buyOutcomeTokens.estimateGas = async function({ using }) {
  * @param {(number|string|BigNumber)} [opts.minProfit] - Overrides the minimum profit limit supplied to the market contract which is derived from the latest block state of the market along with the `outcomeTokenCount` and `limitMargin` parameters.
  * @param {(number|string|BigNumber)} [opts.approvalAmount] - Amount of outcome tokens to allow market to handle. If unsupplied or null, allowance will be reset to the `approvalResetAmount` only if necessary. If set to 0, the approval transaction will be skipped.
  * @param {(number|string|BigNumber)} [opts.approvalResetAmount] - Set to this amount when resetting market outcome token allowance. If unsupplied or null, will be the sale amount specified by `outcomeTokenCount`.
+ * @param {Object} [opts.approveTxOpts] - Extra transaction options for the approval transaction if it occurs. These options override the options specified in sibling properties of the parameter object.
+ * @param {Object} [opts.sellTxOpts] - Extra transaction options for the sell transaction. These options override the options specified in sibling properties of the parameter object.
  * @returns {BigNumber} How much collateral tokens caller received from sale
  * @alias Gnosis#sellOutcomeTokens
  */
@@ -198,14 +203,15 @@ export async function sellOutcomeTokens() {
             ]
         })
 
-    const txOpts = _.pick(opts, ['from', 'to', 'value', 'gas', 'gasPrice'])
-
-    let { approvalAmount, approvalResetAmount, limitMargin, minProfit } = opts || {}
+    let { approvalAmount, approvalResetAmount, limitMargin, minProfit, approveTxOpts, sellTxOpts } = opts || {};
+    ['approvalAmount', 'approvalResetAmount', 'limitMargin', 'minProfit', 'approveTxOpts', 'sellTxOpts'].forEach(prop => { delete opts[prop] })
+    approveTxOpts = Object.assign({}, opts, approveTxOpts)
+    sellTxOpts = Object.assign({}, opts, sellTxOpts)
 
     const market = await this.contracts.Market.at(marketAddress)
     const outcomeToken = await this.contracts.Token.at(
         await this.contracts.Event.at(
-            await market.eventContract(txOpts)
+            await market.eventContract(opts)
         ).outcomeTokens(outcomeTokenIndex)
     )
 
@@ -214,8 +220,8 @@ export async function sellOutcomeTokens() {
             limitMargin = 0
         }
 
-        const baseProfit = await this.lmsrMarketMaker.calcProfit(marketAddress, outcomeTokenIndex, outcomeTokenCount, txOpts)
-        const baseProfitWithFee = baseProfit.sub(await market.calcMarketFee(baseProfit, txOpts))
+        const baseProfit = await this.lmsrMarketMaker.calcProfit(marketAddress, outcomeTokenIndex, outcomeTokenCount, opts)
+        const baseProfitWithFee = baseProfit.sub(await market.calcMarketFee(baseProfit, opts))
         minProfit = baseProfitWithFee.mul(this.web3.toBigNumber(1).sub(limitMargin)).round()
     }
 
@@ -226,26 +232,26 @@ export async function sellOutcomeTokens() {
     const txInfo = []
 
     if(approvalAmount == null) {
-        const seller = txOpts.from || this.defaultAccount
-        const marketAllowance = await outcomeToken.allowance(seller, marketAddress, txOpts)
+        const seller = opts.from || this.defaultAccount
+        const marketAllowance = await outcomeToken.allowance(seller, marketAddress, opts)
 
         if(marketAllowance.lt(outcomeTokenCount)) {
             txInfo.push({
-                tx: await outcomeToken.approve.sendTransaction(marketAddress, approvalResetAmount, txOpts),
+                tx: await outcomeToken.approve.sendTransaction(marketAddress, approvalResetAmount, approveTxOpts),
                 contract: this.contracts.Token,
                 requiredEventName: 'Approval',
             })
         }
     } else if(this.web3.toBigNumber(0).lt(approvalAmount)) {
         txInfo.push({
-            tx: await outcomeToken.approve.sendTransaction(marketAddress, approvalAmount, txOpts),
+            tx: await outcomeToken.approve.sendTransaction(marketAddress, approvalAmount, approveTxOpts),
             contract: this.contracts.Token,
             requiredEventName: 'Approval',
         })
     }
 
     txInfo.push({
-        tx: await market.sell.sendTransaction(outcomeTokenIndex, outcomeTokenCount, minProfit, txOpts),
+        tx: await market.sell.sendTransaction(outcomeTokenIndex, outcomeTokenCount, minProfit, sellTxOpts),
         contract: this.contracts.Market,
         requiredEventName: 'OutcomeTokenSale',
     })
@@ -276,7 +282,7 @@ sellOutcomeTokens.estimateGas = async function({ using }) {
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Nov 24 2017 11:06:23 GMT-0600 (CST) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Dec 15 2017 10:44:00 GMT-0600 (CST) using the Minami theme.
 </footer>
 
 <script>hljs.initHighlightingOnLoad();</script>
