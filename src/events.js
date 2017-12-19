@@ -56,7 +56,9 @@ export const createScalarEvent = wrapWeb3Function((self) => ({
  * @alias Gnosis#publishEventDescription
  */
 export async function publishEventDescription (description) {
-    return await this.ipfs.addJSONAsync(description)
+    const resultHash = await this.ipfs.addJSONAsync(description)
+    this.log(`published event description on IPFS at ${resultHash}`)
+    return resultHash
 }
 
 /**

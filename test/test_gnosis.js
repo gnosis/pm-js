@@ -3,7 +3,7 @@ import _ from 'lodash'
 import Gnosis from '../src/index'
 import TestRPC from 'ethereumjs-testrpc'
 
-const options = process.env.GNOSIS_OPTIONS ? JSON.parse(process.env.GNOSIS_OPTIONS) : null
+const options = process.env.GNOSIS_OPTIONS ? JSON.parse(process.env.GNOSIS_OPTIONS) : {}
 
 const { requireEventFromTXResult, sendTransactionAndGetResult, Decimal } = Gnosis
 const ONE = Math.pow(2, 64)
@@ -90,6 +90,124 @@ describe('Gnosis', function () {
             .every((k) => gnosis.contracts.CentralizedOracle.abi
                 .find(({ type, name }) => type === 'function' && name === k)))
         assert(gnosis.standardMarketFactory.gasStats)
+    })
+
+    it('reports more informative error messages and logs messages', async () => {
+        const logs = []
+
+        const gnosis = await Gnosis.create({
+            logger: (s) => { logs.push(s) },
+        })
+
+        const netOutcomeTokensSold = [0, 0]
+        const feeFactor = 5000 // 0.5%
+        const participants = gnosis.web3.eth.accounts.slice(0, 4)
+
+        const ipfsHash = await gnosis.publishEventDescription(description)
+
+        assert.equal(logs.length, 1)
+        assert(/\b\w{46}\b/.test(logs[0]), 'no IPFS hash found in log message ' + logs[0])
+
+        const oracle = await gnosis.createCentralizedOracle(ipfsHash)
+
+        assert.equal(logs.length, 3)
+        assert(/\b0x[a-f0-9]{64}\b/i.test(logs[1]), 'no transaction hash found in log message ' + logs[1])
+        assert(logs[2].indexOf(oracle.address) !== -1, 'oracle address not found in log message ' + logs[2])
+
+        let errorString = (await requireRejection(gnosis.createCategoricalEvent({
+            collateralToken: gnosis.etherToken,
+            oracle,
+            outcomeCount: 1, // < wrong outcomeCount
+        }))).toString()
+
+        assert(
+            errorString.indexOf('EventFactory') !== -1 &&
+            errorString.indexOf('createCategoricalEvent') !== -1 &&
+            errorString.indexOf(gnosis.etherToken.address) !== -1 &&
+            errorString.indexOf(oracle.address) !== -1 &&
+            /\b1\b/.test(errorString),
+            'could not find call info in error message'
+        )
+
+        // ^ depending on whether we're running geth or testrpc, the above might have generated 0 or 1 logs
+        assert(logs.length === 3 || logs.length === 4)
+        logs.length = 3
+
+        const event = await gnosis.createCategoricalEvent({
+            collateralToken: gnosis.etherToken,
+            oracle: oracle,
+            outcomeCount: netOutcomeTokensSold.length
+        })
+
+        assert.equal(logs.length, 5)
+        assert(/\b0x[a-f0-9]{64}\b/i.test(logs[3]), 'no transaction hash found in log message ' + logs[3])
+        assert(logs[4].indexOf(event.address) !== -1, 'event address not found in log message ' + logs[4])
+
+        const market = await gnosis.createMarket({
+            event: event,
+            marketMaker: gnosis.lmsrMarketMaker,
+            fee: feeFactor, // 0%
+        })
+
+        assert.equal(logs.length, 7)
+        assert(/\b0x[a-f0-9]{64}\b/i.test(logs[5]), 'no transaction hash found in log message ' + logs[5])
+        assert(logs[6].indexOf(market.address) !== -1, 'market address not found in log message ' + logs[6])
+
+        requireEventFromTXResult(await gnosis.etherToken.deposit({ value: 8e18 }), 'Deposit')
+
+        const funding = 1e18
+        requireEventFromTXResult(await gnosis.etherToken.approve(market.address, funding), 'Approval')
+        requireEventFromTXResult(await market.fund(funding), 'MarketFunding')
+
+        errorString = (await requireRejection(gnosis.buyOutcomeTokens({
+            market, outcomeTokenIndex: 0, outcomeTokenCount: 1e18, cost: 1
+        }))).toString()
+
+        assert(
+            errorString.indexOf('Market') !== -1 &&
+            errorString.indexOf('buy') !== -1 &&
+            /\b0\b/.test(errorString),
+            `could not find call info in error message ${errorString}`
+        )
+
+        // ^ depending on whether we're running geth or testrpc, the above might have generated 1 to 3 logs
+        // the approve should go through, but a transaction hash may or may not be generated for the buy
+        // also there is a race condition on the all promise which may or may not let a log through for the approve
+        assert(logs.length >= 8 || logs.length <= 10)
+        logs.length = 7
+
+        await gnosis.buyOutcomeTokens({
+            market, outcomeTokenIndex: 0, outcomeTokenCount: 1e18
+        })
+
+        assert.equal(logs.length, 11)
+        for(let i = 7; i < 11; ++i)
+            assert(/\b0x[a-f0-9]{64}\b/i.test(logs[i]), 'no transaction hash found in log message ' + logs[i])
+
+        // same deal for selling
+
+        errorString = (await requireRejection(gnosis.sellOutcomeTokens({
+            market, outcomeTokenIndex: 0, outcomeTokenCount: 1, minProfit: gnosis.web3.toBigNumber(2).pow(256).sub(1)
+        }))).toString()
+
+        assert(
+            errorString.indexOf('Market') !== -1 &&
+            errorString.indexOf('sell') !== -1 &&
+            /\b0\b/.test(errorString),
+            `could not find call info in error message ${errorString}`
+        )
+
+        // ^ depending on whether we're running geth or testrpc, the above might have generated 1 to 3 logs
+        assert(logs.length >= 12 && logs.length <= 14)
+        logs.length = 11
+
+        await gnosis.sellOutcomeTokens({
+            market, outcomeTokenIndex: 0, outcomeTokenCount: 1e18
+        })
+
+        assert.equal(logs.length, 15)
+        for(let i = 11; i < 15; ++i)
+            assert(/\b0x[a-f0-9]{64}\b/i.test(logs[i]), 'no transaction hash found in log message ' + logs[i])
     })
 
     it('custom options to be passed to provider stuff', async () => {
