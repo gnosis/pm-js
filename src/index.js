@@ -68,7 +68,7 @@ class Gnosis {
      * @param {string} [opts.ipfs.host='ipfs.infura.io'] - IPFS node address
      * @param {Number} [opts.ipfs.port=5001] - IPFS protocol port
      * @param {string} [opts.ipfs.protocol='https'] - IPFS protocol name
-     * @param {Function} [opts.logger] - A callback for logging
+     * @param {Function} [opts.logger] - A callback for logging. Can also provide 'console' to use `console.log`.
      * @returns {Gnosis} An instance of the gnosis.js API
      */
     static async create (opts) {
@@ -92,7 +92,7 @@ class Gnosis {
     constructor (opts) {
         // Logger setup
         const { logger } = opts
-        this.log = logger == null ? () => {} : logger
+        this.log = logger == null ? () => {} : logger === 'console' ? console.log : logger
 
         // IPFS instantiation
         this.ipfs = utils.promisifyAll(new IPFS(opts.ipfs))
