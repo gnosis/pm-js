@@ -217,10 +217,10 @@ export function wrapWeb3Function(spec) {
     const wrappedFn = async function() {
         const opts = getOptsFromArgs(arguments)
         const speccedOpts = spec(this, opts)
+        const callMetadata = getWeb3CallMetadata(arguments, opts, speccedOpts)
+        callMetadata.log = this.log
 
-        return await sendTransactionAndGetResult(
-            getWeb3CallMetadata(arguments, opts, speccedOpts)
-        )
+        return await sendTransactionAndGetResult(callMetadata)
     }
 
     wrappedFn.estimateGas = async function() {
@@ -269,21 +269,61 @@ export function requireEventFromTXResult (result, eventName) {
     return matchingLogs[0]
 }
 
+export function formatCallSignature(opts) {
+    return `${
+        opts.caller.constructor.contractName
+    }(${opts.caller.address.slice(0, 6)}..${opts.caller.address.slice(-4)}).${opts.methodName}(${
+        opts.methodArgs.map(v => JSON.stringify(v)).join(', ')
+    })`
+}
+
+export class TransactionError extends Error {
+    constructor(opts) {
+        super(`${formatCallSignature(opts)}${opts.txHash == null ? '' : `
+
+  with transaction hash ${opts.txHash}`}
+
+  failed with ${opts.subError}`)
+
+        Object.assign(this, opts)
+
+        this.name = 'TransactionError'
+    }
+}
+
 export async function sendTransactionAndGetResult (opts) {
     opts = opts || {}
+    let caller, txHash, txResult, matchingLog
 
-    let caller = opts.callerContract
-    if (_.has(caller, 'deployed')) {
-        caller = await caller.deployed()
+    try {
+        caller = opts.callerContract
+        if (_.has(caller, 'deployed')) {
+            caller = await caller.deployed()
+        }
+
+        txHash = await caller[opts.methodName].sendTransaction(...opts.methodArgs)
+
+        if(opts.log != null) {
+            opts.log(`got tx hash ${txHash} for call ${
+                formatCallSignature({ caller, methodName: opts.methodName, methodArgs: opts.methodArgs })
+            }`)
+        }
+
+        txResult = await caller.constructor.syncTransaction(txHash)
+        matchingLog = requireEventFromTXResult(txResult, opts.eventName)
+
+        if(opts.resultContract == null) {
+            return matchingLog.args[opts.eventArgName]
+        } else {
+            opts.log(`tx hash ${txHash.slice(0, 6)}..${txHash.slice(-4)} returned ${opts.resultContract.contractName}(${matchingLog.args[opts.eventArgName]})`)
+            return await opts.resultContract.at(matchingLog.args[opts.eventArgName])
+        }
+    } catch(err) {
+        throw new TransactionError(Object.assign({
+            caller, txHash, txResult, matchingLog,
+            subError: err,
+        }, opts))
     }
-
-    let result = await caller[opts.methodName](...opts.methodArgs)
-    let matchingLog = requireEventFromTXResult(result, opts.eventName)
-
-    if(opts.resultContract == null)
-        return matchingLog.args[opts.eventArgName]
-    else
-        return await opts.resultContract.at(matchingLog.args[opts.eventArgName])
 }
 
 // I know bluebird does this, but it's heavy

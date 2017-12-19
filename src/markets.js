@@ -3,6 +3,8 @@ import {
     normalizeWeb3Args,
     wrapWeb3Function,
     requireEventFromTXResult,
+    formatCallSignature,
+    TransactionError,
 } from './utils'
 
 /**
@@ -29,6 +31,34 @@ export const createMarket = wrapWeb3Function((self, opts) => ({
         event: 'eventContract',
     }
 }))
+
+const pushDescribedTransaction = async (txInfo, log, opts) => {
+    const { caller, methodName, methodArgs } = opts
+    let txHash
+    try {
+        txHash = await caller[methodName].sendTransaction(...methodArgs)
+        log(`got tx hash ${txHash} for call ${
+            formatCallSignature(opts)
+        }`)
+        txInfo.push(Object.assign({ txHash }, opts))
+    } catch(subError) {
+        throw new TransactionError(Object.assign({ txHash, subError }, opts))
+    }
+}
+
+const syncDescribedTransactions = async (txInfo, log) =>
+    (await Promise.all(
+        txInfo.map(opts => opts.caller.constructor
+            .syncTransaction(opts.txHash)
+            .then(res => {
+                log(`tx ${opts.txHash} synced`)
+                return res
+            })
+            .catch(err =>
+                new TransactionError(Object.assign({ subError: err }, opts))
+            )
+        )
+    )).map((res, i) => requireEventFromTXResult(res, txInfo[i].requiredEventName))
 
 /**
  * Buys outcome tokens. If you have ether and plan on transacting with a market on an event which
@@ -94,28 +124,30 @@ export async function buyOutcomeTokens() {
         const marketAllowance = await collateralToken.allowance(buyer, marketAddress, opts)
 
         if(marketAllowance.lt(cost)) {
-            txInfo.push({
-                tx: await collateralToken.approve.sendTransaction(marketAddress, approvalResetAmount, approveTxOpts),
-                contract: this.contracts.Token,
+            await pushDescribedTransaction(txInfo, this.log, {
+                caller: collateralToken,
+                methodName: 'approve',
+                methodArgs: [marketAddress, approvalResetAmount, approveTxOpts],
                 requiredEventName: 'Approval',
             })
         }
     } else if(this.web3.toBigNumber(0).lt(approvalAmount)) {
-        txInfo.push({
-            tx: await collateralToken.approve.sendTransaction(marketAddress, approvalAmount, approveTxOpts),
-            contract: this.contracts.Token,
+        await pushDescribedTransaction(txInfo, this.log, {
+            caller: collateralToken,
+            methodName: 'approve',
+            methodArgs: [marketAddress, approvalAmount, approveTxOpts],
             requiredEventName: 'Approval',
         })
     }
 
-    txInfo.push({
-        tx: await market.buy.sendTransaction(outcomeTokenIndex, outcomeTokenCount, cost, buyTxOpts),
-        contract: this.contracts.Market,
+    await pushDescribedTransaction(txInfo, this.log, {
+        caller: market,
+        methodName: 'buy',
+        methodArgs: [outcomeTokenIndex, outcomeTokenCount, cost, buyTxOpts],
         requiredEventName: 'OutcomeTokenPurchase',
     })
 
-    const txRequiredEvents = (await Promise.all(txInfo.map(({ tx, contract }, i) => contract.syncTransaction(tx))))
-        .map((res, i) => requireEventFromTXResult(res, txInfo[i].requiredEventName))
+    const txRequiredEvents = await syncDescribedTransactions(txInfo, this.log)
     const purchaseEvent = txRequiredEvents[txRequiredEvents.length - 1]
 
     return purchaseEvent.args.outcomeTokenCost.plus(purchaseEvent.args.marketFees)
@@ -193,28 +225,30 @@ export async function sellOutcomeTokens() {
         const marketAllowance = await outcomeToken.allowance(seller, marketAddress, opts)
 
         if(marketAllowance.lt(outcomeTokenCount)) {
-            txInfo.push({
-                tx: await outcomeToken.approve.sendTransaction(marketAddress, approvalResetAmount, approveTxOpts),
-                contract: this.contracts.Token,
+            await pushDescribedTransaction(txInfo, this.log, {
+                caller: outcomeToken,
+                methodName: 'approve',
+                methodArgs: [marketAddress, approvalResetAmount, approveTxOpts],
                 requiredEventName: 'Approval',
             })
         }
     } else if(this.web3.toBigNumber(0).lt(approvalAmount)) {
-        txInfo.push({
-            tx: await outcomeToken.approve.sendTransaction(marketAddress, approvalAmount, approveTxOpts),
-            contract: this.contracts.Token,
+        await pushDescribedTransaction(txInfo, this.log, {
+            caller: outcomeToken,
+            methodName: 'approve',
+            methodArgs: [marketAddress, approvalAmount, approveTxOpts],
             requiredEventName: 'Approval',
         })
     }
 
-    txInfo.push({
-        tx: await market.sell.sendTransaction(outcomeTokenIndex, outcomeTokenCount, minProfit, sellTxOpts),
-        contract: this.contracts.Market,
+    await pushDescribedTransaction(txInfo, this.log, {
+        caller: market,
+        methodName: 'sell',
+        methodArgs: [outcomeTokenIndex, outcomeTokenCount, minProfit, sellTxOpts],
         requiredEventName: 'OutcomeTokenSale',
     })
 
-    const txRequiredEvents = (await Promise.all(txInfo.map(({ tx, contract }, i) => contract.syncTransaction(tx))))
-        .map((res, i) => requireEventFromTXResult(res, txInfo[i].requiredEventName))
+    const txRequiredEvents = await syncDescribedTransactions(txInfo, this.log)
     const saleEvent = txRequiredEvents[txRequiredEvents.length - 1]
 
     return saleEvent.args.outcomeTokenProfit.minus(saleEvent.args.marketFees)
