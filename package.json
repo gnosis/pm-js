@@ -70,14 +70,14 @@
     "webpack-dev-server": "^2.9.4"
   },
   "dependencies": {
-    "@gnosis.pm/gnosis-core-contracts": "^0.3.6",
-    "@gnosis.pm/olympia-token": "^1.0.0",
+    "@gnosis.pm/gnosis-core-contracts": "^1.0.0",
+    "@gnosis.pm/olympia-token": "^1.0.1",
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
     "decimal.js": "^7.3.0",
     "ipfs-mini": "^1.1.2",
     "lodash": "^4.17.4",
-    "truffle-contract": "github:cag/truffle-contract#split-tx-and-sync",
+    "truffle-contract": "github:cag/truffle-contract#0095707aa042b3c4fdb913a8a7cb0505a3a68d7c",
     "web3": "^0.20.2"
   }
 }
