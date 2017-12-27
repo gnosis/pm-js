@@ -211,7 +211,9 @@ class Gnosis {
 
         await Promise.all([
             /**
-             * If [EtherToken](https://gnosis.github.io/gnosis-contracts/docs/EtherToken/) is deployed to the current network, this will be set to an EtherToken contract abstraction pointing at the deployment address.
+             * If on mainnet, this will be an EtherToken contract abstraction pointing to the [MakerDAO WETH contract](https://etherscan.io/address/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2#code).
+             *
+             * Otherwise, if [EtherToken](https://gnosis.github.io/gnosis-contracts/docs/EtherToken/) is deployed to the current network, this will be set to an EtherToken contract abstraction pointing at the deployment address.
              *
              * @member {Contract} Gnosis#etherToken
              */
