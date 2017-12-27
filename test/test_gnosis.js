@@ -92,6 +92,14 @@ describe('Gnosis', function () {
         assert(gnosis.standardMarketFactory.gasStats)
     })
 
+    it('initializes on the mainnet with an etherToken instance that points to the maker WETH', async () => {
+        let gnosis = await Gnosis.create({
+            ethereum: TestRPC.provider({ network_id: 1 }),
+        })
+        assert(gnosis.etherToken)
+        assert.equal(gnosis.etherToken.address, '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2')
+    })
+
     it('reports more informative error messages and logs messages', async () => {
         const logs = []
 
