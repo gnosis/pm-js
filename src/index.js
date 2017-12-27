@@ -211,11 +211,19 @@ class Gnosis {
 
         await Promise.all([
             /**
-             * If [EtherToken](https://gnosis.github.io/gnosis-contracts/docs/EtherToken/) is deployed to the current network, this will be set to an EtherToken contract abstraction pointing at the deployment address.
+             * If on mainnet, this will be an EtherToken contract abstraction pointing to the [MakerDAO WETH contract](https://etherscan.io/address/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2#code).
+             *
+             * Otherwise, if [EtherToken](https://gnosis.github.io/gnosis-contracts/docs/EtherToken/) is deployed to the current network, this will be set to an EtherToken contract abstraction pointing at the deployment address.
              *
              * @member {Contract} Gnosis#etherToken
              */
-            this.trySettingContractInstance('etherToken', this.contracts.EtherToken),
+            (async () => {
+                if(await utils.promisify(this.web3.version.getNetwork)() === '1') {
+                    this.etherToken = this.contracts.EtherToken.at('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2')
+                } else {
+                    await this.trySettingContractInstance('etherToken', this.contracts.EtherToken)
+                }
+            })(),
 
             /**
              * If [StandardMarketFactory](https://gnosis.github.io/gnosis-contracts/docs/StandardMarketFactory/) is deployed to the current network, this will be set to an StandardMarketFactory contract abstraction pointing at the deployment address.
