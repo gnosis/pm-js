@@ -218,7 +218,7 @@ class Gnosis {
              * @member {Contract} Gnosis#etherToken
              */
             (async () => {
-                if(await utils.promisify(this.web3.version.getNetwork)() === '1') {
+                if(await utils.promisify(this.web3.version.getNetwork)() == 1) {
                     this.etherToken = this.contracts.EtherToken.at('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2')
                 } else {
                     await this.trySettingContractInstance('etherToken', this.contracts.EtherToken)
