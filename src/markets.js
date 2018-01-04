@@ -20,17 +20,22 @@ import {
  * @returns {Contract} The created market contract instance. If marketFactory is [StandardMarketFactory](https://gnosis.github.io/gnosis-contracts/docs/StandardMarketFactory/), this should be a [StandardMarket](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/)
  * @alias Gnosis#createMarket
  */
-export const createMarket = wrapWeb3Function((self, opts) => ({
-    callerContract: opts.marketFactory || self.standardMarketFactory,
-    callerABI: self.contracts.StandardMarketFactory.abi,
-    methodName: 'createMarket',
-    eventName: 'StandardMarketCreation',
-    eventArgName: 'market',
-    resultContract: self.contracts.Market,
-    argAliases: {
-        event: 'eventContract',
+export const createMarket = wrapWeb3Function((self, opts) => {
+    const callerContract = opts.marketFactory || self.standardMarketFactory
+    delete opts.marketFactory
+
+    return {
+        callerContract,
+        callerABI: self.contracts.StandardMarketFactory.abi,
+        methodName: 'createMarket',
+        eventName: 'StandardMarketCreation',
+        eventArgName: 'market',
+        resultContract: self.contracts.Market,
+        argAliases: {
+            event: 'eventContract',
+        }
     }
-}))
+})
 
 const pushDescribedTransaction = async (txInfo, log, opts) => {
     const { caller, methodName, methodArgs } = opts
