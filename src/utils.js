@@ -273,7 +273,13 @@ export function formatCallSignature(opts) {
     return `${
         opts.caller.constructor.contractName
     }(${opts.caller.address.slice(0, 6)}..${opts.caller.address.slice(-4)}).${opts.methodName}(${
-        opts.methodArgs.map(v => JSON.stringify(v)).join(', ')
+        opts.methodArgs.map(v => {
+            try {
+                return JSON.stringify(v)
+            } catch(e) {
+                return v
+            }
+        }).join(', ')
     })`
 }
 

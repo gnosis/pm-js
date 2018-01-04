@@ -218,7 +218,7 @@ describe('Gnosis', function () {
             assert(/\b0x[a-f0-9]{64}\b/i.test(logs[i]), 'no transaction hash found in log message ' + logs[i])
     })
 
-    it('custom options to be passed to provider stuff', async () => {
+    it('supports custom options to be passed to provider', async () => {
         let gnosis = await Gnosis.create(options)
 
         const txParamObjects = []
@@ -243,9 +243,11 @@ describe('Gnosis', function () {
         let market = await gnosis.createMarket({
             event,
             marketMaker: gnosis.lmsrMarketMaker,
+            marketFactory: gnosis.standardMarketFactory,
             fee: 5000,
         })
         assert.equal(txParamObjects[txParamObjects.length - 1].event, undefined)
+        assert.equal(txParamObjects[txParamObjects.length - 1].marketFactory, undefined)
 
         requireEventFromTXResult(await gnosis.etherToken.deposit({ value: 2e18 }), 'Deposit')
 
