@@ -100,6 +100,14 @@ describe('Gnosis', function () {
         assert.equal(gnosis.etherToken.address, '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2')
     })
 
+    it('initializes on Rinkeby with Olympia related contracts', async () => {
+        let gnosis = await Gnosis.create({
+            ethereum: TestRPC.provider({ network_id: 4 }),
+        })
+        assert.equal(gnosis.olympiaToken.address, '0xa0c107db0e9194c18359d3265289239453b56cf2')
+        assert.equal(gnosis.olympiaAddressRegistry.address, '0x79da1c9ef6bf6bc64e66f8abffddc1a093e50f13')
+    })
+
     it('reports more informative error messages and logs messages', async () => {
         const logs = []
 

@@ -50,6 +50,7 @@ const contractArtifacts = [
 ].map((name) => require(`@gnosis.pm/gnosis-core-contracts/build/contracts/${name}.json`))
 
 contractArtifacts.push(require('@gnosis.pm/olympia-token/build/contracts/OlympiaToken.json'))
+contractArtifacts.push(require('@gnosis.pm/olympia-token/build/contracts/AddressRegistry.json'))
 
 const instanceModules = [oracles, events, markets]
 
@@ -245,6 +246,13 @@ class Gnosis {
              * @member {Contract} Gnosis#olympiaToken
              */
             this.trySettingContractInstance('olympiaToken', this.contracts.OlympiaToken),
+
+            /**
+             * If [AddressRegistry](https://github.com/gnosis/olympia-token) is deployed to the current network (this should only work for Rinkeby), this will be set to an AddressRegistry contract abstraction pointing at the deployment address. This is intended for use with Olympia.
+             *
+             * @member {Contract} Gnosis#olympiaAddressRegistry
+             */
+            this.trySettingContractInstance('olympiaAddressRegistry', this.contracts.AddressRegistry),
         ])
     }
 
