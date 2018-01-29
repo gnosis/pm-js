@@ -56,9 +56,9 @@ Error: Invalid JSON RPC response: ""
 
 Gnosis.js refers to Truffle contract build artifacts found in `node_modules/@gnosis.pm/gnosis-core-contracts/build/contracts/`, which contain a registry of where key contracts are deployed given a network ID. By default Gnosis contract suite is already deployed on the Ropsten, Kovan, and Rinkeby testnets.
 
-#### TestRPC and private chain providers
+#### Ganache-cli and private chain providers
 
-[TestRPC](https://github.com/ethereumjs/testrpc) is a JSON RPC provider which is designed to ease developing Ethereum dapps. It can be used in tandem with Gnosis.js as well, but its use requires some setup. Since TestRPC randomly generates a network ID and begins the Ethereum VM in a blank state, the contract suite would need to be deployed, and the deployed contract addresses recorded in the build artifacts before use with TestRPC. This can be done by running the migration script in the core contracts package directory.
+[Ganache-cli](https://github.com/trufflesuite/ganache-cli) is a JSON RPC provider which is designed to ease developing Ethereum dapps. It can be used in tandem with Gnosis.js as well, but its use requires some setup. Since Ganache-cli randomly generates a network ID and begins the Ethereum VM in a blank state, the contract suite would need to be deployed, and the deployed contract addresses recorded in the build artifacts before use with Ganache-cli. This can be done by running the migration script in the core contracts package directory.
 
 ```sh
 (cd node_modules/\@gnosis.pm/gnosis-core-contracts/ && truffle migrate)
