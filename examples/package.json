@@ -1,0 +1,16 @@
+{
+  "name": "categorical_market",
+  "version": "1.0.0",
+  "description": "Example of a categorical market creation",
+  "main": "categorical_market_creation.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gnosis Dev Team",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@gnosis.pm/gnosisjs": "1.1.0",
+    "truffle-contract": "^3.0.0",
+    "truffle-hdwallet-provider": "*"
+  }
+}

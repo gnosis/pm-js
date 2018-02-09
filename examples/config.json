@@ -1,0 +1,16 @@
+{
+  "accountAddress": "0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1",
+  "etherTokenAddress": "0x59d3631c86bbe35ef041872d502f218a39fba150",
+  "mnemonic": "myth like bonus scare over problem client lizard pioneer submit female collect",
+  "gasPrice": "4000000001",
+  "blockchain": {
+    "host": "localhost",
+    "protocol": "http",
+    "port": 8545
+  },
+  "ipfs": {
+    "host": "ipfs.infura.io",
+    "port": 5001,
+    "protocol": "https"
+  }
+}
