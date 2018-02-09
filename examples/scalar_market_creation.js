@@ -1,16 +1,17 @@
 /******************************************************************
-*   This scripts is to demonstrate how to create a scalar prediction market
+*   This scripts aims to demonstrate how to create a scalar prediction market
 *   using GnosisJS.
 *   Prerequisites:
-*   - Have testnet (TestRPC, Ganache) up and running on localhost port 8545 (testrpc -d -i 437894314312)
-*   - Have gnosis contract migrated on your local testnet
+*   - Have a testnet (TestRPC, Ganache) up and running on localhost port 8545 (testrpc -d -i 437894314312)
+*   - Have the Gnosis contracts migrated on your local testnet
 *     cd gnosis.js/node_modules/@gnosis.pm/gnosis-core-contracts/
 *     npm install
 *     npm run migrate
+*   - Take a look at the config.json file
 *
 /*****************************************************************/
 
-let Gnosis
+let Gnosis;
 try {
     Gnosis = require('@gnosis.pm/gnosisjs');
 } catch (err) {
@@ -25,7 +26,6 @@ const Web3 = require('web3');
 const HDWalletProvider = require("truffle-hdwallet-provider");
 const fs = require('fs');
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-// CHANGE THE MNEMONIC WITH THE ONE FROM YOUR TESTNET
 const provider_url = config.blockchain.protocol + "://" + config.blockchain.host + ":" + config.blockchain.port;
 const hd_provider = new HDWalletProvider(config.mnemonic, provider_url);
 const etherTokenAddress = config.etherTokenAddress;

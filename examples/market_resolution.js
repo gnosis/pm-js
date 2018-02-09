@@ -1,18 +1,19 @@
 /******************************************************************
-*   This scripts is to demonstrate how to resolve an existing
+*   This scripts aims to demonstrate how to resolve an existing
 *   prediction market using GnosisJS.
 *   Prerequisites:
-*   - Have testnet (TestRPC, Ganache) up and running on localhost port 8545 (testrpc -d -i 437894314312)
-*   - Have gnosis contract migrated on your local testnet
+*   - Have a testnet (TestRPC, Ganache) up and running on localhost port 8545 (testrpc -d -i 437894314312)
+*   - Have the Gnosis contract migrated on your local testnet
 *     cd gnosis.js/node_modules/@gnosis.pm/gnosis-core-contracts/
 *     npm install
 *     npm run migrate
 *   - Have created a prediction market using either categorical_market_creation.js
 *     or scalar_market_creation.js
+*   - Take a look at the config.json file
 *
 /*****************************************************************/
 
-let Gnosis
+let Gnosis;
 try {
     Gnosis = require('@gnosis.pm/gnosisjs');
 } catch (err) {

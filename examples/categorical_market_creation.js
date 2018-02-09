@@ -1,15 +1,17 @@
 /******************************************************************
-*   This scripts is to demonstrate how to create a categorical prediction market
+*   This scripts aims to demonstrate how to create a categorical prediction market
 *   using GnosisJS.
 *   Prerequisites:
-*   - Have testnet (TestRPC, Ganache) up and running on localhost port 8545 (testrpc -d -i 437894314312)
-*   - Have gnosis contract migrated on your local testnet
+*   - Have a testnet (TestRPC, Ganache) up and running on localhost port 8545 (testrpc -d -i 437894314312)
+*   - Have the Gnosis contracts migrated on your local testnet
 *     cd gnosis.js/node_modules/@gnosis.pm/gnosis-core-contracts/
 *     npm install
 *     npm run migrate
+*   - Take a look at the config.json file
 *
 /*****************************************************************/
-let Gnosis
+
+let Gnosis;
 try {
     Gnosis = require('@gnosis.pm/gnosisjs');
 } catch (err) {
@@ -34,6 +36,7 @@ const options = {
   ipfs: config.ipfs
 };
 
+// Market dictionary definition
 const marketJSON = {
   'title': 'My first categorical prediction market',
   'description': 'This market was created by using GnosisJS library',
@@ -60,7 +63,7 @@ return Gnosis.create(options)
       description: marketJSON.description,
       resolutionDate: marketJSON.resolutionDate,
     };
-
+    // Publish the event description to IPFS
     return gnosisInstance.publishEventDescription(eventDescription).then(result => {
         ipfsHash = result;
         console.info("[GnosisJS] > Event description hash: " + ipfsHash);
@@ -70,7 +73,7 @@ return Gnosis.create(options)
       oracle = result;
       console.info("[GnosisJS] > Centralized Oracle was created");
       console.info("[GnosisJS] > Creating categorical Event...");
-
+      // Create a centralized oracle
       return gnosisInstance.createCategoricalEvent({
           collateralToken: etherTokenAddress,
           oracle,
@@ -82,6 +85,7 @@ return Gnosis.create(options)
       event = result;
       console.info("[GnosisJS] > Categorical event was created");
       console.info("[GnosisJS] > Creating market...");
+      // Create the market
       return gnosisInstance.createMarket({
           event: event,
           marketMaker: gnosisInstance.lmsrMarketMaker,
@@ -95,9 +99,11 @@ return Gnosis.create(options)
       console.info("[GnosisJS] > Funding market...");
       const etherToken = gnosisInstance.contracts.EtherToken.at(etherTokenAddress);
       return new Promise((resolve, reject) => {
+        // Approve tokens transferral
         etherToken.approve(market.address, marketJSON.funding).then(result => {
           console.info('[GnosisJS] > Market tokens were approved');
           console.info('[GnosisJS] > Sending funds: ' + marketJSON.funding + '...');
+          // Provide funds to the market
           market.fund(marketJSON.funding).then(result => {
             console.info("[GnosisJS] > Market creation done successfully");
             resolve();

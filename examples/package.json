@@ -1,8 +1,8 @@
 {
-  "name": "categorical_market",
+  "name": "GnosisJS_Examples",
   "version": "1.0.0",
-  "description": "Example of a categorical market creation",
-  "main": "categorical_market_creation.js",
+  "description": "Example of GnosisJS usage",
+  "main": "ether_token_issuance.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
