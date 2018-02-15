@@ -1,7 +1,7 @@
 import assert from 'assert'
 import _ from 'lodash'
 import Gnosis from '../src/index'
-import TestRPC from 'ethereumjs-testrpc'
+import ganache from 'ganache-cli'
 
 const options = process.env.GNOSIS_OPTIONS ? JSON.parse(process.env.GNOSIS_OPTIONS) : {}
 
@@ -65,13 +65,13 @@ describe('Gnosis', function () {
 
     it('initializes with a provider', async () => {
         let gnosis = await Gnosis.create({
-            ethereum: TestRPC.provider(),
+            ethereum: ganache.provider(),
         })
         assert(gnosis)
     })
 
     it('initializes with a provider that has a mangled name', async () => {
-        class Mangled extends TestRPC.provider().constructor {}
+        class Mangled extends ganache.provider().constructor {}
 
         const provider = new Mangled()
         assert(provider.constructor.name === 'Mangled')
@@ -94,7 +94,7 @@ describe('Gnosis', function () {
 
     it('initializes on the mainnet with an etherToken instance that points to the maker WETH', async () => {
         let gnosis = await Gnosis.create({
-            ethereum: TestRPC.provider({ network_id: 1 }),
+            ethereum: ganache.provider({ network_id: 1 }),
         })
         assert(gnosis.etherToken)
         assert.equal(gnosis.etherToken.address, '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2')
@@ -102,7 +102,7 @@ describe('Gnosis', function () {
 
     it('initializes on Rinkeby with Olympia related contracts', async () => {
         let gnosis = await Gnosis.create({
-            ethereum: TestRPC.provider({ network_id: 4 }),
+            ethereum: ganache.provider({ network_id: 4 }),
         })
         assert.equal(gnosis.olympiaToken.address, '0xa0c107db0e9194c18359d3265289239453b56cf2')
         assert.equal(gnosis.olympiaAddressRegistry.address, '0x79da1c9ef6bf6bc64e66f8abffddc1a093e50f13')
@@ -145,7 +145,7 @@ describe('Gnosis', function () {
             'could not find call info in error message'
         )
 
-        // ^ depending on whether we're running geth or testrpc, the above might have generated 0 or 1 logs
+        // ^ depending on whether we're running geth or ganache, the above might have generated 0 or 1 logs
         assert(logs.length === 3 || logs.length === 4)
         logs.length = 3
 
@@ -186,7 +186,7 @@ describe('Gnosis', function () {
             `could not find call info in error message ${errorString}`
         )
 
-        // ^ depending on whether we're running geth or testrpc, the above might have generated 1 to 3 logs
+        // ^ depending on whether we're running geth or ganache, the above might have generated 1 to 3 logs
         // the approve should go through, but a transaction hash may or may not be generated for the buy
         // also there is a race condition on the all promise which may or may not let a log through for the approve
         assert(logs.length >= 8 || logs.length <= 10)
@@ -213,7 +213,7 @@ describe('Gnosis', function () {
             `could not find call info in error message ${errorString}`
         )
 
-        // ^ depending on whether we're running geth or testrpc, the above might have generated 1 to 3 logs
+        // ^ depending on whether we're running geth or ganache, the above might have generated 1 to 3 logs
         assert(logs.length >= 12 && logs.length <= 14)
         logs.length = 11
 
