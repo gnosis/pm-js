@@ -86,3 +86,11 @@ await gnosis.createCentralizedOracle.estimateGas(ipfsHash, { using: 'rpc' }))
 // using stats derived from gnosis-contracts
 await gnosis.createCentralizedOracle.estimateGas({ using: 'stats' }))
 ```
+
+The gas stats derived from `gnosis-contracts` and used by the `estimateGas` functions when using stats are also added to the contract abstractions in the following property:
+
+```javascript
+// examples of objects with gas stats for each function derived from gnosis-contracts test suite
+gnosis.contracts.CentralizedOracle.gasStats
+gnosis.contracts.ScalarEvent.gasStats
+```
