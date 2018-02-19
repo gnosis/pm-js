@@ -4,9 +4,9 @@
   "mnemonic": "myth like bonus scare over problem client lizard pioneer submit female collect",
   "gasPrice": "4000000001",
   "blockchain": {
-    "host": "localhost",
-    "protocol": "http",
-    "port": 8545
+    "host": "rinkeby.infura.io",
+    "protocol": "https",
+    "port": 443
   },
   "ipfs": {
     "host": "ipfs.infura.io",

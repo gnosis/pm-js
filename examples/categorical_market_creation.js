@@ -24,8 +24,13 @@ try {
 
 const Web3 = require('web3');
 const HDWalletProvider = require("truffle-hdwallet-provider");
-const fs = require('fs');
-const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+let config
+if (process.argv.length == 2){
+  config = require('./config.json');
+}
+else{
+  config = require(process.argv[2])
+}
 const provider_url = config.blockchain.protocol + "://" + config.blockchain.host + ":" + config.blockchain.port;
 const hd_provider = new HDWalletProvider(config.mnemonic, provider_url);
 const etherTokenAddress = config.etherTokenAddress;
@@ -54,7 +59,7 @@ let market;
 return Gnosis.create(options)
 .then(result => {
   gnosisInstance = result;
-  console.info('[GnosisJS] > connection established');
+  console.info('[GnosisJS] > Connection established');
   console.info("[GnosisJS] > Creation started...");
 }).then(() => {
   return new Promise((resolve, reject) => {
