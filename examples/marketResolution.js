@@ -25,8 +25,13 @@ try {
 }
 const Web3 = require('web3');
 const HDWalletProvider = require("truffle-hdwallet-provider");
-const fs = require('fs');
-const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+let config;
+if (process.argv.length == 2){
+  config = require('./config.json');
+}
+else{
+  config = require(process.argv[2])
+}
 const provider_url = config.blockchain.protocol + "://" + config.blockchain.host + ":" + config.blockchain.port;
 const hd_provider = new HDWalletProvider(config.mnemonic, provider_url);
 const web3Instance = new Web3(hd_provider);
