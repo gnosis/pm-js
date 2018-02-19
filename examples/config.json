@@ -8,6 +8,11 @@
     "protocol": "https",
     "port": 443
   },
+  "gnosisdb": {
+    "protocol": "https",
+    "host": "gnosisdb.staging.gnosisdev.com",
+    "port": "443"
+  },
   "ipfs": {
     "host": "ipfs.infura.io",
     "port": 5001,
