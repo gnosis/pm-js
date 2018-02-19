@@ -15,14 +15,12 @@
 
 let Gnosis;
 try {
-    Gnosis = require('@gnosis.pm/gnosisjs');
+    Gnosis = require('../');
 } catch (err) {
-    const error = 'Not able to find the module @gnosis.pm/gnosisjs on your project path,' +
-    ' be sure to have it installed' +
-    ' on your project.';
-    console.error(error)
+    console.error(err)
     process.exit();
 }
+
 const Web3 = require('web3');
 const HDWalletProvider = require("truffle-hdwallet-provider");
 let config;
