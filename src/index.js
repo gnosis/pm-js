@@ -135,7 +135,7 @@ class Gnosis {
             return [name, c]
         }))
 
-        _.forEach(this.contracts, (c, name, cs) => {
+        _.forOwn(this.contracts, (c, name, cs) => {
             const maxGasCost = Math.max(
                 ...Object.values(c.gasStats || {}).map(
                     (fnStats) => fnStats.max != null ? fnStats.max.gasUsed : -Infinity),
