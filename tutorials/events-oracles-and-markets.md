@@ -10,18 +10,23 @@ Who will win the U.S. presidential election of 2016?
 To ask this question with a prediction market on Gnosis, you must first upload the event description onto IPFS via {@link Gnosis#publishEventDescription}. This will asynchronously provide you with a hash value which can be used to locate the file on IPFS:
 
 ```js
-const gnosis = await Gnosis.create()
-const ipfsHash = await gnosis.publishEventDescription({
-    title: 'Who will win the U.S. presidential election of 2016?',
-    description: 'Every four years, the citizens of the United States vote for their next president...',
-    resolutionDate: '2016-11-08T23:00:00-05:00',
-    outcomes: ['Clinton', 'Trump', 'Other'],
-})
-// now the event description has been uploaded to ipfsHash and can be used
-assert.equal(
-    (await gnosis.loadEventDescription(ipfsHash)).title,
-    'Who will win the U.S. presidential election of 2016?'
-)
+let gnosis, ipfsHash
+async function createDescription () {
+    gnosis = await Gnosis.create()
+    ipfsHash = await gnosis.publishEventDescription({
+        title: 'Who will win the U.S. presidential election of 2016?',
+        description: 'Every four years, the citizens of the United States vote for their next president...',
+        resolutionDate: '2016-11-08T23:00:00-05:00',
+        outcomes: ['Clinton', 'Trump', 'Other'],
+    })
+    // now the event description has been uploaded to ipfsHash and can be used
+    console.assert(
+        (await gnosis.loadEventDescription(ipfsHash)).title ===
+        'Who will win the U.S. presidential election of 2016?',
+    )
+    console.info(`Ipfs hash: https://ipfs.infura.io/api/v0/cat?stream-channels=true&arg=${ipfsHash}`)
+}
+createDescription()
 ```
 
 Of course, future events will come to pass, and once they do, the outcome should be determinable. Oracles report on the outcome of events. The simplest oracle contract provided by Gnosis is a [`CentralizedOracle`](https://gnosis.github.io/gnosis-contracts/docs/CentralizedOracle/), and it is controlled by a single entity: the `owner` of the contract, which is a single Ethereum address, and which will from this point forward in this guide be referred to as the centralized oracle itself.
@@ -30,7 +35,12 @@ To create a centralized oracle, use {@link Gnosis#createCentralizedOracle}:
 
 ```js
 // After obtaining an instance of {@link Gnosis} as "gnosis" and "ipfsHash" from {@link Gnosis#publishEventDescription}
-const oracle = await gnosis.createCentralizedOracle(ipfsHash)
+let oracle
+async function createOracle() {
+    oracle = await gnosis.createCentralizedOracle(ipfsHash)
+    console.info(`Oracle created with address ${oracle.address}`)
+}
+createOracle()
 ```
 
 After `createCentralizedOracle` finishes, the owner of the CentralizedOracle contract instance created will be the message sender, or the default account for all transactions in the Gnosis instance (which is normally set to the first account exposed by the Web3 provider).
@@ -46,52 +56,69 @@ Note that ether is *not* an ERC20-compliant token at the moment of this writing.
 In order to create a categorical event contract instance backed by an specific `oracle`, use {@link Gnosis#createCategoricalEvent}. For example, a categorical event with three outcomes like the earlier example can be made like this:
 
 ```js
-const event = await gnosis.createCategoricalEvent({
-    collateralToken: gnosis.etherToken,
-    oracle,
-    // Note the outcomeCount must match the length of the outcomes array published on IPFS
-    outcomeCount: 3,
-})
+let event
+async function createCategoricalEvent() {
+    event = await gnosis.createCategoricalEvent({
+        collateralToken: gnosis.etherToken,
+        oracle,
+        // Note the outcomeCount must match the length of the outcomes array published on IPFS
+        outcomeCount: 3,
+    })
+    console.info(`Categorical event created with address ${event.address}`)
+}
+createCategoricalEvent()
 ```
 
 Note that EtherToken is traded with this particular event instance.
 
+*If you are using the Rinkeby network, you can check that your event has been indexed by [GnosisDB](https://github.com/gnosis/gnosisdb) https://gnosisdb.rinkeby.gnosis.pm/api/events/`event.address`*
+
 When an event has been created, users can convert their collateral into sets of outcome tokens. For example, suppose a user buys 4 ETH worth of outcome tokens from `event`:
 
 ```js
-const txResults = await Promise.all([
-    gnosis.etherToken.deposit({ value: 4e18 }),
-    gnosis.etherToken.approve(event.address, 4e18),
-    event.buyAllOutcomes(4e18),
-])
+async function buyAllOutcomes() {
+    const txResults = await Promise.all([
+        gnosis.etherToken.deposit({ value: 4e18 }),
+        gnosis.etherToken.approve(event.address, 4e18),
+        event.buyAllOutcomes(4e18),
+    ])
 
-// Make sure everything worked
-const expectedEvents = [
-    'Deposit',
-    'Approval',
-    'OutcomeTokenSetIssuance',
-]
-txResults.forEach((txResult, i) => {
-    Gnosis.requireEventFromTXResult(txResult, expectedEvents[i])
-})
+    // Make sure everything worked
+    const expectedEvents = [
+        'Deposit',
+        'Approval',
+        'OutcomeTokenSetIssuance',
+    ]
+    txResults.forEach((txResult, i) => {
+        Gnosis.requireEventFromTXResult(txResult, expectedEvents[i])
+    })
+}
+buyAllOutcomes()
 ```
+*Note that dependending on the wallet your are using tx's can be sorted in the inverse order. The first transaction should have a value of 4 ETH, and the others 0 ETH, just data*
 
 That user would then have `4e18` units of each [`OutcomeToken`](https://gnosis.github.io/gnosis-contracts/docs/OutcomeToken/):
 
 ```js
-const { Token } = gnosis.contracts
-const outcomeCount = (await event.getOutcomeCount()).valueOf()
+async function checkBalances() {
+    const { Token } = gnosis.contracts
+    const outcomeCount = (await event.getOutcomeCount()).valueOf()
 
-for(let i = 0; i < outcomeCount; i++) {
-    const outcomeToken = await Token.at(await event.outcomeTokens(i))
-    console.log('Have', (await outcomeToken.balanceOf(gnosis.defaultAccount)).valueOf(), 'units of outcome', i)
+    for(let i = 0; i < outcomeCount; i++) {
+        const outcomeToken = await Token.at(await event.outcomeTokens(i))
+        console.log('Have', (await outcomeToken.balanceOf(gnosis.defaultAccount)).valueOf(), 'units of outcome', i)
+    }
 }
+checkBalances()
 ```
 
 Finally, if you are the centralized oracle for an `event` contract which refers to the 2016 U.S. presidential election as set up above, you can report the outcome of the event as "Trump" and allow stakeholders to settle their claims with {@link Gnosis#resolveEvent}:
 
 ```js
-await gnosis.resolveEvent({ event, outcome: 1 })
+async function resolve() {
+    await gnosis.resolveEvent({ event, outcome: 1 })
+}
+resolve()
 ```
 
 Note that you must pass in the 0-based index of the outcome corresponding to the event description published on IPFS ("Trump" has index 1 in the example `['Clinton', 'Trump', 'Other']`),
@@ -99,7 +126,10 @@ Note that you must pass in the 0-based index of the outcome corresponding to the
 If you are a stakeholder in this `event` contract instance, you can redeem your winnings with [`CategoricalEvent.redeemWinnings`](https://gnosis.github.io/gnosis-contracts/docs/CategoricalEvent/):
 
 ```js
-Gnosis.requireEventFromTXResult(await event.redeemWinnings(), 'WinningsRedemption')
+async function redeem() {
+    Gnosis.requireEventFromTXResult(await event.redeemWinnings(), 'WinningsRedemption')
+}
+redeem()
 ```
 
 ### Markets and Automated Market Makers
@@ -111,32 +141,40 @@ However, it may be difficult to coordinate the trade. In order to create liquidi
 Gnosis contracts contain market and market maker contract interfaces, a [standard market implementation](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/), and an [implementation](https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker/) of the [logarithmic market scoring rule (LMSR)](http://mason.gmu.edu/~rhanson/mktscore.pdf), an automated market maker. This can be leveraged with the {@link Gnosis#createMarket} method. For example, given an `event`, you can create a [`StandardMarket`](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/) operated by the LMSR market maker with the following:
 
 ```js
-const market = await gnosis.createMarket({
-    event,
-    marketMaker: gnosis.lmsrMarketMaker,
-    50000, // signifies a 5% fee on transactions
-           // see docs at {@link Gnosis#createMarket} for more info
-})
+let market
+async function createMarket() {
+    market = await gnosis.createMarket({
+        event,
+        marketMaker: gnosis.lmsrMarketMaker,
+        fee: 50000 // signifies a 5% fee on transactions
+            // see docs at {@link Gnosis#createMarket} for more info
+    })
+    console.info(`Market created with address ${market.address}`)
+}
+createMarket()
 ```
 
 Once a `market` has been created, it needs to be funded with the collateral token in order for it to provide liquidity. The market creator funds the market according to the maximum loss acceptable to them, which is possible since LMSR guarantees a bounded loss:
 
 ```js
-// Fund the market with 4 ETH
-await Promise.all([
-    gnosis.etherToken.deposit({ value: 4e18 }),
-    gnosis.etherToken.approve(event.address, 4e18),
-    market.fund(4e18),
-])
+async function fund() {
+    // Fund the market with 4 ETH
+    const txResults = await Promise.all([
+        gnosis.etherToken.deposit({ value: 4e18 }),
+        gnosis.etherToken.approve(market.address, 4e18),
+        market.fund(4e18),
+    ])
 
-const expectedEvents = [
-    'Deposit',
-    'Approval',
-    'MarketFunding',
-]
-txResults.forEach((txResult, i) => {
-    Gnosis.requireEventFromTXResult(txResult, expectedEvents[i])
-})
+    const expectedEvents = [
+        'Deposit',
+        'Approval',
+        'MarketFunding',
+    ]
+    txResults.forEach((txResult, i) => {
+        Gnosis.requireEventFromTXResult(txResult, expectedEvents[i])
+    })
+}
+fund()
 ```
 
 Furthermore, the outcome tokens sold by the market are guaranteed to be backed by collateral because the ultimate source of these outcome tokens are from the event contract, which only allow buying collateral-backed sets of outcome tokens.
@@ -144,35 +182,48 @@ Furthermore, the outcome tokens sold by the market are guaranteed to be backed b
 Let's suppose there is a `market` on the 2016 presidential election as indicated above, and that you are wondering if "Other" outcome tokens (which have index 2) are worth it at its price point. You can estimate how much it would cost to buy `1e18` units of those outcome tokens with [`LMSRMarketMaker.calcCost`](https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker/):
 
 ```js
-const cost = await gnosis.lmsrMarketMaker.calcCost(market.address, 2, 1e18)
-console.log(cost.valueOf())
+async function calcCost() {
+    const cost = await gnosis.lmsrMarketMaker.calcCost(market2.address, 2, 1e18)
+    console.info(`Buy 1 Outcome Token with index 2 costs ${cost.valueOf()/1e18} ETH tokens`)
+}
+calcCost()
 ```
 
 Let's say now that you've decided that these outcome tokens are worth it. Gnosis.js contains convenience functions for buying and selling outcome tokens from a market backed by an LMSR market maker. They are {@link Gnosis#buyOutcomeTokens} and {@link Gnosis#sellOutcomeTokens}. To buy these outcome tokens, you can use the following code:
 
 ```js
-await gnosis.buyOutcomeTokens({
-    market,
-    outcomeTokenIndex: 2,
-    outcomeTokenCount: 1e18,
-})
+async function buyOutcomeTokens() {
+    await gnosis.buyOutcomeTokens({
+        market,
+        outcomeTokenIndex: 2,
+        outcomeTokenCount: 1e18,
+    })
+    console.info('Bought 1 Outcome Token of Outcome with index 2')
+}
+buyOutcomeTokens()
 ```
 
 Similarly, you can see how much these outcome tokens are worth to the `market` with [`LMSRMarketMaker.calcProfit`](https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker/):
 
 ```js
-const profit = await gnosis.lmsrMarketMaker.calcProfit(market.address, 2, 1e18)
-console.log(calcProfit.valueOf())
+async function calcProfit() {
+    const profit = await gnosis.lmsrMarketMaker.calcProfit(market.address, 2, 1e18)
+    console.info(`Sell 1 Outcome Token with index 2 gives ${profit.valueOf()/1e18} ETH tokens of profit`)
+}
+calcProfit()
 ```
 
 If you want to sell the outcome tokens you have bought, you can do the following:
 
 ```js
-await gnosis.sellOutcomeTokens({
-    market,
-    outcomeTokenIndex: 2,
-    outcomeTokenCount: 1e18,
-})
+async function sellOutcomeTokens() {
+    await gnosis.sellOutcomeTokens({
+        market,
+        outcomeTokenIndex: 2,
+        outcomeTokenCount: 1e18,
+    })
+}
+sellOutcomeTokens()
 ```
 
 Oftentimes prediction markets aggregate predictions into more accurate predictions. Because of this, without a fee, the investor can expect to take a loss on their investments. However, too high of a fee would discourage participation in the market. Discerning the best fee factor for markets is outside the scope of this document.
@@ -180,8 +231,11 @@ Oftentimes prediction markets aggregate predictions into more accurate predictio
 Finally, if you are the creator of a [`StandardMarket`](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/), you can close the market and obtain all of its outcome token holdings with `StandardMarket.close` and/or withdraw the trading fees paid with `StandardMarket.withdrawFees`:
 
 ```js
-Gnosis.requireEventFromTXResult(await market.close(), 'MarketClose')
-Gnosis.requireEventFromTXResult(await market.withdrawFees(), 'MarketFeeWithdrawal')
+async function closeAndWithdraw() {
+    Gnosis.requireEventFromTXResult(await market.close(), 'MarketClose')
+    Gnosis.requireEventFromTXResult(await market.withdrawFees(), 'MarketFeeWithdrawal')
+}
+closeAndWithdraw()
 ```
 
 ### Events with Scalar Outcomes
@@ -192,25 +246,36 @@ The discussion up to this point has been about an instance of an event with cate
 const lowerBound = '80'
 const upperBound = '100'
 
-const ipfsHash = await gnosis.publishEventDescription({
-    title: 'What will be the annual global land and ocean temperature anomaly for 2017?',
-    description: 'The anomaly is with respect to the average temperature for the 20th century and is as reported by the National Centers for Environmental Services...',
-    resolutionDate: '2017-01-01T00:00:00+00:00',
-    lowerBound,
-    upperBound,
-    decimals: 2,
-    unit: '°C',
-})
+let ipfsHash, oracle, event
 
-const oracle = await gnosis.createCentralizedOracle(ipfsHash)
+async function createScalarEvent() {
+    ipfsHash = await gnosis.publishEventDescription({
+        title: 'What will be the annual global land and ocean temperature anomaly for 2017?',
+        description: 'The anomaly is with respect to the average temperature for the 20th century and is as reported by the National Centers for Environmental Services...',
+        resolutionDate: '2017-01-01T00:00:00+00:00',
+        lowerBound,
+        upperBound,
+        decimals: 2,
+        unit: '°C',
+    })
 
-const event = await gnosis.createScalarEvent({
-    collateralToken: gnosis.etherToken,
-    oracle,
-    // Note that these bounds should match the values published on IPFS
-    lowerBound,
-    upperBound,
-})
+    console.info(`Ipfs hash: https://ipfs.infura.io/api/v0/cat?stream-channels=true&arg=${ipfsHash}`)
+
+    oracle = await gnosis.createCentralizedOracle(ipfsHash)
+
+    console.info(`Oracle created with address ${oracle.address}`)
+
+    event = await gnosis.createScalarEvent({
+        collateralToken: gnosis.etherToken,
+        oracle,
+        // Note that these bounds should match the values published on IPFS
+        lowerBound,
+        upperBound,
+    })
+
+    console.info(`Event created with address ${event.address}`)
+}
+createScalarEvent()
 ```
 
 This sets up an event with a lower bound of 0.80°C and an upper bound of 1.00°C. Note that the values are passed in as whole integers and adjusted to the right order of magnitude according to the `decimals` property of the event description.
@@ -220,7 +285,9 @@ There are two outcome tokens associated with this event: a short token for the l
 Now let's say that the NCES reports that the average global temperature anomaly for 2017 is 0.89°C. If you are the centralized oracle for this event as above, you can report this result to the chain like so:
 
 ```js
-await gnosis.resolveEvent({ event, outcome: '89' })
+async function resolve() {
+    await gnosis.resolveEvent({ event, outcome: '89' })
+}
 ```
 
 This will value each unit of the short outcome at \\(1 - {0.89 - 0.80 \over 1.00 - 0.80} = 0.55\\) units of the collateral, and the long outcome at \\(0.45\\) units of the collateral. Thus, if you held 50 units of the short outcome and 100 units of the long outcome, [`ScalarEvent.redeemWinnings`](https://gnosis.github.io/gnosis-contracts/docs/ScalarEvent/) would net you \\(\lfloor 50 \times 0.55 + 100 \times 0.45 \rfloor = 72\\) units of collateral. Hopefully you'll have paid less than that for those outcomes.

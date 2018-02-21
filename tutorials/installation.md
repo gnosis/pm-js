@@ -29,6 +29,11 @@ const Gnosis = require('@gnosis.pm/gnosisjs')
 
 This will import the transpiled library through the `dist/index` entry point, which exports the {@link Gnosis} class.
 
+If you are playing around with gnosis.js directly in the project folder, you can import it from dist
+```js
+const Gnosis = require('.')
+```
+
 ### Browser use
 
 The `gnosis.js` file and its minified version `gnosis.min.js` are self-contained and can be used directly in a webpage. For example, you may copy `gnosis.min.js` into a folder or onto your server, and in an HTML page, use the following code to import the library:
