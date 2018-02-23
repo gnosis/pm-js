@@ -55,7 +55,7 @@ You can also run `npm run webbuild` to build the library targeting the web. Note
 
 ### Running the dev server
 
-Run `npm run dev` to run the dev server and serve the examples. The library source will be continuously recompiled. Examples will be available on http://localhost:8080. Don't forget to refresh the page after you change the source.
+Run `npm run dev` to run the dev server and serve the examples. The library source will be continuously recompiled. Examples will be available on [http://localhost:8080](http://localhost:8080). Don't forget to refresh the page after you change the source.
 
 ### Running the tests
 
@@ -65,7 +65,7 @@ You may also provide mocha options through the `MOCHA_OPTS` environment variable
 
 ## Documentation
 
-API documentation and tutorials can be found hosted online at https://gnosis.github.io/gnosis.js/
+API documentation and tutorials can be found hosted online at [https://gnosis.github.io/gnosis.js/](https://gnosis.github.io/gnosis.js/)
 
 ### Running the docs
 
