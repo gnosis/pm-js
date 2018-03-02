@@ -70,7 +70,7 @@
     "truffle-hdwallet-provider": "0.0.3"
   },
   "dependencies": {
-    "@gnosis.pm/gnosis-core-contracts": "^1.0.2",
+    "@gnosis.pm/gnosis-core-contracts": "^1.0.3",
     "@gnosis.pm/olympia-token": "^1.1.0",
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
