@@ -476,6 +476,19 @@ describe('Gnosis', function () {
             })
             assert(await gnosis.resolveEvent.estimateGas({ event, using: 'stats' }) > 0)
         })
+
+        it('by default supplies a gas limit suitable for buyAllOutcomes', async () => {
+            let event = await gnosis.createCategoricalEvent({
+                collateralToken: gnosis.etherToken,
+                oracle: oracle,
+                outcomeCount: 2
+            })
+
+            const funding = 1e18
+            requireEventFromTXResult(await gnosis.etherToken.deposit({ value: funding }), 'Deposit')
+            requireEventFromTXResult(await gnosis.etherToken.approve(event.address, funding), 'Approval')
+            requireEventFromTXResult(await event.buyAllOutcomes(funding), 'OutcomeTokenSetIssuance')
+        })
     })
 
     describe('#markets', () => {
