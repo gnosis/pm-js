@@ -13,6 +13,7 @@ module.exports = {
     plugins: [
         new LodashModuleReplacementPlugin()
     ],
+    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
     module: {
         rules: [
             {
@@ -20,12 +21,12 @@ module.exports = {
                 use: [ 'style-loader', 'css-loader' ]
             },
             {
-                test: /\/contracts\/\w+\.json$/,
-                use: ['json-loader', 'json-x-loader?exclude=unlinked_binary+networks.*.events+networks.*.links']
+                test: /\/build\/contracts\/\w+\.json$/,
+                use: ['json-x-loader?exclude=unlinked_binary+networks.*.events+networks.*.links']
             },
             {
                 test: /\/gas-stats.json$/,
-                use: ['json-loader', 'json-x-loader?exclude=*.*.data']
+                use: ['json-x-loader?exclude=*.*.data']
             },
             {
                 test: /\.js$/,
