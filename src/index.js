@@ -24,7 +24,7 @@ const windowLoaded = new Promise((accept, reject) => {
 
 const gasStatsData = require('@gnosis.pm/gnosis-core-contracts/build/gas-stats.json')
 const gasLimit = 4e6
-const gasDefaultMaxMultiplier = 1.5
+const gasDefaultMaxMultiplier = 2
 
 const implementationInterfaceMap = {
     StandardMarket: ['Market'],
