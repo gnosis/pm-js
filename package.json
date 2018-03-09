@@ -18,7 +18,7 @@
     "test": "run-with-testrpc -l 40000000 'npm run migrate && npm run test-manual'",
     "test-manual": "mocha --require babel-core/register $MOCHA_OPTS",
     "test-gnosisdb": "cross-env GNOSIS_OPTIONS='{\"ipfs\":{\"host\":\"localhost\",\"port\":5001,\"protocol\":\"http\"}}' npm run test-manual",
-    "prepublish": "npm run netreset && npm run nodebuild && npm run webbuild && npm run docbuild"
+    "prepublish": "npm run netreset && npm run nodebuild && npm run webbuild"
   },
   "main": "dist/index",
   "repository": {
@@ -52,6 +52,8 @@
     "eslint": "^4.17.0",
     "eslint-plugin-babel": "^4.1.2",
     "ganache-cli": "^6.0.3",
+    "jsdoc": "^3.5.5",
+    "jsdoc-strip-async-await": "^0.1.0",
     "json-loader": "^0.5.7",
     "json-x-loader": "^0.2.0",
     "lodash-webpack-plugin": "^0.11.4",

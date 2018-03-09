@@ -36,7 +36,7 @@ Of course, future events will come to pass, and once they do, the outcome should
 To create a centralized oracle, use [Gnosis.createCentralizedOracle](api-reference.html#createCentralizedOracle):
 
 ```js
-// After obtaining an instance of [Gnosis](api-reference.html#Gnosis) as "gnosis" and "ipfsHash" from [Gnosis.publishEventDescription](api-reference.html#publishEventDescription)
+// After obtaining an instance of Gnosis (api-reference.html#Gnosis) as "gnosis" and "ipfsHash" from Gnosis.publishEventDescription (api-reference.html#publishEventDescription)
 let oracle
 async function createOracle() {
     oracle = await gnosis.createCentralizedOracle(ipfsHash)
@@ -149,7 +149,7 @@ async function createMarket() {
         event,
         marketMaker: gnosis.lmsrMarketMaker,
         fee: 50000 // signifies a 5% fee on transactions
-            // see docs at [Gnosis.createMarket](api-reference.html#createMarket) for more info
+            // see docs at Gnosis.createMarket (api-reference.html#createMarket) for more info
     })
     console.info(`Market created with address ${market.address}`)
 }
