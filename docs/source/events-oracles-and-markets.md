@@ -1,4 +1,6 @@
-### Questions About the Future, Oracles, and Trust
+### Events, Oracles and Markets
+
+#### Questions About the Future, Oracles, and Trust
 
 A prediction predicts the outcome of a future event. For example, the event might be "the U.S. presidential election of 2016." There may be predictions associated with each of the possible outcomes, but this event only had one of these outcome. Events like these with a discrete set of outcomes are considered to be categorical events. They may be phrased as a question with a choice of answers, e.g.:
 
@@ -7,7 +9,7 @@ Who will win the U.S. presidential election of 2016?
 * Trump
 * Other
 
-To ask this question with a prediction market on Gnosis, you must first upload the event description onto IPFS via {@link Gnosis#publishEventDescription}. This will asynchronously provide you with a hash value which can be used to locate the file on IPFS:
+To ask this question with a prediction market on Gnosis, you must first upload the event description onto IPFS via [Gnosis.publishEventDescription](api-reference.html#publishEventDescription). This will asynchronously provide you with a hash value which can be used to locate the file on IPFS:
 
 ```js
 let gnosis, ipfsHash
@@ -31,10 +33,10 @@ createDescription()
 
 Of course, future events will come to pass, and once they do, the outcome should be determinable. Oracles report on the outcome of events. The simplest oracle contract provided by Gnosis is a [`CentralizedOracle`](https://gnosis.github.io/gnosis-contracts/docs/CentralizedOracle/), and it is controlled by a single entity: the `owner` of the contract, which is a single Ethereum address, and which will from this point forward in this guide be referred to as the centralized oracle itself.
 
-To create a centralized oracle, use {@link Gnosis#createCentralizedOracle}:
+To create a centralized oracle, use [Gnosis.createCentralizedOracle](api-reference.html#createCentralizedOracle):
 
 ```js
-// After obtaining an instance of {@link Gnosis} as "gnosis" and "ipfsHash" from {@link Gnosis#publishEventDescription}
+// After obtaining an instance of [Gnosis](api-reference.html#Gnosis) as "gnosis" and "ipfsHash" from [Gnosis.publishEventDescription](api-reference.html#publishEventDescription)
 let oracle
 async function createOracle() {
     oracle = await gnosis.createCentralizedOracle(ipfsHash)
@@ -47,13 +49,13 @@ After `createCentralizedOracle` finishes, the owner of the CentralizedOracle con
 
 By no means is the CentralizedOracle the only possible oracle design which can be used with Gnosis. Any oracle which implements the [`Oracle`](https://github.com/gnosis/gnosis-contracts/blob/master/contracts/Oracles/Oracle.sol) contract interface may be used.
 
-### Events and Collateral
+#### Events and Collateral
 
 Once an oracle is created, an event contract may defer to the oracle's judgment. The [`CategoricalEvent`](https://gnosis.github.io/gnosis-contracts/docs/CategoricalEvent/) and [`ScalarEvent`](https://gnosis.github.io/gnosis-contracts/docs/ScalarEvent/) contracts represent an event. They also mint sets of outcome tokens corresponding to a collateral of an [ERC20](https://theethereum.wiki/w/index.php/ERC20_Token_Standard)-compliant token. Once the relied-on oracle reports an outcome to the event, the outcome token corresponding to the reported outcome may be exchanged for the original collateral token.
 
-Note that ether is *not* an ERC20-compliant token at the moment of this writing. It may be converted into an ERC20-compliant variant with an adaptor contract like [EtherToken](https://gnosis.github.io/gnosis-contracts/docs/EtherToken/) though. There is a deployed instance of EtherToken available in the API as {@link Gnosis#etherToken}.
+Note that ether is *not* an ERC20-compliant token at the moment of this writing. It may be converted into an ERC20-compliant variant with an adaptor contract like [EtherToken](https://gnosis.github.io/gnosis-contracts/docs/EtherToken/) though. There is a deployed instance of EtherToken available in the API as [Gnosis.etherToken](api-reference.html#Gnosis.etherToken).
 
-In order to create a categorical event contract instance backed by an specific `oracle`, use {@link Gnosis#createCategoricalEvent}. For example, a categorical event with three outcomes like the earlier example can be made like this:
+In order to create a categorical event contract instance backed by an specific `oracle`, use [Gnosis.createCategoricalEvent](api-reference.html#createCategoricalEvent). For example, a categorical event with three outcomes like the earlier example can be made like this:
 
 ```js
 let event
@@ -112,7 +114,7 @@ async function checkBalances() {
 checkBalances()
 ```
 
-Finally, if you are the centralized oracle for an `event` contract which refers to the 2016 U.S. presidential election as set up above, you can report the outcome of the event as "Trump" and allow stakeholders to settle their claims with {@link Gnosis#resolveEvent}:
+Finally, if you are the centralized oracle for an `event` contract which refers to the 2016 U.S. presidential election as set up above, you can report the outcome of the event as "Trump" and allow stakeholders to settle their claims with [Gnosis.resolveEvent](api-reference.html#resolveEvent):
 
 ```js
 async function resolve() {
@@ -132,13 +134,13 @@ async function redeem() {
 redeem()
 ```
 
-### Markets and Automated Market Makers
+#### Markets and Automated Market Makers
 
 Suppose that Alice believed Clinton would win the 2016 U.S. election, but Bob believed Trump would win that election. With the machinery we've developed thus far, both Alice and Bob would have to buy outcome tokens and then trade each other based on their beliefs. Alice would give Trump tokens to Bob in exchange for Clinton tokens. When the oracle reports that the outcome of the election was Trump, the Trump tokens held by Bob can be exchanged for the collateral used to back those tokens.
 
 However, it may be difficult to coordinate the trade. In order to create liquidity, an automated market maker may be used to operate an on-chain market. These markets also aggregate information from participants about their beliefs about the likeliness of outcomes.
 
-Gnosis contracts contain market and market maker contract interfaces, a [standard market implementation](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/), and an [implementation](https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker/) of the [logarithmic market scoring rule (LMSR)](http://mason.gmu.edu/~rhanson/mktscore.pdf), an automated market maker. This can be leveraged with the {@link Gnosis#createMarket} method. For example, given an `event`, you can create a [`StandardMarket`](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/) operated by the LMSR market maker with the following:
+Gnosis contracts contain market and market maker contract interfaces, a [standard market implementation](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/), and an [implementation](https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker/) of the [logarithmic market scoring rule (LMSR)](http://mason.gmu.edu/~rhanson/mktscore.pdf), an automated market maker. This can be leveraged with the [Gnosis.createMarket](api-reference.html#createMarket) method. For example, given an `event`, you can create a [`StandardMarket`](https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/) operated by the LMSR market maker with the following:
 
 ```js
 let market
@@ -147,7 +149,7 @@ async function createMarket() {
         event,
         marketMaker: gnosis.lmsrMarketMaker,
         fee: 50000 // signifies a 5% fee on transactions
-            // see docs at {@link Gnosis#createMarket} for more info
+            // see docs at [Gnosis.createMarket](api-reference.html#createMarket) for more info
     })
     console.info(`Market created with address ${market.address}`)
 }
@@ -189,7 +191,7 @@ async function calcCost() {
 calcCost()
 ```
 
-Let's say now that you've decided that these outcome tokens are worth it. Gnosis.js contains convenience functions for buying and selling outcome tokens from a market backed by an LMSR market maker. They are {@link Gnosis#buyOutcomeTokens} and {@link Gnosis#sellOutcomeTokens}. To buy these outcome tokens, you can use the following code:
+Let's say now that you've decided that these outcome tokens are worth it. Gnosis.js contains convenience functions for buying and selling outcome tokens from a market backed by an LMSR market maker. They are [Gnosis.buyOutcomeTokens](api-reference.html#buyOutcomeTokens) and [Gnosis.sellOutcomeTokens](api-reference.html#sellOutcomeTokens). To buy these outcome tokens, you can use the following code:
 
 ```js
 async function buyOutcomeTokens() {
@@ -238,9 +240,9 @@ async function closeAndWithdraw() {
 closeAndWithdraw()
 ```
 
-### Events with Scalar Outcomes
+#### Events with Scalar Outcomes
 
-The discussion up to this point has been about an instance of an event with categorical outcomes. However, some events may be better expressed as an event with a scalar outcome. For example, you can ask the following question using {@link Gnosis#createScalarEvent}:
+The discussion up to this point has been about an instance of an event with categorical outcomes. However, some events may be better expressed as an event with a scalar outcome. For example, you can ask the following question using [Gnosis.createScalarEvent](api-reference.html#createScalarEvent):
 
 ```js
 const lowerBound = '80'

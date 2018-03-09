@@ -4,8 +4,7 @@
   "description": "A javascript library for building applications on top of Gnosis, the Ethereum prediction market platform",
   "scripts": {
     "lint": "eslint ./",
-    "doc": "jsdoc -c jsdoc-conf.json && node -e 'require(\"open\")(\"./docs/index.html\")'",
-    "docbuild": "jsdoc -c jsdoc-conf.json",
+    "doc": "cd docs; make html",
     "compile": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle compile",
     "migrate": "npm run migrate-core && npm run migrate-oly",
     "migrate-core": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle migrate",
@@ -53,8 +52,6 @@
     "eslint": "^4.17.0",
     "eslint-plugin-babel": "^4.1.2",
     "ganache-cli": "^6.0.3",
-    "jsdoc": "^3.5.5",
-    "jsdoc-strip-async-await": "^0.1.0",
     "json-loader": "^0.5.7",
     "json-x-loader": "^0.2.0",
     "lodash-webpack-plugin": "^0.11.4",
