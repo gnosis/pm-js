@@ -74,7 +74,7 @@ createCategoricalEvent()
 Note that EtherToken is traded with this particular event instance.
 
 > If you are using the Rinkeby network, you can check that your event has been indexed by [GnosisDB](https://github.com/gnosis/gnosisdb) with the following URL:
-> ```txt
+> ```
 > https://gnosisdb.rinkeby.gnosis.pm/api/events/EVENT_ADDRESS
 > ```
 > Be sure to substitute in the actual event address for `EVENT_ADDRESS`

@@ -4,7 +4,7 @@
   "description": "A javascript library for building applications on top of Gnosis, the Ethereum prediction market platform",
   "scripts": {
     "lint": "eslint ./",
-    "doc": "cd docs; make html",
+    "doc": "cd docs/source/ && sphinx-build . ../build",
     "compile": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle compile",
     "migrate": "npm run migrate-core && npm run migrate-oly",
     "migrate-core": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle migrate",
