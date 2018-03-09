@@ -4,8 +4,7 @@
   "description": "A javascript library for building applications on top of Gnosis, the Ethereum prediction market platform",
   "scripts": {
     "lint": "eslint ./",
-    "doc": "jsdoc -c jsdoc-conf.json && node -e 'require(\"open\")(\"./docs/index.html\")'",
-    "docbuild": "jsdoc -c jsdoc-conf.json",
+    "doc": "cd docs; make html",
     "compile": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle compile",
     "migrate": "npm run migrate-core && npm run migrate-oly",
     "migrate-core": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle migrate",
@@ -19,7 +18,7 @@
     "test": "run-with-testrpc -l 40000000 'npm run migrate && npm run test-manual'",
     "test-manual": "mocha --require babel-core/register $MOCHA_OPTS",
     "test-gnosisdb": "cross-env GNOSIS_OPTIONS='{\"ipfs\":{\"host\":\"localhost\",\"port\":5001,\"protocol\":\"http\"}}' npm run test-manual",
-    "prepublish": "npm run netreset && npm run nodebuild && npm run webbuild && npm run docbuild"
+    "prepublish": "npm run netreset && npm run nodebuild && npm run webbuild"
   },
   "main": "dist/index",
   "repository": {

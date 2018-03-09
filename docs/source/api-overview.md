@@ -1,4 +1,6 @@
-The Gnosis.js library is encapsulated inside of the {@link Gnosis} class. In order for it to function, it must be connected to an Ethereum network through a [Web3.js](https://github.com/ethereum/wiki/wiki/JavaScript-API) interface. It also uses [IPFS](https://ipfs.io/) for publishing and retrieving event data, and so it will also have to be connected to an IPFS node. Configuration of these connections can be done with a call to the asynchronous factory function {@link Gnosis.create}. For example, the following code will store an instance of the Gnosis.js library into the variable `gnosis`:
+### API Overview
+
+The Gnosis.js library is encapsulated inside of the [Gnosis](api-reference.html#Gnosis) class. In order for it to function, it must be connected to an Ethereum network through a [Web3.js](https://github.com/ethereum/wiki/wiki/JavaScript-API) interface. It also uses [IPFS](https://ipfs.io/) for publishing and retrieving event data, and so it will also have to be connected to an IPFS node. Configuration of these connections can be done with a call to the asynchronous factory function [Gnosis.create](api-reference.html#Gnosis.create). For example, the following code will store an instance of the Gnosis.js library into the variable `gnosis`:
 
 ```js
 let gnosis
@@ -13,7 +15,7 @@ Gnosis.create().then(result => {
 
 Because of the library's dependence on remote service providers and the necessity to wait for transactions to complete on the blockchain, the majority of the methods in the API are asynchronous and return thenables in the form of [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises).
 
-Gnosis.js also relies on [Truffle contract abstractions](https://github.com/trufflesuite/truffle-contract). In fact, much of the underlying core contract functionality can be accessed in Gnosis.js as one of these abstractions. Since the Truffle contract wrapper has to perform asynchronous actions such as wait on the result of a remote request to an Ethereum RPC node, it also uses thenables. For example, here is how to use the on-chain Gnosis [Math](https://gnosis.github.io/gnosis-contracts/docs/Math/) library exposed at {@link Gnosis#contracts} to print the approximate natural log of a number:
+Gnosis.js also relies on [Truffle contract abstractions](https://github.com/trufflesuite/truffle-contract). In fact, much of the underlying core contract functionality can be accessed in Gnosis.js as one of these abstractions. Since the Truffle contract wrapper has to perform asynchronous actions such as wait on the result of a remote request to an Ethereum RPC node, it also uses thenables. For example, here is how to use the on-chain Gnosis [Math](https://gnosis.github.io/gnosis-contracts/docs/Math/) library exposed at [Gnosis.contracts](api-reference.html#Gnosis.contracts) to print the approximate natural log of a number:
 
 ```js
 const ONE = Math.pow(2, 64)
@@ -32,4 +34,4 @@ const math = await gnosis.contracts.Math.deployed()
 console.log('Math.ln(3) =', (await math.ln(3 * ONE)).valueOf() / ONE)
 ```
 
-Gnosis.js also exposes a number of convenience methods wrapping contract operations such as {@link Gnosis#createCentralizedOracle} and {@link Gnosis#createScalarEvent}.
+Gnosis.js also exposes a number of convenience methods wrapping contract operations such as [Gnosis.createCentralizedOracle](api-reference.html#createCentralizedOracle) and [Gnosis.createScalarEvent](api-reference.html#createScalarEvent).
