@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=source
 set BUILDDIR=build
-set SPHINXPROJ=asdf
+set SPHINXPROJ=gnosisjs
 
 if "%1" == "" goto help
 
