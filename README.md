@@ -67,9 +67,15 @@ You may also provide mocha options through the `MOCHA_OPTS` environment variable
 
 API documentation and tutorials can be found hosted online at [https://gnosisjs.readthedocs.io](https://gnosisjs.readthedocs.io)
 
-### Running the docs
+### Building the docs
 
-Run `npm run doc` to build and open a local build of the documentation in your browser.
+The documentation generator requires Python to be present on your computer. Install the required Python packages into your environment via
+
+```
+pip install -r docs/requirements.txt
+```
+
+Afterwards, run `npm run doc` to build and open a local build of the documentation in your browser.
 
 ### Web3 options
 
