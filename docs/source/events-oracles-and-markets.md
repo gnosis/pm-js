@@ -73,17 +73,21 @@ createCategoricalEvent()
 
 Note that EtherToken is traded with this particular event instance.
 
-*If you are using the Rinkeby network, you can check that your event has been indexed by [GnosisDB](https://github.com/gnosis/gnosisdb) https://gnosisdb.rinkeby.gnosis.pm/api/events/`event.address`*
+> If you are using the Rinkeby network, you can check that your event has been indexed by [GnosisDB](https://github.com/gnosis/gnosisdb) with the following URL:
+> ```
+> https://gnosisdb.rinkeby.gnosis.pm/api/events/EVENT_ADDRESS
+> ```
+> Be sure to substitute in the actual event address for `EVENT_ADDRESS`
 
 When an event has been created, users can convert their collateral into sets of outcome tokens. For example, suppose a user buys 4 ETH worth of outcome tokens from `event`:
 
 ```js
 async function buyAllOutcomes() {
     const txResults = await Promise.all([
-        gnosis.etherToken.deposit({ value: 4e18 }),
-        gnosis.etherToken.approve(event.address, 4e18),
-        event.buyAllOutcomes(4e18),
-    ])
+        [gnosis.etherToken.constructor, await gnosis.etherToken.deposit.sendTransaction({ value: depositValue })],
+        [gnosis.etherToken.constructor, await gnosis.etherToken.approve.sendTransaction(event.address, depositValue)],
+        [event.constructor, await event.buyAllOutcomes.sendTransaction(depositValue)],
+    ].map(([contract, txHash]) => contract.syncTransaction(txHash)))
 
     // Make sure everything worked
     const expectedEvents = [
@@ -97,9 +101,48 @@ async function buyAllOutcomes() {
 }
 buyAllOutcomes()
 ```
-*Note that dependending on the wallet your are using tx's can be sorted in the inverse order. The first transaction should have a value of 4 ETH, and the others 0 ETH, just data*
 
-That user would then have `4e18` units of each [`OutcomeToken`](https://gnosis.github.io/gnosis-contracts/docs/OutcomeToken/):
+> The computation of `txResults` may appear to be fairly complex in the previous example, so here is a breakdown of that computation and why it was done that way.
+>
+> At first, you may think of the following code:
+>
+> ```js
+> const txResults = [
+>     await gnosis.etherToken.deposit({ value: depositValue }),
+>     await gnosis.etherToken.approve(event.address, depositValue),
+>     await event.buyAllOutcomes(depositValue),
+> ]
+> ```
+>
+> This code would actually be just fine, and would work in place of the above, but would provide a flawed user experience. Users would have to wait for the `deposit` and `approve` transactions to *mine* before the next transaction is even sent, and on the Ethereum mainnet, this could take 15-30s between each transaction!
+>
+> Then, you may propose:
+>
+> ```js
+> const txResults = await Promise.all([
+>     gnosis.etherToken.deposit({ value: depositValue }),
+>     gnosis.etherToken.approve(event.address, depositValue),
+>     event.buyAllOutcomes(depositValue),
+> ])
+> ```
+>
+> Indeed, all the transactions are sent to the provider and mined simultaneously, but there is no order to them. In practice, this usually means it is up to the user to sign the transactions in order: this is also a flawed user experience, as there is only one order here which makes any sense.
+>
+> This is why we send in the transactions like so:
+>
+> ```js
+> const txHash = await gnosis.etherToken.deposit.sendTransaction({ value: depositValue })
+> ```
+>
+> The `sendTransaction` variant of these Truffle methods only wait until the transaction hash is determined. Since the transaction hash is partially derived from the user's account nonce, we can ensure that the transactions are processed in order. Then, we can wait for all of the transactions we sent in to mine:
+>
+> ```js
+> const txResults = await Promise.all([gnosis.etherToken.constructor.syncTransaction(depositTransactionHash), ...])
+> ```
+>
+> You may notice that the constructor of the contract instance was used to call a method `syncTransaction`. That constructor is the same as the contract type abstraction, that is: `gnosis.etherToken.constructor === gnosis.contracts.EtherToken`. This is not an official method of `truffle-contract` yet! For more information, see [this pull request](https://github.com/trufflesuite/truffle-contract/pull/73).
+
+After executing a `buyAllOutcomes` transaction as above, the user would then have `4e18` units of each [`OutcomeToken`](https://gnosis.github.io/gnosis-contracts/docs/OutcomeToken/):
 
 ```js
 async function checkBalances() {
@@ -162,10 +205,10 @@ Once a `market` has been created, it needs to be funded with the collateral toke
 async function fund() {
     // Fund the market with 4 ETH
     const txResults = await Promise.all([
-        gnosis.etherToken.deposit({ value: 4e18 }),
-        gnosis.etherToken.approve(market.address, 4e18),
-        market.fund(4e18),
-    ])
+        [gnosis.etherToken.constructor, await gnosis.etherToken.deposit.sendTransaction({ value: 4e18 })],
+        [gnosis.etherToken.constructor, await gnosis.etherToken.approve.sendTransaction(market.address, 4e18)],
+        [market.constructor, await market.fund.sendTransaction(4e18)],
+    ].map(([contract, txHash]) => contract.syncTransaction(txHash)))
 
     const expectedEvents = [
         'Deposit',

@@ -5,7 +5,8 @@
     "plugins": ["node_modules/jsdoc-strip-async-await", "plugins/markdown"],
     "templates": {
         "default": {
-            "layoutFile": "assets/layout.tmpl"
+            "layoutFile": "assets/layout.tmpl",
+            "includeDate": false
         }
     },
     "opts": {
