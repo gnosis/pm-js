@@ -27,8 +27,8 @@
    <script src=gnosis.js></script>
    ```
 5. Follow some tutorials:
-   * [API Overview](https://gnosis.github.io/gnosis.js/tutorial-api-overview.html)
-   * [Events, Oracles, and Markets](https://gnosis.github.io/gnosis.js/tutorial-events-oracles-and-markets.html)
+   * [API Overview](https://gnosisjs.readthedocs.io/en/latest/api-overview.html)
+   * [Events, Oracles, and Markets](https://gnosisjs.readthedocs.io/en/latest/events-oracles-and-markets.html)
 
 
 ## Installation
