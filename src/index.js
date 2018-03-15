@@ -49,9 +49,6 @@ const contractArtifacts = [
     'StandardMarketFactory',
 ].map((name) => require(`@gnosis.pm/gnosis-core-contracts/build/contracts/${name}.json`))
 
-contractArtifacts.push(require('@gnosis.pm/olympia-token/build/contracts/OlympiaToken.json'))
-contractArtifacts.push(require('@gnosis.pm/olympia-token/build/contracts/AddressRegistry.json'))
-
 const instanceModules = [oracles, events, markets]
 
 /**
@@ -117,7 +114,6 @@ class Gnosis {
          * - `Market <https://gnosis.github.io/gnosis-contracts/docs/Market>`_
          * - `StandardMarket <https://gnosis.github.io/gnosis-contracts/docs/StandardMarket>`_
          * - `Standard Market Factory <https://gnosis.github.io/gnosis-contracts/docs/StandardMarketFactory>`_
-         * - `OlympiaToken <https://github.com/gnosis/olympia-token>`_
          *
          * These are configured to use the web3 provider specified in Gnosis.create or subsequently modified with Gnosis.setWeb3Provider. The default gas costs for these abstractions are set to the maximum cost of their respective entries found in the `gas-stats.json` file built from the `core contracts <https://github.com/gnosis/gnosis-contracts#readme>`_. Additionally, the default message sender (i.e. `from` address) is set via the optional `defaultAccount` param in Gnosis.setWeb3Provider.
          *
@@ -150,6 +146,7 @@ class Gnosis {
         })
 
         this.TruffleContract = TruffleContract
+        this.instanceNames = {}
 
         instanceModules.forEach((module) => {
             Object.keys(module).forEach((instanceProp) => {
@@ -243,19 +240,8 @@ class Gnosis {
              */
             this.trySettingContractInstance('lmsrMarketMaker', this.contracts.LMSRMarketMaker),
 
-            /**
-             * If `OlympiaToken <https://github.com/gnosis/olympia-token>`_ is deployed to the current network (this should only work for Rinkeby), this will be set to an OlympiaToken contract abstraction pointing at the deployment address.
-             *
-             * @member {Contract} Gnosis#olympiaToken
-             */
-            this.trySettingContractInstance('olympiaToken', this.contracts.OlympiaToken),
-
-            /**
-             * If `AddressRegistry <https://github.com/gnosis/olympia-token>`_ is deployed to the current network (this should only work for Rinkeby), this will be set to an AddressRegistry contract abstraction pointing at the deployment address. This is intended for use with Olympia.
-             *
-             * @member {Contract} Gnosis#olympiaAddressRegistry
-             */
-            this.trySettingContractInstance('olympiaAddressRegistry', this.contracts.AddressRegistry),
+            ..._.toPairs(this.instanceNames).map(([cName, iName]) =>
+                this.trySettingContractInstance(iName, this.contracts[cName])),
         ])
     }
 
@@ -270,6 +256,34 @@ class Gnosis {
         }
     }
 
+    /**
+     * Imports contracts into this Gnosis instance using an object mapping contract names to their corresponding Truffle artifacts. Additionally, attempt to set attributes on the Gnosis instance corresponding to `instanceNames`.
+     *
+     * Note: this method is asynchronous and will return a Promise
+     *
+     * @param {Object} artifacts - Object mapping contract names to Truffle artifacts.
+     * @param {Object} instanceNames - Object mapping contract names to the name of an attribute on the Gnosis instance which will represent the deployed version of the contract, analogous to :attr:`standardMarketFactory` or :attr:`lmsrMarketMaker`.
+     */
+    async importContracts(artifacts, instanceNames) {
+        _.forOwn(artifacts, (artifact, name) => {
+            if(this.contracts[name]) {
+                throw new Error(`custom contract ${ name } already exists in contract set!`)
+            }
+
+            const contract = TruffleContract(artifact)
+            contract.setProvider(this.web3.currentProvider)
+            contract.defaults({
+                from: this.defaultAccount
+            })
+
+            this.contracts[name] = contract
+        })
+
+        Object.assign(this.instanceNames, instanceNames)
+
+        await Promise.all(_.toPairs(instanceNames).map(([cName, iName]) =>
+            this.trySettingContractInstance(iName, this.contracts[cName])))
+    }
 
     setDefaultAccount (account) {
         /**

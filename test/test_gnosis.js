@@ -1,5 +1,6 @@
 import assert from 'assert'
 import ganache from 'ganache-cli'
+import olympiaArtifacts from '@gnosis.pm/olympia-token'
 import Gnosis from '../src/index'
 import {
     description,
@@ -77,12 +78,30 @@ describe('Gnosis', function () {
         assert.equal(gnosis.etherToken.address, '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2')
     })
 
-    it('initializes on Rinkeby with Olympia related contracts', async () => {
-        let gnosis = await Gnosis.create({
-            ethereum: ganache.provider({ network_id: 4 }),
+    it('can import custom deployed smart contract sets with config data', async () => {
+        let gnosis = await Gnosis.create(options)
+
+        await gnosis.importContracts(olympiaArtifacts, {
+            OlympiaToken: 'olympiaToken',
+            AddressRegistry: 'olympiaAddressRegistry',
         })
+
+        assert.notEqual(gnosis.contracts.PlayToken, null)
+        assert.equal(gnosis.olympiaToken, undefined)
+        assert.equal(gnosis.olympiaAddressRegistry, undefined)
+
+        await gnosis.setWeb3Provider(ganache.provider({ network_id: 4 }))
+
         assert.equal(gnosis.olympiaToken.address, '0xa0c107db0e9194c18359d3265289239453b56cf2')
         assert.equal(gnosis.olympiaAddressRegistry.address, '0x79da1c9ef6bf6bc64e66f8abffddc1a093e50f13')
+
+        // TODO: Truffle contracts cache the address last used to represent deployed contracts
+        //       even after the provider has changed to provide for another network.
+        //       When this behavior is no longer the case, the next bit can be uncommented and should pass.
+        // await gnosis.setWeb3Provider(ganache.provider())
+
+        // assert.equal(gnosis.olympiaToken, undefined)
+        // assert.equal(gnosis.olympiaAddressRegistry, undefined)
     })
 
     it('reports more informative error messages and logs messages', async () => {

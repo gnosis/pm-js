@@ -6,7 +6,7 @@
     "lint": "eslint ./",
     "doc": "cd docs/source/ && sphinx-build . ../build && node -e 'require(\"open\")(\"../build/index.html\")'",
     "compile": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle compile",
-    "migrate": "npm run migrate-core && npm run migrate-oly",
+    "migrate": "npm run migrate-core",
     "migrate-core": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle migrate",
     "migrate-oly": "cd node_modules/@gnosis.pm/olympia-token && truffle migrate",
     "netreset": "npm run netreset-core && npm run netreset-oly",
@@ -38,6 +38,7 @@
   "license": "MIT",
   "homepage": "https://github.com/gnosis/gnosis.js#readme",
   "devDependencies": {
+    "@gnosis.pm/olympia-token": "^1.2.1",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.2",
@@ -71,7 +72,6 @@
   },
   "dependencies": {
     "@gnosis.pm/gnosis-core-contracts": "^1.0.3",
-    "@gnosis.pm/olympia-token": "^1.2.1",
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
     "decimal.js": "^10.0.0",
