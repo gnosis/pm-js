@@ -16,7 +16,7 @@
     "webbuild": "webpack && cross-env WEBPACK_ENV=minified webpack -p",
     "dev": "run-with-testrpc 'npm run migrate && webpack-dev-server'",
     "test": "run-with-testrpc -l 40000000 'npm run migrate && npm run test-manual'",
-    "test-manual": "mocha --require babel-core/register $MOCHA_OPTS",
+    "test-manual": "mocha --timeout 120000 --require babel-core/register $MOCHA_OPTS",
     "test-gnosisdb": "cross-env GNOSIS_OPTIONS='{\"ipfs\":{\"host\":\"localhost\",\"port\":5001,\"protocol\":\"http\"}}' npm run test-manual",
     "prepublish": "npm run netreset && npm run nodebuild && npm run webbuild"
   },
