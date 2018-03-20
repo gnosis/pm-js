@@ -1,4 +1,4 @@
-### API Overview
+# API Overview
 
 The Gnosis.js library is encapsulated inside of the [Gnosis](api-reference.html#Gnosis) class. In order for it to function, it must be connected to an Ethereum network through a [Web3.js](https://github.com/ethereum/wiki/wiki/JavaScript-API) interface. It also uses [IPFS](https://ipfs.io/) for publishing and retrieving event data, and so it will also have to be connected to an IPFS node. Configuration of these connections can be done with a call to the asynchronous factory function [Gnosis.create](api-reference.html#Gnosis.create). For example, the following code will store an instance of the Gnosis.js library into the variable `gnosis`:
 
