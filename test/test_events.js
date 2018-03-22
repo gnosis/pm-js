@@ -3,15 +3,16 @@ import Gnosis from '../src/index'
 import {
     description,
     options,
+    multiWeb3GnosisDescribe,
 } from './test_utils'
 
 const { requireEventFromTXResult } = Gnosis
 
-describe('Gnosis events', () => {
+multiWeb3GnosisDescribe('Gnosis events', ({ gnosisQ }) => {
     let gnosis, ipfsHash, oracle
 
     beforeEach(async () => {
-        gnosis = await Gnosis.create(options)
+        gnosis = await gnosisQ
         ipfsHash = await gnosis.publishEventDescription(description)
         oracle = await gnosis.createCentralizedOracle(ipfsHash)
     })

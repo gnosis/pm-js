@@ -190,9 +190,12 @@ class Gnosis {
             this.web3 = new Web3(new Web3.providers.HttpProvider(provider))
         } else if (
             typeof provider === 'object' &&
-            typeof provider.send === 'function' &&
-            typeof provider.sendAsync === 'function'
+            typeof provider.send === 'function'
         ) {
+            if(typeof provider.sendAsync !== 'function') {
+                provider.sendAsync = provider.send
+            }
+
             this.web3 = new Web3(provider)
         } else {
             throw new TypeError(`provider of type '${typeof provider}' not supported`)

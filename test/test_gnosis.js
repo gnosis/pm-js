@@ -5,6 +5,7 @@ import {
     description,
     options,
     requireRejection,
+    multiWeb3It,
 } from './test_utils'
 
 const { requireEventFromTXResult } = Gnosis
@@ -47,6 +48,13 @@ describe('Gnosis', function () {
 
         let gnosis = await Gnosis.create({
             ethereum: provider,
+        })
+        assert(gnosis)
+    })
+
+    multiWeb3It('initializes with a Web3 HTTP provider', async (Web3) => {
+        const gnosis = await Gnosis.create({
+            ethereum: new Web3.providers.HttpProvider('http://localhost:8545'),
         })
         assert(gnosis)
     })
