@@ -16,3 +16,4 @@ The Gnosis JavaScript library should work for any OS. It has the following syste
    api-overview
    events-oracles-and-markets
    lmsr-primer
+   tournament-operation

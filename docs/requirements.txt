@@ -1,3 +1,4 @@
+pygments-lexer-solidity
 sphinx-js
 sphinx-issues
 sphinx-autobuild
