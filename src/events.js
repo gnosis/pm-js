@@ -7,9 +7,9 @@ import { wrapWeb3Function, normalizeWeb3Args, requireEventFromTXResult } from '.
  * Note: this method is asynchronous and will return a Promise
  *
  * @function
- * @param {(Contract|string)} opts.collateralToken - The collateral token contract or its address
- * @param {(Contract|string)} opts.oracle - The oracle responsible for resolving this event
- * @param {(number|string|BigNumber)} opts.outcomeCount - The number of outcomes of this event
+ * @param {Contract|string} opts.collateralToken - The collateral token contract or its address
+ * @param {Contract|string} opts.oracle - The oracle responsible for resolving this event
+ * @param {number|string|BigNumber} opts.outcomeCount - The number of outcomes of this event
  * @returns {Contract} The created categorical event
  * @alias Gnosis#createCategoricalEvent
  */
@@ -27,10 +27,10 @@ export const createCategoricalEvent = wrapWeb3Function((self) => ({
  * Note: this method is asynchronous and will return a Promise
  *
  * @function
- * @param {(Contract|string)} opts.collateralToken - The collateral token contract or its address
- * @param {(Contract|string)} opts.oracle - The oracle responsible for resolving this event
- * @param {(number|string|BigNumber)} opts.lowerBound - The lower bound for the event outcome
- * @param {(number|string|BigNumber)} opts.upperBound - The upper bound for the event outcome
+ * @param {Contract|string} opts.collateralToken - The collateral token contract or its address
+ * @param {Contract|string} opts.oracle - The oracle responsible for resolving this event
+ * @param {number|string|BigNumber} opts.lowerBound - The lower bound for the event outcome
+ * @param {number|string|BigNumber} opts.upperBound - The upper bound for the event outcome
  * @returns {Contract} The created scalar event
  * @alias Gnosis#createScalarEvent
  */
@@ -79,8 +79,8 @@ export async function loadEventDescription (ipfsHash) {
  *
  * Note: this method is asynchronous and will return a Promise
  *
- * @param {(Contract|string)} opts.event - The event address or instance
- * @param {(number|string|BigNumber)} opts.outcome - The outcome to set this event to. This is the zero-based index of the outcome for categorical events and the decimals-adjusted value of the outcome for scalar events.
+ * @param {Contract|string} opts.event - The event address or instance
+ * @param {number|string|BigNumber} opts.outcome - The outcome to set this event to. This is the zero-based index of the outcome for categorical events and the decimals-adjusted value of the outcome for scalar events.
  * @alias Gnosis#resolveEvent
  */
 export async function resolveEvent() {

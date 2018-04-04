@@ -12,12 +12,11 @@ import {
  *
  * Note: this method is asynchronous and will return a Promise
  *
- * @function
- * @param {(Contract|string)} opts.event - The forwarded oracle contract or its address
- * @param {(Contract|string)} opts.marketMaker - The collateral token contract or its address
- * @param {(number|string|BigNumber)} opts.fee - The fee factor. Specifying 1,000,000 corresponds to 100%, 50,000 corresponds to 5%, etc.
- * @param {(Contract|string)} [opts.marketFactory=Gnosis.standardMarketFactory] - The factory contract
- * @returns {Contract} The created market contract instance. If marketFactory is StandardMarketFactory (https://gnosis.github.io/gnosis-contracts/docs/StandardMarketFactory/), this should be a StandardMarket (https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/)
+ * @param {Contract|string} opts.event - The forwarded oracle contract or its address
+ * @param {Contract|string} opts.marketMaker - The collateral token contract or its address
+ * @param {number|string|BigNumber} opts.fee - The fee factor. Specifying 1,000,000 corresponds to 100%, 50,000 corresponds to 5%, etc.
+ * @param {Contract|string} [opts.marketFactory=Gnosis.standardMarketFactory] - The factory contract
+ * @returns {Contract} The created market contract instance. If marketFactory is `StandardMarketFactory <https://gnosis.github.io/gnosis-contracts/docs/StandardMarketFactory/>`_, this should be a `StandardMarket <https://gnosis.github.io/gnosis-contracts/docs/StandardMarket/>`_
  * @alias Gnosis#createMarket
  */
 export const createMarket = wrapWeb3Function((self, opts) => {
@@ -73,13 +72,13 @@ const syncDescribedTransactions = async (txInfo, log) =>
  *
  * Note: this method is asynchronous and will return a Promise
  *
- * @param {(Contract|string)} opts.market - The market to buy tokens from
- * @param {(number|string|BigNumber)} opts.outcomeTokenIndex - The index of the outcome
- * @param {(number|string|BigNumber)} opts.outcomeTokenCount - Number of outcome tokens to buy
- * @param {(number|string|BigNumber)} [opts.limitMargin=0] - Because transactions change prices, there is a chance that the cost limit for the buy, which is set to the cost according to the latest mined block, will prevent the buy transaction from succeeding. This parameter can be used to increase the cost limit by a fixed proportion. For example, specifying `limitMargin: 0.05` will make the cost limit increase by 5%.
- * @param {(number|string|BigNumber)} [opts.cost] - Overrides the cost limit supplied to the market contract which is derived from the latest block state of the market along with the `outcomeTokenCount` and `limitMargin` parameters.
- * @param {(number|string|BigNumber)} [opts.approvalAmount] - Amount of collateral to allow market to spend. If unsupplied or null, allowance will be reset to the `approvalResetAmount` only if necessary. If set to 0, the approval transaction will be skipped.
- * @param {(number|string|BigNumber)} [opts.approvalResetAmount] - Set to this amount when resetting market collateral allowance. If unsupplied or null, will be the cost of this transaction.
+ * @param {Contract|string} opts.market - The market to buy tokens from
+ * @param {number|string|BigNumber} opts.outcomeTokenIndex - The index of the outcome
+ * @param {number|string|BigNumber} opts.outcomeTokenCount - Number of outcome tokens to buy
+ * @param {number|string|BigNumber} [opts.limitMargin=0] - Because transactions change prices, there is a chance that the cost limit for the buy, which is set to the cost according to the latest mined block, will prevent the buy transaction from succeeding. This parameter can be used to increase the cost limit by a fixed proportion. For example, specifying `limitMargin: 0.05` will make the cost limit increase by 5%.
+ * @param {number|string|BigNumber} [opts.cost] - Overrides the cost limit supplied to the market contract which is derived from the latest block state of the market along with the `outcomeTokenCount` and `limitMargin` parameters.
+ * @param {number|string|BigNumber} [opts.approvalAmount] - Amount of collateral to allow market to spend. If unsupplied or null, allowance will be reset to the `approvalResetAmount` only if necessary. If set to 0, the approval transaction will be skipped.
+ * @param {number|string|BigNumber} [opts.approvalResetAmount] - Set to this amount when resetting market collateral allowance. If unsupplied or null, will be the cost of this transaction.
  * @param {Object} [opts.approveTxOpts] - Extra transaction options for the approval transaction if it occurs. These options override the options specified in sibling properties of the parameter object.
  * @param {Object} [opts.buyTxOpts] - Extra transaction options for the buy transaction. These options override the options specified in sibling properties of the parameter object.
  * @returns {BigNumber} How much collateral tokens caller paid
@@ -174,13 +173,13 @@ buyOutcomeTokens.estimateGas = async function({ using }) {
  *
  * Note: this method is asynchronous and will return a Promise
  *
- * @param {(Contract|string)} opts.market - The market to sell tokens to
- * @param {(number|string|BigNumber)} opts.outcomeTokenIndex - The index of the outcome
- * @param {(number|string|BigNumber)} opts.outcomeTokenCount - Number of outcome tokens to sell
- * @param {(number|string|BigNumber)} [opts.limitMargin=0] - Because transactions change profits, there is a chance that the profit limit for the sell, which is set to the profit according to the latest mined block, will prevent the sell transaction from succeeding. This parameter can be used to decrease the profit limit by a fixed proportion. For example, specifying `limitMargin: 0.05` will make the profit limit decrease by 5%.
- * @param {(number|string|BigNumber)} [opts.minProfit] - Overrides the minimum profit limit supplied to the market contract which is derived from the latest block state of the market along with the `outcomeTokenCount` and `limitMargin` parameters.
- * @param {(number|string|BigNumber)} [opts.approvalAmount] - Amount of outcome tokens to allow market to handle. If unsupplied or null, allowance will be reset to the `approvalResetAmount` only if necessary. If set to 0, the approval transaction will be skipped.
- * @param {(number|string|BigNumber)} [opts.approvalResetAmount] - Set to this amount when resetting market outcome token allowance. If unsupplied or null, will be the sale amount specified by `outcomeTokenCount`.
+ * @param {Contract|string} opts.market - The market to sell tokens to
+ * @param {number|string|BigNumber} opts.outcomeTokenIndex - The index of the outcome
+ * @param {number|string|BigNumber} opts.outcomeTokenCount - Number of outcome tokens to sell
+ * @param {number|string|BigNumber} [opts.limitMargin=0] - Because transactions change profits, there is a chance that the profit limit for the sell, which is set to the profit according to the latest mined block, will prevent the sell transaction from succeeding. This parameter can be used to decrease the profit limit by a fixed proportion. For example, specifying `limitMargin: 0.05` will make the profit limit decrease by 5%.
+ * @param {number|string|BigNumber} [opts.minProfit] - Overrides the minimum profit limit supplied to the market contract which is derived from the latest block state of the market along with the `outcomeTokenCount` and `limitMargin` parameters.
+ * @param {number|string|BigNumber} [opts.approvalAmount] - Amount of outcome tokens to allow market to handle. If unsupplied or null, allowance will be reset to the `approvalResetAmount` only if necessary. If set to 0, the approval transaction will be skipped.
+ * @param {number|string|BigNumber} [opts.approvalResetAmount] - Set to this amount when resetting market outcome token allowance. If unsupplied or null, will be the sale amount specified by `outcomeTokenCount`.
  * @param {Object} [opts.approveTxOpts] - Extra transaction options for the approval transaction if it occurs. These options override the options specified in sibling properties of the parameter object.
  * @param {Object} [opts.sellTxOpts] - Extra transaction options for the sell transaction. These options override the options specified in sibling properties of the parameter object.
  * @returns {BigNumber} How much collateral tokens caller received from sale
