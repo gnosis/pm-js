@@ -32,12 +32,12 @@ export const createCentralizedOracle = wrapWeb3Function((self) => ({
  * Note: this method is asynchronous and will return a Promise
  *
  * @function
- * @param {(Contract|string)} opts.forwardedOracle - The forwarded oracle contract or its address
- * @param {(Contract|string)} opts.collateralToken - The collateral token contract or its address
- * @param {(number|string|BigNumber)} opts.spreadMultiplier - The spread multiplier
- * @param {(number|string|BigNumber)} opts.challengePeriod - The challenge period in seconds
- * @param {(number|string|BigNumber)} opts.challengeAmount - The amount of collateral tokens put at stake in the challenge
- * @param {(number|string|BigNumber)} opts.frontRunnerPeriod - The front runner period in seconds
+ * @param {Contract|string} opts.forwardedOracle - The forwarded oracle contract or its address
+ * @param {Contract|string} opts.collateralToken - The collateral token contract or its address
+ * @param {number|string|BigNumber} opts.spreadMultiplier - The spread multiplier
+ * @param {number|string|BigNumber} opts.challengePeriod - The challenge period in seconds
+ * @param {number|string|BigNumber} opts.challengeAmount - The amount of collateral tokens put at stake in the challenge
+ * @param {number|string|BigNumber} opts.frontRunnerPeriod - The front runner period in seconds
  * @returns {Contract} The created ultimate oracle contract instance
  * @alias Gnosis#createUltimateOracle
  */
