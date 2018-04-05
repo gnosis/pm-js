@@ -10,8 +10,6 @@ Classes
 Methods
 -------
 
-.. automethod:: Gnosis.createMarket
-
 .. autofunction:: calcLMSRCost
 
 .. autofunction:: calcLMSRMarginalPrice
