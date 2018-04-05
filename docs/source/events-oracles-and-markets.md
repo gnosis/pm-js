@@ -83,6 +83,7 @@ When an event has been created, users can convert their collateral into sets of 
 
 ```js
 async function buyAllOutcomes() {
+    const depositValue = 4e18 // 4 ether
     const txResults = await Promise.all([
         [gnosis.etherToken.constructor, await gnosis.etherToken.deposit.sendTransaction({ value: depositValue })],
         [gnosis.etherToken.constructor, await gnosis.etherToken.approve.sendTransaction(event.address, depositValue)],
