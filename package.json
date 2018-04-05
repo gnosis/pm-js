@@ -5,6 +5,7 @@
   "scripts": {
     "lint": "eslint ./",
     "doc": "cd docs/source/ && sphinx-build . ../build && node -e 'require(\"open\")(\"../build/index.html\")'",
+    "docwatch": "cd docs/source/ && sphinx-autobuild . ../build",
     "compile": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle compile",
     "migrate": "npm run migrate-core",
     "migrate-core": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle migrate",
