@@ -8,7 +8,7 @@
 
 ## Getting Started
 
-See the [documentation](https://gnosisjs.readthedocs.io/en/latest/developer-guide.html).
+See the [documentation](https://gnosisjs.readthedocs.io/en/latest/).
 
 ## Really quick start
 
