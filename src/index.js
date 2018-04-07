@@ -98,22 +98,22 @@ class Gnosis {
         /**
          * A collection of Truffle contract abstractions for the following Gnosis contracts:
          *
-         * - `Math <https://gnosis.github.io/gnosis-contracts/docs/Math>`_
-         * - `Event <https://gnosis.github.io/gnosis-contracts/docs/Event>`_
-         * - `CategoricalEvent <https://gnosis.github.io/gnosis-contracts/docs/CategoricalEvent>`_
-         * - `ScalarEvent <https://gnosis.github.io/gnosis-contracts/docs/ScalarEvent>`_
-         * - `EventFactory <https://gnosis.github.io/gnosis-contracts/docs/EventFactory>`_
-         * - `Token <https://gnosis.github.io/gnosis-contracts/docs/Token>`_
-         * - `HumanFriendlyToken <https://gnosis.github.io/gnosis-contracts/docs/HumanFriendlyToken>`_
-         * - `Ether Token <https://gnosis.github.io/gnosis-contracts/docs/EtherToken>`_
-         * - `CentralizedOracle <https://gnosis.github.io/gnosis-contracts/docs/CentralizedOracle>`_
-         * - `CentralizedOracleFactory <https://gnosis.github.io/gnosis-contracts/docs/CentralizedOracleFactory>`_
-         * - `UltimateOracle <https://gnosis.github.io/gnosis-contracts/docs/UltimateOracle>`_
-         * - `UltimateOracleFactory <https://gnosis.github.io/gnosis-contracts/docs/UltimateOracleFactory>`_
-         * - `LMSR Market Maker <https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker>`_
-         * - `Market <https://gnosis.github.io/gnosis-contracts/docs/Market>`_
-         * - `StandardMarket <https://gnosis.github.io/gnosis-contracts/docs/StandardMarket>`_
-         * - `Standard Market Factory <https://gnosis.github.io/gnosis-contracts/docs/StandardMarketFactory>`_
+         * - `Math <https://gnosis-contracts.readthedocs.io/en/latest/Math.html>`_
+         * - `Event <https://gnosis-contracts.readthedocs.io/en/latest/Event.html>`_
+         * - `CategoricalEvent <https://gnosis-contracts.readthedocs.io/en/latest/CategoricalEvent.html>`_
+         * - `ScalarEvent <https://gnosis-contracts.readthedocs.io/en/latest/ScalarEvent.html>`_
+         * - `EventFactory <https://gnosis-contracts.readthedocs.io/en/latest/EventFactory.html>`_
+         * - `Token <https://gnosis-contracts.readthedocs.io/en/latest/Token.html>`_
+         * - `HumanFriendlyToken <https://gnosis-contracts.readthedocs.io/en/latest/HumanFriendlyToken.html>`_
+         * - `Ether Token <https://gnosis-contracts.readthedocs.io/en/latest/EtherToken.html>`_
+         * - `CentralizedOracle <https://gnosis-contracts.readthedocs.io/en/latest/CentralizedOracle.html>`_
+         * - `CentralizedOracleFactory <https://gnosis-contracts.readthedocs.io/en/latest/CentralizedOracleFactory.html>`_
+         * - `UltimateOracle <https://gnosis-contracts.readthedocs.io/en/latest/UltimateOracle.html>`_
+         * - `UltimateOracleFactory <https://gnosis-contracts.readthedocs.io/en/latest/UltimateOracleFactory.html>`_
+         * - `LMSR Market Maker <https://gnosis-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html>`_
+         * - `Market <https://gnosis-contracts.readthedocs.io/en/latest/Market.html>`_
+         * - `StandardMarket <https://gnosis-contracts.readthedocs.io/en/latest/StandardMarket.html>`_
+         * - `Standard Market Factory <https://gnosis-contracts.readthedocs.io/en/latest/StandardMarketFactory.html>`_
          *
          * These are configured to use the web3 provider specified in Gnosis.create or subsequently modified with Gnosis.setWeb3Provider. The default gas costs for these abstractions are set to the maximum cost of their respective entries found in the `gas-stats.json` file built from the `core contracts <https://github.com/gnosis/gnosis-contracts#readme>`_. Additionally, the default message sender (i.e. `from` address) is set via the optional `defaultAccount` param in Gnosis.setWeb3Provider.
          *
@@ -214,7 +214,7 @@ class Gnosis {
             /**
              * If on mainnet, this will be an EtherToken contract abstraction pointing to the `MakerDAO WETH contract <https://etherscan.io/address/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2#code>`_.
              *
-             * Otherwise, if `EtherToken <https://gnosis.github.io/gnosis-contracts/docs/EtherToken/>`_ is deployed to the current network, this will be set to an EtherToken contract abstraction pointing at the deployment address.
+             * Otherwise, if `EtherToken <https://gnosis-contracts.readthedocs.io/en/latest/EtherToken.html>`_ is deployed to the current network, this will be set to an EtherToken contract abstraction pointing at the deployment address.
              *
              * @member {Contract} Gnosis#etherToken
              */
@@ -227,14 +227,14 @@ class Gnosis {
             })(),
 
             /**
-             * If `StandardMarketFactory <https://gnosis.github.io/gnosis-contracts/docs/StandardMarketFactory/>`_ is deployed to the current network, this will be set to an StandardMarketFactory contract abstraction pointing at the deployment address.
+             * If `StandardMarketFactory <https://gnosis-contracts.readthedocs.io/en/latest/StandardMarketFactory.html>`_ is deployed to the current network, this will be set to an StandardMarketFactory contract abstraction pointing at the deployment address.
              *
              * @member {Contract} Gnosis#standardMarketFactory
              */
             this.trySettingContractInstance('standardMarketFactory', this.contracts.StandardMarketFactory),
 
             /**
-             * If `LMSRMarketMaker <https://gnosis.github.io/gnosis-contracts/docs/LMSRMarketMaker/>`_ is deployed to the current network, this will be set to an LMSRMarketMaker contract abstraction pointing at the deployment address.
+             * If `LMSRMarketMaker <https://gnosis-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html>`_ is deployed to the current network, this will be set to an LMSRMarketMaker contract abstraction pointing at the deployment address.
              *
              * @member {Contract} Gnosis#lmsrMarketMaker
              */
