@@ -8,9 +8,9 @@
 
 3. Install [`gnosis-contracts`](https://github.com/gnosis/gnosis-contracts) and `gnosis.js` into your project as a dependency using:
    
-       npm install --save @gnosis.pm/gnosis-core-contracts @gnosis.pm/gnosisjs
+       npm install --save '@gnosis.pm/gnosis-core-contracts' '@gnosis.pm/gnosisjs'
    
-   Be sure to issue this command with this exact spelling.
+   Be sure to issue this command with this exact spelling. The quotes are there in case you use [Powershell](https://stackoverflow.com/a/5571703/1796894).
 
    This command installs the Gnosis core contracts and the Gnosis JavaScript library, and their dependencies into the `node_modules` directory. The [`@gnosis.pm/gnosisjs`](https://www.npmjs.com/package/@gnosis.pm/gnosisjs) package contains the following:
 
