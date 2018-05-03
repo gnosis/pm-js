@@ -1,7 +1,7 @@
 import { Decimal, normalizeWeb3Args } from './utils'
 
 /**
- * Estimates the cost of buying specified number of outcome tokens from LMSR market.
+ * Estimates the cost of buying specified number of outcome tokens from LMSR market. Unfunded markets will be handled as a special case, returning the outcomeTokenCount passed plus its corresponding fee fee.
  * @param {number[]|string[]|BigNumber[]} opts.netOutcomeTokensSold - Amounts of net outcome tokens that have been sold. Negative amount means more have been bought than sold.
  * @param {number|string|BigNumber} opts.funding - The amount of funding market has
  * @param {number|string|BigNumber} opts.outcomeTokenIndex - The index of the outcome
@@ -27,9 +27,14 @@ export function calcLMSRCost () {
         })
 
     outcomeTokenCount = new Decimal(outcomeTokenCount.toString())
-    let b = new Decimal(funding.toString()).dividedBy(new Decimal(netOutcomeTokensSold.length).ln())
 
-    return b.times(
+    let baseCost
+
+    if(funding == 0) {
+        baseCost = outcomeTokenCount
+    } else {
+        const b = new Decimal(funding.toString()).dividedBy(new Decimal(netOutcomeTokensSold.length).ln())
+        baseCost = b.times(
         netOutcomeTokensSold.reduce((acc, numShares, i) =>
             acc.plus(
                 new Decimal(numShares.toString())
@@ -43,14 +48,16 @@ export function calcLMSRCost () {
                 .dividedBy(b)
                 .exp()),
             new Decimal(0)).ln()
-        )).times(new Decimal(1).plus(new Decimal(feeFactor).dividedBy(1e6)))
+        ))
+    }
+    return baseCost.times(new Decimal(1).plus(new Decimal(feeFactor).dividedBy(1e6)))
         .times(1+1e-9).ceil()   // TODO: Standardize this 1e-9 and 1e9 in isClose of tests
                                 //       This is necessary because of rounding errors due to
                                 //       series truncation in solidity implementation.
 }
 
 /**
- * Estimates profit from selling specified number of outcome tokens to LMSR market.
+ * Estimates profit from selling specified number of outcome tokens to LMSR market.Unfunded markets will be handled as a special case, returning no profit.
  * @param {number[]|string[]|BigNumber[]} opts.netOutcomeTokensSold - Amounts of net outcome tokens that have been sold by the market already. Negative amount means more have been sold to the market than sold by the market.
  * @param {number|string|BigNumber} opts.funding - The amount of funding market has
  * @param {number|string|BigNumber} opts.outcomeTokenIndex - The index of the outcome
@@ -74,6 +81,10 @@ export function calcLMSRProfit () {
                 feeFactor: 0,
             },
         })
+
+    if(funding == 0) {
+        return new Decimal(0)
+    }
 
     outcomeTokenCount = new Decimal(outcomeTokenCount.toString())
     let b = new Decimal(funding.toString()).dividedBy(new Decimal(netOutcomeTokensSold.length).ln())
@@ -146,7 +157,7 @@ export function calcLMSROutcomeTokenCount () {
 }
 
 /**
- * Estimates the marginal price of outcome token.
+ * Estimates the marginal price of outcome token. Unfunded markets with no outcome tokens sold will be handled as a special case, returning (1 / number of outcomes sold).
  * @param {Number[]|string[]|BigNumber[]} opts.netOutcomeTokensSold - Amounts of net outcome tokens that have been sold. Negative amount means more have been bought than sold.
  * @param {number|string|BigNumber} opts.funding - The amount of funding market has
  * @param {number|string|BigNumber} opts.outcomeTokenIndex - The index of the outcome
@@ -163,6 +174,10 @@ export function calcLMSRMarginalPrice() {
                 { name: 'outcomeTokenIndex', type: 'uint8'},
             ]
         })
+
+    if(funding == 0 && netOutcomeTokensSold.every(quantity => quantity == 0)) {
+        return new Decimal(1).div(netOutcomeTokensSold.length)
+    }
 
     const b = Decimal(funding.valueOf()).div(Decimal.ln(netOutcomeTokensSold.length))
     const expOffset = Decimal.max(...netOutcomeTokensSold).div(b)
