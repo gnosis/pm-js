@@ -457,6 +457,38 @@ describe('Gnosis market mechanics', () => {
         assertIsClose(localCalculatedMarginalPrice.valueOf(), chainCalculatedMarginalPrice.div(ONE).valueOf())
     })
 
+    it('can do calculations when market is unfunded', async () => {
+        const outcomeTokenIndex = 0
+        const outcomeTokenCount = 1e18
+        const localCalculatedCost = Gnosis.calcLMSRCost({
+            netOutcomeTokensSold: [0, 0, 0],
+            funding: 0,
+            outcomeTokenIndex,
+            outcomeTokenCount,
+            feeFactor,
+        })
+        assertIsClose(
+            localCalculatedCost.valueOf(),
+            Decimal(outcomeTokenCount).mul(1e6 + feeFactor).div(1e6).valueOf()
+        )
+
+        const localCalculatedProfit = Gnosis.calcLMSRProfit({
+            netOutcomeTokensSold: [0, 0, 0],
+            funding: 0,
+            outcomeTokenIndex,
+            outcomeTokenCount,
+            feeFactor,
+        })
+        assert.equal(localCalculatedProfit.valueOf(), 0)
+
+        const localCalculatedMarginalPrice = Gnosis.calcLMSRMarginalPrice({
+            netOutcomeTokensSold: [0, 0, 0],
+            funding: 0,
+            outcomeTokenIndex
+        })
+        assertIsClose(localCalculatedMarginalPrice.valueOf(), 1/3)
+    })
+
     it('does not mutate arguments when performing calculations', () => {
         let netOutcomeTokensSoldCopy = _.clone(netOutcomeTokensSold)
         let outcomeTokenIndex = 0

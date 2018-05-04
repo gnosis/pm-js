@@ -1,7 +1,7 @@
 language: node_js
 node_js:
 - 'node'
-- '7'
+- '8'
 before_deploy:
 - npm-prepublish --verbose --lax
 deploy:
@@ -11,5 +11,5 @@ deploy:
   on:
     all_branches: true
     tags: true
-    node: '7'
+    node: '8'
     repo: gnosis/gnosis.js
