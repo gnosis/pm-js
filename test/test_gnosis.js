@@ -1,6 +1,6 @@
 import assert from 'assert'
 import ganache from 'ganache-cli'
-import olympiaArtifacts from '@gnosis.pm/olympia-token'
+import olympiaArtifacts from '@gnosis.pm/pm-apollo-token'
 import Gnosis from '../src/index'
 import {
     description,

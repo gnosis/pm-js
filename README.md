@@ -1,14 +1,14 @@
-# Gnosis.js Library
+# pm-js Library
 
-[![Logo](https://raw.githubusercontent.com/gnosis/gnosis.js/master/assets/logo.png)](https://gnosis.pm/)
+[![Logo](https://raw.githubusercontent.com/gnosis/pm-js/master/assets/logo.png)](https://gnosis.pm/)
 
-[![Build Status](https://travis-ci.org/gnosis/gnosis.js.svg?branch=master)](https://travis-ci.org/gnosis/gnosis.js)
+[![Build Status](https://travis-ci.org/gnosis/pm-js.svg?branch=master)](https://travis-ci.org/gnosis/pm-js)
 
 [![Slack Status](https://slack.gnosis.pm/badge.svg)](https://slack.gnosis.pm)
 
 ## Getting Started
 
-See the [documentation](https://gnosisjs.readthedocs.io/en/latest/).
+See the [documentation](https://pm-js.readthedocs.io/en/latest/).
 
 ## Really quick start
 
@@ -20,16 +20,16 @@ See the [documentation](https://gnosisjs.readthedocs.io/en/latest/).
    ```
    ganache-cli -d -i 437894314312
    ```
-3. Clone [Gnosis contracts](https://github.com/gnosis/gnosis-contracts), cd in there, and migrate the contracts onto the Ganache-cli instance with:
+3. Clone [pm-contracts](https://github.com/gnosis/pm-contracts), cd in there, and migrate the contracts onto the Ganache-cli instance with:
    ```
-   cd path/to/gnosis-contracts
+   cd path/to/pm-contracts
    npm install
    npm run migrate
    ```
-4. Download [`gnosis.js`](https://raw.githubusercontent.com/gnosis/gnosis.js/master/dist/gnosis.js) and put it in an HTML file:
+4. Download [`pm.js`](https://raw.githubusercontent.com/gnosis/pm-js/master/dist/pm.js) and put it in an HTML file:
    ```
-   <script src=gnosis.js></script>
+   <script src=pm.js></script>
    ```
 5. Follow some tutorials:
-   * [API Overview](https://gnosisjs.readthedocs.io/en/latest/api-overview.html)
-   * [Events, Oracles, and Markets](https://gnosisjs.readthedocs.io/en/latest/events-oracles-and-markets.html)
+   * [API Overview](https://pm-js.readthedocs.io/en/latest/api-overview.html)
+   * [Events, Oracles, and Markets](https://pm-js.readthedocs.io/en/latest/events-oracles-and-markets.html)

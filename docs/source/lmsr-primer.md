@@ -1,6 +1,6 @@
 # LMSR Primer
 
-The Gnosis.js implementation of the logarithmic market scoring rule mostly follows the [original specification](http://mason.gmu.edu/~rhanson/mktscore.pdf). It is based on the following cost function:
+The pm-js implementation of the logarithmic market scoring rule mostly follows the [original specification](http://mason.gmu.edu/~rhanson/mktscore.pdf). It is based on the following cost function:
 
 $$ C(\vec{q}) = b \log \left( \sum_i \exp \left( { q_i \over b } \right) \right) $$
 
@@ -48,7 +48,7 @@ Thus, in order to guarantee that a market can operate with a liquidity parameter
 
 $$ b = {F \over \log n} $$
 
-In the Gnosis implementation, the [LMSR market maker contract](https://gnosis-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html) is provided with the `funding` \\(F\\) through inspection of the `market`, and \\(b\\) is derived accordingly.
+In the Gnosis implementation, the [LMSR market maker contract](https://pm-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html) is provided with the `funding` \\(F\\) through inspection of the `market`, and \\(b\\) is derived accordingly.
 
 ## Marginal Price of Outcome Tokens
 

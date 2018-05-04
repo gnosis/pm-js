@@ -1,12 +1,12 @@
 # Contributing Guide
 
-We welcome you to submit pull requests to the [Gnosis JS Github repo](https://github.com/gnosis/gnosis.js), and we will do our best to make sure they are reviewed. If your pull request isn't adjusted and merged, at least the idea and use case scenario will be taken into consideration. That said, if something is a significant time investment, consider describing the change in an issue first before you take the plunge.
+We welcome you to submit pull requests to the [pm-js Github repo](https://github.com/gnosis/pm-js), and we will do our best to make sure they are reviewed. If your pull request isn't adjusted and merged, at least the idea and use case scenario will be taken into consideration. That said, if something is a significant time investment, consider describing the change in an issue first before you take the plunge.
 
-The rest of this article will detail getting started with setting up a local development copy of Gnosis JS.
+The rest of this article will detail getting started with setting up a local development copy of pm-js.
 
 ## Installation
 
-First use Git to clone the [repo](https://github.com/gnosis/gnosis.js).
+First use Git to clone the [repo](https://github.com/gnosis/pm-js).
 
 Run `npm install` to install dependencies.
 
@@ -60,6 +60,6 @@ You can also spin up a documentation build watcher with `npm run docwatch`. The 
 
 As long as we like your pull request, we promise we won't nitpick on little things. That said, we would appreciate it if you observe the following:
 
-* Make sure the changeset for your PR is comprehensible. Basically, don't commit `dist/gnosis.js` if you happen to rebuild it. We will do that every release.
+* Make sure the changeset for your PR is comprehensible. Basically, don't commit `dist/pm-js` if you happen to rebuild it. We will do that every release.
 * Please write tests for new features, and consider adding regression tests for fixes.
 * Make each commit/PR about one thing if you can.

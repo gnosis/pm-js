@@ -1,5 +1,5 @@
 {
-  "name": "@gnosis.pm/gnosisjs",
+  "name": "@gnosis.pm/pm-js",
   "version": "2.0.0",
   "description": "A javascript library for building applications on top of Gnosis, the Ethereum prediction market platform",
   "scripts": {
@@ -9,22 +9,22 @@
     "compile": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle compile",
     "migrate": "npm run migrate-core",
     "migrate-core": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle migrate",
-    "migrate-oly": "cd node_modules/@gnosis.pm/olympia-token && truffle migrate",
+    "migrate-oly": "cd node_modules/@gnosis.pm/pm-apollo-token && truffle migrate",
     "netreset": "npm run netreset-core && npm run netreset-oly",
     "netreset-core": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle networks --clean && node scripts/inject_network_info.js",
-    "netreset-oly": "cd node_modules/@gnosis.pm/olympia-token && truffle networks --clean && node scripts/inject_network_info.js",
+    "netreset-oly": "cd node_modules/@gnosis.pm/pm-apollo-token && truffle networks --clean && node scripts/inject_network_info.js",
     "nodebuild": "babel src/ --out-dir dist --source-maps",
     "webbuild": "webpack && cross-env WEBPACK_ENV=minified webpack -p",
     "dev": "run-with-testrpc 'npm run migrate && webpack-dev-server'",
     "test": "run-with-testrpc -l 40000000 'npm run migrate && npm run test-manual'",
     "test-manual": "multidep test/multidep.json && mocha --timeout 120000 --require babel-core/register $MOCHA_OPTS",
-    "test-gnosisdb": "cross-env GNOSIS_OPTIONS='{\"ipfs\":{\"host\":\"localhost\",\"port\":5001,\"protocol\":\"http\"}}' npm run test-manual",
+    "test-pm-trading-db": "cross-env GNOSIS_OPTIONS='{\"ipfs\":{\"host\":\"localhost\",\"port\":5001,\"protocol\":\"http\"}}' npm run test-manual",
     "prepublish": "npm run netreset && npm run nodebuild && npm run webbuild"
   },
   "main": "dist/index",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gnosis/gnosis.js.git"
+    "url": "git+https://github.com/gnosis/pm-js.git"
   },
   "keywords": [
     "gnosis",
@@ -37,9 +37,9 @@
   ],
   "author": "Gnosis (https://gnosis.pm/)",
   "license": "MIT",
-  "homepage": "https://github.com/gnosis/gnosis.js#readme",
+  "homepage": "https://github.com/gnosis/pm-js#readme",
   "devDependencies": {
-    "@gnosis.pm/olympia-token": "^1.2.1",
+    "@gnosis.pm/pm_apollo-token": "^1.2.1",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.2",

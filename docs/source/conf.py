@@ -22,7 +22,7 @@ from recommonmark.parser import CommonMarkParser
 
 # -- Project information -----------------------------------------------------
 
-project = u'gnosis.js'
+project = u'pm-js'
 copyright = u'2018, Gnosis'
 author = u'Gnosis'
 
@@ -112,7 +112,7 @@ html_static_path = [join(sphinx_rtd_theme.get_html_theme_path(), 'sphinx_rtd_the
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Gnosisjsdoc'
+htmlhelp_basename = 'pmjsdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -139,7 +139,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'gnosisjs.tex', u'gnosis.js Documentation',
+    (master_doc, 'pm-js.tex', u'pm-js Documentation',
      u'Gnosis', 'manual'),
 ]
 
@@ -149,7 +149,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'gnosisjs', u'gnosis.js Documentation',
+    (master_doc, 'pm-js', u'pm-js Documentation',
      [author], 1)
 ]
 
@@ -160,8 +160,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'gnosisjs', u'gnosis.js Documentation',
-     author, 'gnosisjs', 'Gnosis JavaScript Library',
+    (master_doc, 'pm-js', u'pm-js Documentation',
+     author, 'pm-js', 'Prediction Markets JavaScript Library',
      'Miscellaneous'),
 ]
 
