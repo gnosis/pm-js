@@ -1,6 +1,6 @@
 # API Overview
 
-The Gnosis.js library is encapsulated inside of the [Gnosis](api-reference.html#Gnosis) class. In order for it to function, it must be connected to an Ethereum network through a [Web3.js](https://github.com/ethereum/wiki/wiki/JavaScript-API) interface. It also uses [IPFS](https://ipfs.io/) for publishing and retrieving event data, and so it will also have to be connected to an IPFS node. Configuration of these connections can be done with a call to the asynchronous factory function [Gnosis.create](api-reference.html#Gnosis.create). For example, the following code will store an instance of the Gnosis.js library into the variable `gnosis`:
+The pm-js library is encapsulated inside of the [Gnosis](api-reference.html#Gnosis) class. In order for it to function, it must be connected to an Ethereum network through a [Web3.js](https://github.com/ethereum/wiki/wiki/JavaScript-API) interface. It also uses [IPFS](https://ipfs.io/) for publishing and retrieving event data, and so it will also have to be connected to an IPFS node. Configuration of these connections can be done with a call to the asynchronous factory function [Gnosis.create](api-reference.html#Gnosis.create). For example, the following code will store an instance of the pm-js library into the variable `gnosis`:
 
 ```javascript
 let gnosis
@@ -19,7 +19,7 @@ Because of the library's dependence on remote service providers and the necessit
 
 ## Truffle contract abstractions
 
-Gnosis.js also relies on [Truffle contract abstractions](https://github.com/trufflesuite/truffle-contract). In fact, much of the underlying core contract functionality can be accessed in Gnosis.js as one of these abstractions. Since the Truffle contract wrapper has to perform asynchronous actions such as wait on the result of a remote request to an Ethereum RPC node, it also uses thenables. For example, here is how to use the on-chain Gnosis [Math](https://gnosis-contracts.readthedocs.io/en/latest/Math.html) library exposed at [Gnosis.contracts](api-reference.html#Gnosis.contracts) to print the approximate natural log of a number:
+pm-js also relies on [Truffle contract abstractions](https://github.com/trufflesuite/truffle-contract). In fact, much of the underlying core contract functionality can be accessed in pm-js as one of these abstractions. Since the Truffle contract wrapper has to perform asynchronous actions such as wait on the result of a remote request to an Ethereum RPC node, it also uses thenables. For example, here is how to use the on-chain Gnosis [Math](https://gnosis-pm-contracts.readthedocs.io/en/latest/Math.html) library exposed at [Gnosis.contracts](api-reference.html#Gnosis.contracts) to print the approximate natural log of a number:
 
 ```javascript
 const ONE = Math.pow(2, 64)
@@ -42,7 +42,7 @@ console.log('Math.ln(3) =', (await math.ln(3 * ONE)).valueOf() / ONE)
 
 ## Wrapping common operations
 
-Gnosis.js also exposes a number of convenience methods wrapping contract operations such as [Gnosis.createCentralizedOracle](api-reference.html#createCentralizedOracle) and [Gnosis.createScalarEvent](api-reference.html#createScalarEvent).
+pm-js also exposes a number of convenience methods wrapping contract operations such as [Gnosis.createCentralizedOracle](api-reference.html#createCentralizedOracle) and [Gnosis.createScalarEvent](api-reference.html#createScalarEvent).
 
 ### Web3 options
 
@@ -63,21 +63,21 @@ Many of the methods on the gnosis API also have an asynchronous `estimateGas` pr
 // using the estimateGas RPC
 await gnosis.createCentralizedOracle.estimateGas(ipfsHash, { using: 'rpc' }))
 
-// using stats derived from gnosis-contracts
+// using stats derived from pm-contracts
 await gnosis.createCentralizedOracle.estimateGas({ using: 'stats' }))
 ```
 
-The gas stats derived from `gnosis-contracts` and used by the `estimateGas` functions when using stats are also added to the contract abstractions in the following property:
+The gas stats derived from `pm-contracts` and used by the `estimateGas` functions when using stats are also added to the contract abstractions in the following property:
 
 ```javascript
-// examples of objects with gas stats for each function derived from gnosis-contracts test suite
+// examples of objects with gas stats for each function derived from pm-contracts test suite
 gnosis.contracts.CentralizedOracle.gasStats
 gnosis.contracts.ScalarEvent.gasStats
 ```
 
 ## (Advanced) Notes for developers who use `web3`
 
-If you would like to continue using `web3` directly, one option is to skip this repo and use the [core contracts](https://github.com/gnosis/gnosis-contracts) directly. The NPM package `@gnosis.pm/gnosis-core-contracts` contains Truffle build artifacts as `build/contracts/*.json`, and those in turn contain contract ABIs, as well as existing deployment locations for various networks. The usage at this level looks something like this:
+If you would like to continue using `web3` directly, one option is to skip this repo and use the [core contracts](https://github.com/gnosis/pm-contracts) directly. The NPM package `@gnosis.pm/gnosis-core-contracts` contains Truffle build artifacts as `build/contracts/*.json`, and those in turn contain contract ABIs, as well as existing deployment locations for various networks. The usage at this level looks something like this:
 
 ```javascript
 const Web3 = require('web3')
@@ -88,7 +88,7 @@ const web3 = new Web3(/* whatever your web3 setup is here... */)
 const eventWeb3Contract = web3.eth.contract(CategoricalEventArtifact.abi, '0x0bf128753dB586f742eaAda502301ea86a7561e6')
 ```
 
-Truffle build artifacts are compatible with [`truffle-contract`](https://github.com/trufflesuite/truffle-contract), which wraps [`web3.eth.contract`](https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethcontract) functionality and provides additional features. If you'd like to take advantage of these features without Gnosis JS, you may use `truffle-contract` in the following way:
+Truffle build artifacts are compatible with [`truffle-contract`](https://github.com/trufflesuite/truffle-contract), which wraps [`web3.eth.contract`](https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethcontract) functionality and provides additional features. If you'd like to take advantage of these features without pm-js, you may use `truffle-contract` in the following way:
 
 ```javascript
 const Web3 = require('web3')
@@ -107,7 +107,7 @@ const CategoricalEvent.setProvider(provider)
 const eventTruffleContract = await CategoricalEvent.at('0x0bf128753dB586f742eaAda502301ea86a7561e6')
 ```
 
-With Gnosis JS, you may accomplish the above with:
+With pm-js, you may accomplish the above with:
 
 ```javascript
 const gnosis = await Gnosis.create({ ethereum: web3.currentProvider })
