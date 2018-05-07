@@ -22,7 +22,7 @@ const windowLoaded = new Promise((accept, reject) => {
     }, false)
 })
 
-const gasStatsData = require('@gnosis.pm/gnosis-core-contracts/build/gas-stats.json')
+const gasStatsData = require('@gnosis.pm/pm-contracts/build/gas-stats.json')
 const gasLimit = 4e6
 const gasDefaultMaxMultiplier = 2
 
@@ -47,12 +47,12 @@ const contractArtifacts = [
     'Market',
     'StandardMarket',
     'StandardMarketFactory',
-].map((name) => require(`@gnosis.pm/gnosis-core-contracts/build/contracts/${name}.json`))
+].map((name) => require(`@gnosis.pm/pm-contracts/build/contracts/${name}.json`))
 
 const instanceModules = [oracles, events, markets]
 
 /**
- * Represents the pm.js API
+ * Represents the Gnosis Prediction Markets JS Library API
  */
 class Gnosis {
     /**
@@ -98,22 +98,22 @@ class Gnosis {
         /**
          * A collection of Truffle contract abstractions for the following Gnosis contracts:
          *
-         * - `Math <https://pm-contracts.readthedocs.io/en/latest/Math.html>`_
-         * - `Event <https://pm-contracts.readthedocs.io/en/latest/Event.html>`_
-         * - `CategoricalEvent <https://pm-contracts.readthedocs.io/en/latest/CategoricalEvent.html>`_
-         * - `ScalarEvent <https://pm-contracts.readthedocs.io/en/latest/ScalarEvent.html>`_
-         * - `EventFactory <https://pm-contracts.readthedocs.io/en/latest/EventFactory.html>`_
-         * - `Token <https://pm-contracts.readthedocs.io/en/latest/Token.html>`_
-         * - `HumanFriendlyToken <https://pm-contracts.readthedocs.io/en/latest/HumanFriendlyToken.html>`_
-         * - `Ether Token <https://pm-contracts.readthedocs.io/en/latest/EtherToken.html>`_
-         * - `CentralizedOracle <https://pm-contracts.readthedocs.io/en/latest/CentralizedOracle.html>`_
-         * - `CentralizedOracleFactory <https://pm-contracts.readthedocs.io/en/latest/CentralizedOracleFactory.html>`_
-         * - `UltimateOracle <https://pm-contracts.readthedocs.io/en/latest/UltimateOracle.html>`_
-         * - `UltimateOracleFactory <https://pm-contracts.readthedocs.io/en/latest/UltimateOracleFactory.html>`_
-         * - `LMSR Market Maker <https://pm-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html>`_
-         * - `Market <https://pm-contracts.readthedocs.io/en/latest/Market.html>`_
-         * - `StandardMarket <https://pm-contracts.readthedocs.io/en/latest/StandardMarket.html>`_
-         * - `Standard Market Factory <https://pm-contracts.readthedocs.io/en/latest/StandardMarketFactory.html>`_
+         * - `Math <https://gnosis-pm-contracts.readthedocs.io/en/latest/Math.html>`_
+         * - `Event <https://gnosis-pm-contracts.readthedocs.io/en/latest/Event.html>`_
+         * - `CategoricalEvent <https://gnosis-pm-contracts.readthedocs.io/en/latest/CategoricalEvent.html>`_
+         * - `ScalarEvent <https://gnosis-pm-contracts.readthedocs.io/en/latest/ScalarEvent.html>`_
+         * - `EventFactory <https://gnosis-pm-contracts.readthedocs.io/en/latest/EventFactory.html>`_
+         * - `Token <https://gnosis-pm-contracts.readthedocs.io/en/latest/Token.html>`_
+         * - `HumanFriendlyToken <https://gnosis-pm-contracts.readthedocs.io/en/latest/HumanFriendlyToken.html>`_
+         * - `Ether Token <https://gnosis-pm-contracts.readthedocs.io/en/latest/EtherToken.html>`_
+         * - `CentralizedOracle <https://gnosis-pm-contracts.readthedocs.io/en/latest/CentralizedOracle.html>`_
+         * - `CentralizedOracleFactory <https://gnosis-pm-contracts.readthedocs.io/en/latest/CentralizedOracleFactory.html>`_
+         * - `UltimateOracle <https://gnosis-pm-contracts.readthedocs.io/en/latest/UltimateOracle.html>`_
+         * - `UltimateOracleFactory <https://gnosis-pm-contracts.readthedocs.io/en/latest/UltimateOracleFactory.html>`_
+         * - `LMSR Market Maker <https://gnosis-pm-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html>`_
+         * - `Market <https://gnosis-pm-contracts.readthedocs.io/en/latest/Market.html>`_
+         * - `StandardMarket <https://gnosis-pm-contracts.readthedocs.io/en/latest/StandardMarket.html>`_
+         * - `Standard Market Factory <https://gnosis-pm-contracts.readthedocs.io/en/latest/StandardMarketFactory.html>`_
          *
          * These are configured to use the web3 provider specified in Gnosis.create or subsequently modified with Gnosis.setWeb3Provider. The default gas costs for these abstractions are set to the maximum cost of their respective entries found in the `gas-stats.json` file built from the `core contracts <https://github.com/gnosis/pm-contracts#readme>`_. Additionally, the default message sender (i.e. `from` address) is set via the optional `defaultAccount` param in Gnosis.setWeb3Provider.
          *
@@ -214,7 +214,7 @@ class Gnosis {
             /**
              * If on mainnet, this will be an EtherToken contract abstraction pointing to the `MakerDAO WETH contract <https://etherscan.io/address/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2#code>`_.
              *
-             * Otherwise, if `EtherToken <https://pm-contracts.readthedocs.io/en/latest/EtherToken.html>`_ is deployed to the current network, this will be set to an EtherToken contract abstraction pointing at the deployment address.
+             * Otherwise, if `EtherToken <https://gnosis-pm-contracts.readthedocs.io/en/latest/EtherToken.html>`_ is deployed to the current network, this will be set to an EtherToken contract abstraction pointing at the deployment address.
              *
              * @member {Contract} Gnosis#etherToken
              */
@@ -227,14 +227,14 @@ class Gnosis {
             })(),
 
             /**
-             * If `StandardMarketFactory <https://pm-contracts.readthedocs.io/en/latest/StandardMarketFactory.html>`_ is deployed to the current network, this will be set to an StandardMarketFactory contract abstraction pointing at the deployment address.
+             * If `StandardMarketFactory <https://gnosis-pm-contracts.readthedocs.io/en/latest/StandardMarketFactory.html>`_ is deployed to the current network, this will be set to an StandardMarketFactory contract abstraction pointing at the deployment address.
              *
              * @member {Contract} Gnosis#standardMarketFactory
              */
             this.trySettingContractInstance('standardMarketFactory', this.contracts.StandardMarketFactory),
 
             /**
-             * If `LMSRMarketMaker <https://pm-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html>`_ is deployed to the current network, this will be set to an LMSRMarketMaker contract abstraction pointing at the deployment address.
+             * If `LMSRMarketMaker <https://gnosis-pm-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html>`_ is deployed to the current network, this will be set to an LMSRMarketMaker contract abstraction pointing at the deployment address.
              *
              * @member {Contract} Gnosis#lmsrMarketMaker
              */

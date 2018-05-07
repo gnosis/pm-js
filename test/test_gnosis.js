@@ -1,6 +1,6 @@
 import assert from 'assert'
 import ganache from 'ganache-cli'
-import olympiaArtifacts from '@gnosis.pm/pm-apollo-token'
+import apolloArtifacts from '@gnosis.pm/pm-apollo-contracts'
 import Gnosis from '../src/index'
 import {
     description,
@@ -81,7 +81,7 @@ describe('Gnosis', function () {
     it('can import custom deployed smart contract sets with config data', async () => {
         let gnosis = await Gnosis.create(options)
 
-        await gnosis.importContracts(olympiaArtifacts, {
+        await gnosis.importContracts(apolloArtifacts, {
             OlympiaToken: 'olympiaToken',
             AddressRegistry: 'olympiaAddressRegistry',
         })
@@ -92,8 +92,8 @@ describe('Gnosis', function () {
 
         await gnosis.setWeb3Provider(ganache.provider({ network_id: 4 }))
 
-        assert.equal(gnosis.olympiaToken.address, '0xa0c107db0e9194c18359d3265289239453b56cf2')
-        assert.equal(gnosis.olympiaAddressRegistry.address, '0x79da1c9ef6bf6bc64e66f8abffddc1a093e50f13')
+        assert.equal(gnosis.olympiaToken.address, '0x979861df79c7408553aaf20c01cfb3f81ccf9341')
+        assert.equal(gnosis.olympiaAddressRegistry.address, '0x6427d856450b20f6fab88be18d949faf9c4da512')
 
         // TODO: Truffle contracts cache the address last used to represent deployed contracts
         //       even after the provider has changed to provide for another network.

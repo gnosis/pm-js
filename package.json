@@ -6,13 +6,13 @@
     "lint": "eslint ./",
     "doc": "cd docs/source/ && sphinx-build . ../build && node -e 'require(\"open\")(\"../build/index.html\")'",
     "docwatch": "cd docs/source/ && sphinx-autobuild . ../build",
-    "compile": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle compile",
+    "compile": "cd node_modules/@gnosis.pm/pm-contracts && truffle compile",
     "migrate": "npm run migrate-core",
-    "migrate-core": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle migrate",
-    "migrate-oly": "cd node_modules/@gnosis.pm/pm-apollo-token && truffle migrate",
+    "migrate-core": "cd node_modules/@gnosis.pm/pm-contracts && truffle migrate",
+    "migrate-oly": "cd node_modules/@gnosis.pm/pm-apollo-contracts && truffle migrate",
     "netreset": "npm run netreset-core && npm run netreset-oly",
-    "netreset-core": "cd node_modules/@gnosis.pm/gnosis-core-contracts && truffle networks --clean && node scripts/inject_network_info.js",
-    "netreset-oly": "cd node_modules/@gnosis.pm/pm-apollo-token && truffle networks --clean && node scripts/inject_network_info.js",
+    "netreset-core": "cd node_modules/@gnosis.pm/pm-contracts && truffle networks --clean && node scripts/inject_network_info.js",
+    "netreset-oly": "cd node_modules/@gnosis.pm/pm-apollo-contracts && truffle networks --clean && node scripts/inject_network_info.js",
     "nodebuild": "babel src/ --out-dir dist --source-maps",
     "webbuild": "webpack && cross-env WEBPACK_ENV=minified webpack -p",
     "dev": "run-with-testrpc 'npm run migrate && webpack-dev-server'",
@@ -39,7 +39,8 @@
   "license": "MIT",
   "homepage": "https://github.com/gnosis/pm-js#readme",
   "devDependencies": {
-    "@gnosis.pm/pm_apollo-token": "^1.2.1",
+    "@gnosis.pm/pm-apollo-contracts": "^1.4.1",
+    "@gnosis.pm/pm-contracts": "^1.0.4",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.2",
@@ -81,6 +82,6 @@
     "web3": "^0.20.6"
   },
   "peerDependencies": {
-    "@gnosis.pm/gnosis-core-contracts": "*"
+    "@gnosis.pm/pm-contracts": "*"
   }
 }

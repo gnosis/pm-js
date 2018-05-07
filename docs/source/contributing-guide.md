@@ -60,6 +60,6 @@ You can also spin up a documentation build watcher with `npm run docwatch`. The 
 
 As long as we like your pull request, we promise we won't nitpick on little things. That said, we would appreciate it if you observe the following:
 
-* Make sure the changeset for your PR is comprehensible. Basically, don't commit `dist/pm-js` if you happen to rebuild it. We will do that every release.
+* Make sure the changeset for your PR is comprehensible. Basically, don't commit `dist/gnosis-pm-js` if you happen to rebuild it. We will do that every release.
 * Please write tests for new features, and consider adding regression tests for fixes.
 * Make each commit/PR about one thing if you can.

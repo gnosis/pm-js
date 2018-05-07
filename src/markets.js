@@ -16,7 +16,7 @@ import {
  * @param {Contract|string} opts.marketMaker - The collateral token contract or its address
  * @param {number|string|BigNumber} opts.fee - The fee factor. Specifying 1,000,000 corresponds to 100%, 50,000 corresponds to 5%, etc.
  * @param {Contract|string} [opts.marketFactory=Gnosis.standardMarketFactory] - The factory contract
- * @returns {Contract} The created market contract instance. If marketFactory is `StandardMarketFactory <https://pm-contracts.readthedocs.io/en/latest/StandardMarketFactory.html>`_, this should be a `StandardMarket <https://pm-contracts.readthedocs.io/en/latest/StandardMarket.html>`_
+ * @returns {Contract} The created market contract instance. If marketFactory is `StandardMarketFactory <https://gnosis-pm-contracts.readthedocs.io/en/latest/StandardMarketFactory.html>`_, this should be a `StandardMarket <https://gnosis-pm-contracts.readthedocs.io/en/latest/StandardMarket.html>`_
  * @alias Gnosis#createMarket
  */
 export const createMarket = wrapWeb3Function((self, opts) => {

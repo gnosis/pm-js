@@ -48,7 +48,7 @@ Thus, in order to guarantee that a market can operate with a liquidity parameter
 
 $$ b = {F \over \log n} $$
 
-In the Gnosis implementation, the [LMSR market maker contract](https://pm-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html) is provided with the `funding` \\(F\\) through inspection of the `market`, and \\(b\\) is derived accordingly.
+In the Gnosis implementation, the [LMSR market maker contract](https://gnosis-pm-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html) is provided with the `funding` \\(F\\) through inspection of the `market`, and \\(b\\) is derived accordingly.
 
 ## Marginal Price of Outcome Tokens
 

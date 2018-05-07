@@ -19,7 +19,7 @@ Because of the library's dependence on remote service providers and the necessit
 
 ## Truffle contract abstractions
 
-pm-js also relies on [Truffle contract abstractions](https://github.com/trufflesuite/truffle-contract). In fact, much of the underlying core contract functionality can be accessed in pm-js as one of these abstractions. Since the Truffle contract wrapper has to perform asynchronous actions such as wait on the result of a remote request to an Ethereum RPC node, it also uses thenables. For example, here is how to use the on-chain Gnosis [Math](https://pm-contracts.readthedocs.io/en/latest/Math.html) library exposed at [Gnosis.contracts](api-reference.html#Gnosis.contracts) to print the approximate natural log of a number:
+pm-js also relies on [Truffle contract abstractions](https://github.com/trufflesuite/truffle-contract). In fact, much of the underlying core contract functionality can be accessed in pm-js as one of these abstractions. Since the Truffle contract wrapper has to perform asynchronous actions such as wait on the result of a remote request to an Ethereum RPC node, it also uses thenables. For example, here is how to use the on-chain Gnosis [Math](https://gnosis-pm-contracts.readthedocs.io/en/latest/Math.html) library exposed at [Gnosis.contracts](api-reference.html#Gnosis.contracts) to print the approximate natural log of a number:
 
 ```javascript
 const ONE = Math.pow(2, 64)

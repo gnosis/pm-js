@@ -31,7 +31,7 @@ async function createDescription () {
 createDescription()
 ```
 
-Of course, future events will come to pass, and once they do, the outcome should be determinable. Oracles report on the outcome of events. The simplest oracle contract provided by Gnosis is a [`CentralizedOracle`](https://pm-contracts.readthedocs.io/en/latest/CentralizedOracle.html), and it is controlled by a single entity: the `owner` of the contract, which is a single Ethereum address, and which will from this point forward in this guide be referred to as the centralized oracle itself.
+Of course, future events will come to pass, and once they do, the outcome should be determinable. Oracles report on the outcome of events. The simplest oracle contract provided by Gnosis is a [`CentralizedOracle`](https://gnosis-pm-contracts.readthedocs.io/en/latest/CentralizedOracle.html), and it is controlled by a single entity: the `owner` of the contract, which is a single Ethereum address, and which will from this point forward in this guide be referred to as the centralized oracle itself.
 
 To create a centralized oracle, use [Gnosis.createCentralizedOracle](api-reference.html#createCentralizedOracle):
 
@@ -51,9 +51,9 @@ By no means is the CentralizedOracle the only possible oracle design which can b
 
 #### Events and Collateral
 
-Once an oracle is created, an event contract may defer to the oracle's judgment. The [`CategoricalEvent`](https://pm-contracts.readthedocs.io/en/latest/CategoricalEvent.html) and [`ScalarEvent`](https://pm-contracts.readthedocs.io/en/latest/ScalarEvent.html) contracts represent an event. They also mint sets of outcome tokens corresponding to a collateral of an [ERC20](https://theethereum.wiki/w/index.php/ERC20_Token_Standard)-compliant token. Once the relied-on oracle reports an outcome to the event, the outcome token corresponding to the reported outcome may be exchanged for the original collateral token.
+Once an oracle is created, an event contract may defer to the oracle's judgment. The [`CategoricalEvent`](https://gnosis-pm-contracts.readthedocs.io/en/latest/CategoricalEvent.html) and [`ScalarEvent`](https://gnosis-pm-contracts.readthedocs.io/en/latest/ScalarEvent.html) contracts represent an event. They also mint sets of outcome tokens corresponding to a collateral of an [ERC20](https://theethereum.wiki/w/index.php/ERC20_Token_Standard)-compliant token. Once the relied-on oracle reports an outcome to the event, the outcome token corresponding to the reported outcome may be exchanged for the original collateral token.
 
-Note that ether is *not* an ERC20-compliant token at the moment of this writing. It may be converted into an ERC20-compliant variant with an adaptor contract like [EtherToken](https://pm-contracts.readthedocs.io/en/latest/EtherToken.html) though. There is a deployed instance of EtherToken available in the API as [Gnosis.etherToken](api-reference.html#Gnosis.etherToken).
+Note that ether is *not* an ERC20-compliant token at the moment of this writing. It may be converted into an ERC20-compliant variant with an adaptor contract like [EtherToken](https://gnosis-pm-contracts.readthedocs.io/en/latest/EtherToken.html) though. There is a deployed instance of EtherToken available in the API as [Gnosis.etherToken](api-reference.html#Gnosis.etherToken).
 
 In order to create a categorical event contract instance backed by an specific `oracle`, use [Gnosis.createCategoricalEvent](api-reference.html#createCategoricalEvent). For example, a categorical event with three outcomes like the earlier example can be made like this:
 
@@ -143,7 +143,7 @@ buyAllOutcomes()
 >
 > You may notice that the constructor of the contract instance was used to call a method `syncTransaction`. That constructor is the same as the contract type abstraction, that is: `gnosis.etherToken.constructor === gnosis.contracts.EtherToken`. This is not an official method of `truffle-contract` yet! For more information, see [this pull request](https://github.com/trufflesuite/truffle-contract/pull/73).
 
-After executing a `buyAllOutcomes` transaction as above, the user would then have `4e18` units of each [`OutcomeToken`](https://pm-contracts.readthedocs.io/en/latest/OutcomeToken.html):
+After executing a `buyAllOutcomes` transaction as above, the user would then have `4e18` units of each [`OutcomeToken`](https://gnosis-pm-contracts.readthedocs.io/en/latest/OutcomeToken.html):
 
 ```js
 async function checkBalances() {
@@ -169,7 +169,7 @@ resolve()
 
 Note that you must pass in the 0-based index of the outcome corresponding to the event description published on IPFS ("Trump" has index 1 in the example `['Clinton', 'Trump', 'Other']`),
 
-If you are a stakeholder in this `event` contract instance, you can redeem your winnings with [`CategoricalEvent.redeemWinnings`](https://pm-contracts.readthedocs.io/en/latest/CategoricalEvent.html):
+If you are a stakeholder in this `event` contract instance, you can redeem your winnings with [`CategoricalEvent.redeemWinnings`](https://gnosis-pm-contracts.readthedocs.io/en/latest/CategoricalEvent.html):
 
 ```js
 async function redeem() {
@@ -184,7 +184,7 @@ Suppose that Alice believed Clinton would win the 2016 U.S. election, but Bob be
 
 However, it may be difficult to coordinate the trade. In order to create liquidity, an automated market maker may be used to operate an on-chain market. These markets also aggregate information from participants about their beliefs about the likeliness of outcomes.
 
-Gnosis contracts contain market and market maker contract interfaces, a [standard market implementation](https://pm-contracts.readthedocs.io/en/latest/StandardMarket.html), and an [implementation](https://pm-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html) of the [logarithmic market scoring rule (LMSR)](https://mason.gmu.edu/~rhanson/mktscore.pdf), an automated market maker. This can be leveraged with the [Gnosis.createMarket](api-reference.html#createMarket) method. For example, given an `event`, you can create a [`StandardMarket`](https://pm-contracts.readthedocs.io/en/latest/StandardMarket.html) operated by the LMSR market maker with the following:
+Gnosis contracts contain market and market maker contract interfaces, a [standard market implementation](https://gnosis-pm-contracts.readthedocs.io/en/latest/StandardMarket.html), and an [implementation](https://gnosis-pm-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html) of the [logarithmic market scoring rule (LMSR)](https://mason.gmu.edu/~rhanson/mktscore.pdf), an automated market maker. This can be leveraged with the [Gnosis.createMarket](api-reference.html#createMarket) method. For example, given an `event`, you can create a [`StandardMarket`](https://gnosis-pm-contracts.readthedocs.io/en/latest/StandardMarket.html) operated by the LMSR market maker with the following:
 
 ```js
 let market
@@ -225,7 +225,7 @@ fund()
 
 Furthermore, the outcome tokens sold by the market are guaranteed to be backed by collateral because the ultimate source of these outcome tokens are from the event contract, which only allow buying collateral-backed sets of outcome tokens.
 
-Let's suppose there is a `market` on the 2016 presidential election as indicated above, and that you are wondering if "Other" outcome tokens (which have index 2) are worth it at its price point. You can estimate how much it would cost to buy `1e18` units of those outcome tokens with [`LMSRMarketMaker.calcCost`](https://pm-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html):
+Let's suppose there is a `market` on the 2016 presidential election as indicated above, and that you are wondering if "Other" outcome tokens (which have index 2) are worth it at its price point. You can estimate how much it would cost to buy `1e18` units of those outcome tokens with [`LMSRMarketMaker.calcCost`](https://gnosis-pm-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html):
 
 ```js
 async function calcCost() {
@@ -249,7 +249,7 @@ async function buyOutcomeTokens() {
 buyOutcomeTokens()
 ```
 
-Similarly, you can see how much these outcome tokens are worth to the `market` with [`LMSRMarketMaker.calcProfit`](https://pm-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html):
+Similarly, you can see how much these outcome tokens are worth to the `market` with [`LMSRMarketMaker.calcProfit`](https://gnosis-pm-contracts.readthedocs.io/en/latest/LMSRMarketMaker.html):
 
 ```js
 async function calcProfit() {
@@ -274,7 +274,7 @@ sellOutcomeTokens()
 
 Oftentimes prediction markets aggregate predictions into more accurate predictions. Because of this, without a fee, the investor can expect to take a loss on their investments. However, too high of a fee would discourage participation in the market. Discerning the best fee factor for markets is outside the scope of this document.
 
-Finally, if you are the creator of a [`StandardMarket`](https://pm-contracts.readthedocs.io/en/latest/StandardMarket.html), you can close the market and obtain all of its outcome token holdings with `StandardMarket.close` and/or withdraw the trading fees paid with `StandardMarket.withdrawFees`:
+Finally, if you are the creator of a [`StandardMarket`](https://gnosis-pm-contracts.readthedocs.io/en/latest/StandardMarket.html), you can close the market and obtain all of its outcome token holdings with `StandardMarket.close` and/or withdraw the trading fees paid with `StandardMarket.withdrawFees`:
 
 ```js
 async function closeAndWithdraw() {
@@ -336,4 +336,4 @@ async function resolve() {
 }
 ```
 
-This will value each unit of the short outcome at \\(1 - {0.89 - 0.80 \over 1.00 - 0.80} = 0.55\\) units of the collateral, and the long outcome at \\(0.45\\) units of the collateral. Thus, if you held 50 units of the short outcome and 100 units of the long outcome, [`ScalarEvent.redeemWinnings`](https://pm-contracts.readthedocs.io/en/latest/ScalarEvent.html) would net you \\(\lfloor 50 \times 0.55 + 100 \times 0.45 \rfloor = 72\\) units of collateral. Hopefully you'll have paid less than that for those outcomes.
+This will value each unit of the short outcome at \\(1 - {0.89 - 0.80 \over 1.00 - 0.80} = 0.55\\) units of the collateral, and the long outcome at \\(0.45\\) units of the collateral. Thus, if you held 50 units of the short outcome and 100 units of the long outcome, [`ScalarEvent.redeemWinnings`](https://gnosis-pm-contracts.readthedocs.io/en/latest/ScalarEvent.html) would net you \\(\lfloor 50 \times 0.55 + 100 \times 0.45 \rfloor = 72\\) units of collateral. Hopefully you'll have paid less than that for those outcomes.

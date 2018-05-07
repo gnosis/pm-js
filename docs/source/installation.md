@@ -16,7 +16,7 @@
 
    * ES6 source of the library in `src` which can also be found on the [repository](https://github.com/gnosis/pm-js)
    * Compiled versions of the modules which can be run on Node.js in the `dist` directory
-   * Webpacked standalone `pm[.min].js` files ready for use by web clients in the `dist` directory
+   * Webpacked standalone `gnosis-pm[.min].js` files ready for use by web clients in the `dist` directory
    * API documentation in the `docs` directory
 
 
@@ -38,10 +38,10 @@ const Gnosis = require('.')
 
 ## Browser use
 
-The `pm-js` file and its minified version `pm.min.js` are self-contained and can be used directly in a webpage. For example, you may copy `pm.min.js` into a folder or onto your server, and in an HTML page, use the following code to import the library:
+The `gnosis-pm.js` file and its minified version `gnosis-pm.min.js` are self-contained and can be used directly in a webpage. For example, you may copy `gnosis-pm.min.js` into a folder or onto your server, and in an HTML page, use the following code to import the library:
 
 ```html
-<script src="pm.min.js"></script>
+<script src="gnosis-pm.min.js"></script>
 <script>
 // Gnosis should be available as a global after the above script import, so this subsequent script tag can make use of the API.
 </script>
@@ -71,7 +71,7 @@ pm-js refers to Truffle contract build artifacts found in `node_modules/@gnosis.
 (cd node_modules/\@gnosis.pm/gnosis-core-contracts/ && truffle migrate)
 ```
 
-This will deploy the contracts onto the chain and will record the deployed addresses in the contract build artifacts. This will make the API available to pm-js applications which use the transpiled *modules* in `dist` (typically Node.js apps), as these modules refer directly to the build artifacts in the `@gnosis.pm/gnosis-core-contracts` package. However, for browser applications which use the standalone library file `pm[.min].js`, that file has to be rebuilt to incorporate the new deployment addresses info.
+This will deploy the contracts onto the chain and will record the deployed addresses in the contract build artifacts. This will make the API available to pm-js applications which use the transpiled *modules* in `dist` (typically Node.js apps), as these modules refer directly to the build artifacts in the `@gnosis.pm/gnosis-core-contracts` package. However, for browser applications which use the standalone library file `gnosis-pm[.min].js`, that file has to be rebuilt to incorporate the new deployment addresses info.
 
 ### MetaMask
 

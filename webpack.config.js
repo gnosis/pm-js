@@ -7,7 +7,7 @@ module.exports = {
     entry: './src/index.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: minifiedOutput ? 'pm.min.js' : 'pm.js',
+        filename: minifiedOutput ? 'gnosis-pm.min.js' : 'gnosis-pm.js',
         library: 'Gnosis'
     },
     plugins: [
