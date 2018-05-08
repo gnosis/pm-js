@@ -77,11 +77,11 @@ gnosis.contracts.ScalarEvent.gasStats
 
 ## (Advanced) Notes for developers who use `web3`
 
-If you would like to continue using `web3` directly, one option is to skip this repo and use the [core contracts](https://github.com/gnosis/pm-contracts) directly. The NPM package `@gnosis.pm/gnosis-core-contracts` contains Truffle build artifacts as `build/contracts/*.json`, and those in turn contain contract ABIs, as well as existing deployment locations for various networks. The usage at this level looks something like this:
+If you would like to continue using `web3` directly, one option is to skip this repo and use the [core contracts](https://github.com/gnosis/pm-contracts) directly. The NPM package `@gnosis.pm/pm-contracts` contains Truffle build artifacts as `build/contracts/*.json`, and those in turn contain contract ABIs, as well as existing deployment locations for various networks. The usage at this level looks something like this:
 
 ```javascript
 const Web3 = require('web3')
-const CategoricalEventArtifact = require('@gnosis.pm/gnosis-core-contracts/build/contracts/CategoricalEvent.json')
+const CategoricalEventArtifact = require('@gnosis.pm/pm-contracts/build/contracts/CategoricalEvent.json')
 
 const web3 = new Web3(/* whatever your web3 setup is here... */)
 
@@ -97,7 +97,7 @@ const contract = require('truffle-contract')
 // unlike the last setup, we don't need web3, just 
 const provider = new Web3.providers.HttpProvider('https://ropsten.infura.io') // or whatever provider you'd like
 
-const CategoricalEventArtifact = require('@gnosis.pm/gnosis-core-contracts/build/contracts/CategoricalEvent.json')
+const CategoricalEventArtifact = require('@gnosis.pm/pm-contracts/build/contracts/CategoricalEvent.json')
 const CategoricalEvent = contract(CategoricalEventArtifact) // pass in the artifact directly here instead
 const CategoricalEvent.setProvider(provider)
 

@@ -8,7 +8,7 @@
 
 3. Install [`pm-contracts`](https://github.com/gnosis/pm-contracts) and `pm-js` into your project as a dependency using:
    
-       npm install --save '@gnosis.pm/gnosis-core-contracts' '@gnosis.pm/pm-js'
+       npm install --save '@gnosis.pm/pm-contracts' '@gnosis.pm/pm-js'
    
    Be sure to issue this command with this exact spelling. The quotes are there in case you use [Powershell](https://stackoverflow.com/a/5571703/1796894).
 
@@ -61,17 +61,17 @@ After setting up the pm-js library, you will still need a connection to an [Ethe
 Error: Invalid JSON RPC response: ""
 ```
 
-pm-js refers to Truffle contract build artifacts found in `node_modules/@gnosis.pm/gnosis-core-contracts/build/contracts/`, which contain a registry of where key contracts are deployed given a network ID. By default Gnosis contract suite is already deployed on the Ropsten, Kovan, and Rinkeby testnets.
+pm-js refers to Truffle contract build artifacts found in `node_modules/@gnosis.pm/pm-contracts/build/contracts/`, which contain a registry of where key contracts are deployed given a network ID. By default Gnosis contract suite is already deployed on the Ropsten, Kovan, and Rinkeby testnets.
 
 ### Ganache-cli and private chain providers
 
 [Ganache-cli](https://github.com/trufflesuite/ganache-cli) is a JSON RPC provider which is designed to ease developing Ethereum dapps. It can be used in tandem with pm-js as well, but its use requires some setup. Since Ganache-cli randomly generates a network ID and begins the Ethereum VM in a blank state, the contract suite would need to be deployed, and the deployed contract addresses recorded in the build artifacts before use with Ganache-cli. This can be done by running the migration script in the core contracts package directory.
 
 ```sh
-(cd node_modules/\@gnosis.pm/gnosis-core-contracts/ && truffle migrate)
+(cd node_modules/\@gnosis.pm/pm-contracts/ && truffle migrate)
 ```
 
-This will deploy the contracts onto the chain and will record the deployed addresses in the contract build artifacts. This will make the API available to pm-js applications which use the transpiled *modules* in `dist` (typically Node.js apps), as these modules refer directly to the build artifacts in the `@gnosis.pm/gnosis-core-contracts` package. However, for browser applications which use the standalone library file `gnosis-pm[.min].js`, that file has to be rebuilt to incorporate the new deployment addresses info.
+This will deploy the contracts onto the chain and will record the deployed addresses in the contract build artifacts. This will make the API available to pm-js applications which use the transpiled *modules* in `dist` (typically Node.js apps), as these modules refer directly to the build artifacts in the `@gnosis.pm/pm-contracts` package. However, for browser applications which use the standalone library file `gnosis-pm[.min].js`, that file has to be rebuilt to incorporate the new deployment addresses info.
 
 ### MetaMask
 
