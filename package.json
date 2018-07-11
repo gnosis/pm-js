@@ -79,7 +79,7 @@
     "ipfs-mini": "^1.1.2",
     "lodash": "^4.17.5",
     "truffle-contract": "github:cag/truffle-contract#0095707aa042b3c4fdb913a8a7cb0505a3a68d7c",
-    "web3": "^0.20.6"
+    "web3": "^1.0.0-beta.34"
   },
   "peerDependencies": {
     "@gnosis.pm/pm-contracts": "*"
