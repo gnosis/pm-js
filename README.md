@@ -8,7 +8,7 @@
 
 ## Getting Started
 
-See the [documentation](https://gnosis-pm-js.readthedocs.io/en/latest/).
+See the [documentation](https://gnosis-apollo.readthedocs.io/en/latest/pm-js.html).
 
 ## Really quick start
 
@@ -30,6 +30,3 @@ See the [documentation](https://gnosis-pm-js.readthedocs.io/en/latest/).
    ```html
    <script src="gnosis-pm.js"></script>
    ```
-5. Follow some tutorials:
-   * [API Overview](https://gnosis-pm-js.readthedocs.io/en/latest/api-overview.html)
-   * [Events, Oracles, and Markets](https://gnosis-pm-js.readthedocs.io/en/latest/events-oracles-and-markets.html)
