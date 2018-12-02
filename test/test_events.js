@@ -8,6 +8,7 @@ import {
 
 const { requireEventFromTXResult } = Gnosis
 
+
 multiWeb3GnosisDescribe('Gnosis events', ({ gnosisQ }) => {
     let gnosis, ipfsHash, oracle
 
@@ -26,6 +27,8 @@ multiWeb3GnosisDescribe('Gnosis events', ({ gnosisQ }) => {
         assert(event)
         assert(!await oracle.isOutcomeSet())
         assert(!await event.isOutcomeSet())
+        assert(event.transactionHash !== null)
+        assert(event.transactionHash !== undefined)
 
         await gnosis.resolveEvent({
             event,

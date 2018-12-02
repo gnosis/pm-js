@@ -13,8 +13,8 @@
     "netreset-oly": "cd node_modules/@gnosis.pm/pm-apollo-contracts && truffle networks --clean && node scripts/inject_network_info.js",
     "nodebuild": "babel src/ --out-dir dist --source-maps",
     "webbuild": "webpack && cross-env WEBPACK_ENV=minified webpack -p",
-    "dev": "run-with-testrpc 'npm run migrate && webpack-dev-server'",
-    "test": "run-with-testrpc -l 40000000 'npm run migrate && npm run test-manual'",
+    "dev": "./node_modules/.bin/run-with-testrpc 'npm run migrate && webpack-dev-server'",
+    "test": "./node_modules/.bin/run-with-testrpc -l 40000000 'npm run migrate && npm run test-manual'",
     "test-manual": "multidep test/multidep.json && mocha --timeout 120000 --require babel-core/register test/test_events.js",
     "test-pm-trading-db": "cross-env GNOSIS_OPTIONS='{\"ipfs\":{\"host\":\"localhost\",\"port\":5001,\"protocol\":\"http\"}}' npm run test-manual",
     "prepublish": "npm run netreset && npm run nodebuild && npm run webbuild"

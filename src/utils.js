@@ -299,7 +299,7 @@ export class TransactionError extends Error {
 
 export async function sendTransactionAndGetResult (opts) {
     opts = opts || {}
-    let caller, txHash, txResult, matchingLog
+    let caller, txHash, txResult, matchingLog, contractInstance
 
     try {
         caller = opts.callerContract
@@ -322,7 +322,10 @@ export async function sendTransactionAndGetResult (opts) {
             return matchingLog.args[opts.eventArgName]
         } else {
             opts.log(`tx hash ${txHash.slice(0, 6)}..${txHash.slice(-4)} returned ${opts.resultContract.contractName}(${matchingLog.args[opts.eventArgName]})`)
-            return await opts.resultContract.at(matchingLog.args[opts.eventArgName])
+            contractInstance = await opts.resultContract.at(matchingLog.args[opts.eventArgName])
+            // Set the resulting transaction hash on the contract instance
+            contractInstance.transactionHash = txHash
+            return contractInstance
         }
     } catch(err) {
         throw new TransactionError(Object.assign({
