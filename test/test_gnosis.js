@@ -70,12 +70,11 @@ describe('Gnosis', function () {
         assert(gnosis.standardMarketFactory.gasStats)
     })
 
-    it('initializes on the mainnet with an etherToken instance that points to the maker WETH', async () => {
-        let gnosis = await Gnosis.create({
+    it('tries to initialize on the network with network_id 1 with an etherToken instance that points to the canonical WETH', async () => {
+        const err = await requireRejection(Gnosis.create({
             ethereum: ganache.provider({ network_id: 1 }),
-        })
-        assert(gnosis.etherToken)
-        assert.equal(gnosis.etherToken.address, '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2')
+        }))
+        assert.equal(err.message, 'Cannot create instance of EtherToken; no code at address 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2')
     })
 
     it('can import custom deployed smart contract sets with config data', async () => {
@@ -92,16 +91,16 @@ describe('Gnosis', function () {
 
         await gnosis.setWeb3Provider(ganache.provider({ network_id: 4 }))
 
-        assert.equal(gnosis.olympiaToken.address, '0x979861df79c7408553aaf20c01cfb3f81ccf9341')
-        assert.equal(gnosis.olympiaAddressRegistry.address, '0x6427d856450b20f6fab88be18d949faf9c4da512')
+        assert.equal(gnosis.olympiaToken.address, '0x979861dF79C7408553aAF20c01Cfb3f81CCf9341')
+        assert.equal(gnosis.olympiaAddressRegistry.address, '0x6427D856450b20F6FaB88bE18d949FaF9C4DA512')
 
         // TODO: Truffle contracts cache the address last used to represent deployed contracts
         //       even after the provider has changed to provide for another network.
         //       When this behavior is no longer the case, the next bit can be uncommented and should pass.
         // await gnosis.setWeb3Provider(ganache.provider())
 
-        // assert.equal(gnosis.olympiaToken, undefined)
-        // assert.equal(gnosis.olympiaAddressRegistry, undefined)
+        // assert.equal(gnosis.olympiaToken.address, undefined)
+        // assert.equal(gnosis.olympiaAddressRegistry.address, undefined)
     })
 
     it('reports more informative error messages and logs messages', async () => {
@@ -113,7 +112,7 @@ describe('Gnosis', function () {
 
         const netOutcomeTokensSold = [0, 0]
         const feeFactor = 5000 // 0.5%
-        const participants = gnosis.web3.eth.accounts.slice(0, 4)
+        const participants = (await gnosis.web3.eth.getAccounts()).slice(0, 4)
 
         const ipfsHash = await gnosis.publishEventDescription(description)
 
@@ -226,13 +225,14 @@ describe('Gnosis', function () {
         let gnosis = await Gnosis.create(options)
 
         const txParamObjects = []
-        const _sendAsync = gnosis.web3.currentProvider.sendAsync
-        gnosis.web3.currentProvider.sendAsync = function() {
+        console.log(gnosis.web3.currentProvider)
+        const _send = gnosis.web3.currentProvider.send
+        gnosis.web3.currentProvider.send = function() {
             const rpcMessage = arguments[0]
             if(rpcMessage.method === 'eth_sendTransaction') {
                 txParamObjects.push(rpcMessage.params[0])
             }
-            return _sendAsync.apply(this, arguments)
+            return _send.apply(this, arguments)
         }
 
         let ipfsHash = await gnosis.publishEventDescription(description)

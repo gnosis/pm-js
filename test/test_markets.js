@@ -44,7 +44,7 @@ describe('Gnosis market mechanics', () => {
         feeFactor = 5000 // 0.5%
 
         gnosis = await Gnosis.create(options)
-        participants = gnosis.web3.eth.accounts.slice(0, 4)
+        participants = (await gnosis.web3.eth.getAccounts()).slice(0, 4)
         ipfsHash = await gnosis.publishEventDescription(description)
         oracle = await gnosis.createCentralizedOracle(ipfsHash)
         event = await gnosis.createCategoricalEvent({

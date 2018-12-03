@@ -20,6 +20,7 @@ export const createCentralizedOracle = wrapWeb3Function((self) => ({
     resultContract: self.contracts.CentralizedOracle,
     validators: [
         ([ipfsHash]) => {
+            ipfsHash = self.web3.version >= '1' ? self.web3.utils.hexToAscii(ipfsHash) : ipfsHash
             if(ipfsHash.length !== ipfsHashLength)
                 throw new Error(`expected ipfsHash ${ipfsHash} to have length ${ipfsHashLength}`)
         }

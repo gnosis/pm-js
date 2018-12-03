@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import DecimalJS from 'decimal.js'
+import Web3 from 'web3'
 
 function makeWeb3Compatible(value, type, argName) {
     if(type == null) {
@@ -46,7 +47,9 @@ function makeWeb3Compatible(value, type, argName) {
 
     if(type === 'bytes' || type === 'string') {
         if(_.isString(value)) {
-            return value
+            if(Web3.version < '1' || Web3.utils.isHexStrict(value))
+                return value
+            return Web3.utils.utf8ToHex(value)
         }
 
         throw new Error(`could not format ${value} for ${type} ${argName}`)
