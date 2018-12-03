@@ -1,6 +1,6 @@
 {
   "path": "test/multidep_modules",
   "versions": {
-    "web3": ["0.20.6", "1.0.0-beta.33"]
+    "web3": ["0.20.7", "1.0.0-beta.34"]
   }
 }
