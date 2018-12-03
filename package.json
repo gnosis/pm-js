@@ -76,7 +76,7 @@
     "decimal.js": "^10.0.0",
     "ipfs-mini": "^1.1.2",
     "lodash": "^4.17.5",
-    "truffle-contract": "github:cag/truffle-contract#0095707aa042b3c4fdb913a8a7cb0505a3a68d7c",
+    "truffle-contract": "^4.0.0-beta.2",
     "web3": "^1.0.0-beta.34"
   },
   "peerDependencies": {
