@@ -15,7 +15,7 @@
     "webbuild": "webpack && cross-env WEBPACK_ENV=minified webpack -p",
     "dev": "./node_modules/.bin/run-with-testrpc 'npm run migrate && webpack-dev-server'",
     "test": "./node_modules/.bin/run-with-testrpc -l 40000000 'npm run migrate && npm run test-manual'",
-    "test-manual": "multidep test/multidep.json && mocha --timeout 120000 --require babel-core/register test/test_events.js",
+    "test-manual": "multidep test/multidep.json && mocha --timeout 120000 --require babel-core/register $MOCHA_OPTS",
     "test-pm-trading-db": "cross-env GNOSIS_OPTIONS='{\"ipfs\":{\"host\":\"localhost\",\"port\":5001,\"protocol\":\"http\"}}' npm run test-manual",
     "prepublish": "npm run netreset && npm run nodebuild && npm run webbuild"
   },
@@ -65,7 +65,7 @@
     "open": "0.0.5",
     "run-with-testrpc": "0.3.0",
     "style-loader": "^0.20.3",
-    "truffle": "^3.4.11",
+    "truffle": "3.4.11",
     "webpack": "^4.1.1",
     "webpack-cli": "3.1.1",
     "webpack-dev-server": "^3.1.1"
@@ -77,7 +77,7 @@
     "ipfs-mini": "^1.1.2",
     "lodash": "^4.17.5",
     "truffle-contract": "github:cag/truffle-contract#0095707aa042b3c4fdb913a8a7cb0505a3a68d7c",
-    "web3": "^1.0.0-beta.34"
+    "web3": "1.0.0-beta.34"
   },
   "peerDependencies": {
     "@gnosis.pm/pm-contracts": "1.1.0"
