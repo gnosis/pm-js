@@ -8,6 +8,7 @@ deploy:
   provider: npm
   email: alanlu1023@gmail.com
   api_key: $NPM_TOKEN
+  skip_cleanup: true
   on:
     all_branches: true
     tags: true
