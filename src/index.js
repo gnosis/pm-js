@@ -25,6 +25,7 @@ const windowLoaded = new Promise((accept, reject) => {
 const gasStatsData = require('@gnosis.pm/pm-contracts/build/gas-stats.json')
 const gasLimit = 4e6
 const gasDefaultMaxMultiplier = 2
+const weth9MainnetAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 
 const implementationInterfaceMap = {
     StandardMarket: ['Market'],
@@ -212,6 +213,7 @@ class Gnosis {
 
         await Promise.all([
             /**
+            * @TODO review comment below:
              * If on mainnet, this will be an EtherToken contract abstraction pointing to the `MakerDAO WETH contract <https://etherscan.io/address/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2#code>`_.
              *
              * Otherwise, if `EtherToken <https://gnosis-pm-contracts.readthedocs.io/en/latest/EtherToken.html>`_ is deployed to the current network, this will be set to an EtherToken contract abstraction pointing at the deployment address.
@@ -220,9 +222,9 @@ class Gnosis {
              */
             (async () => {
                 if(await utils.promisify(this.web3.version.getNetwork)() == 1) {
-                    this.etherToken = this.contracts.EtherToken.at('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2')
+                    this.etherToken = this.contracts.WETH9.at(weth9MainnetAddress)
                 } else {
-                    await this.trySettingContractInstance('etherToken', this.contracts.EtherToken)
+                    await this.trySettingContractInstance('etherToken', this.contracts.WETH9)
                 }
             })(),
 
