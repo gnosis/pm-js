@@ -66,7 +66,7 @@ const syncDescribedTransactions = async (txInfo, log) =>
 
 /**
  * Buys outcome tokens. If you have ether and plan on transacting with a market on an event which
- * uses EtherToken as collateral, be sure to convert the ether into EtherToken by sending ether to
+ * uses WETH9 as collateral, be sure to convert the ether into WETH9 by sending ether to
  * the deposit() method of the contract. For other ERC20 collateral tokens, follow the token's
  * acquisition process defined by the token's contract.
  *
@@ -101,7 +101,7 @@ export async function buyOutcomeTokens() {
     buyTxOpts = Object.assign({}, opts, buyTxOpts)
 
     const market = await this.contracts.Market.at(marketAddress)
-    const collateralToken = await this.contracts.Token.at(
+    const collateralToken = await this.contracts.WETH9.at(
         await this.contracts.Event.at(
             await market.eventContract(opts)
         ).collateralToken()
@@ -159,7 +159,7 @@ export async function buyOutcomeTokens() {
 
 buyOutcomeTokens.estimateGas = async function({ using }) {
     if(using === 'stats') {
-        return this.contracts.Token.gasStats.approve.averageGasUsed +
+        return this.contracts.WETH9.gasStats.approve.averageGasUsed +
             this.contracts.Market.gasStats.buy.averageGasUsed
     }
     throw new Error(`unsupported gas estimation source ${using}`)
@@ -167,8 +167,8 @@ buyOutcomeTokens.estimateGas = async function({ using }) {
 
 
 /**
- * Sells outcome tokens. If transacting with a market which deals with EtherToken as collateral,
- * will need additional step of sending a withdraw(uint amount) transaction to the EtherToken
+ * Sells outcome tokens. If transacting with a market which deals with WETH9 as collateral,
+ * will need additional step of sending a withdraw(uint amount) transaction to the WETH9
  * contract if raw ether is desired.
  *
  * Note: this method is asynchronous and will return a Promise
@@ -202,7 +202,7 @@ export async function sellOutcomeTokens() {
     sellTxOpts = Object.assign({}, opts, sellTxOpts)
 
     const market = await this.contracts.Market.at(marketAddress)
-    const outcomeToken = await this.contracts.Token.at(
+    const outcomeToken = await this.contracts.WETH9.at(
         await this.contracts.Event.at(
             await market.eventContract(opts)
         ).outcomeTokens(outcomeTokenIndex)
@@ -260,7 +260,7 @@ export async function sellOutcomeTokens() {
 
 sellOutcomeTokens.estimateGas = async function({ using }) {
     if(using === 'stats') {
-        return this.contracts.Token.gasStats.approve.averageGasUsed +
+        return this.contracts.WETH9.gasStats.approve.averageGasUsed +
             this.contracts.Market.gasStats.sell.averageGasUsed
     }
     throw new Error(`unsupported gas estimation source ${using}`)
