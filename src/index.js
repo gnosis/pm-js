@@ -36,9 +36,9 @@ const contractArtifacts = [
     'CategoricalEvent',
     'ScalarEvent',
     'EventFactory',
-    'Token',
+    'ERC20',
     'HumanFriendlyToken',
-    'EtherToken',
+    'WETH9',
     'CentralizedOracle',
     'CentralizedOracleFactory',
     'UltimateOracle',
@@ -103,9 +103,7 @@ class Gnosis {
          * - `CategoricalEvent <https://gnosis-pm-contracts.readthedocs.io/en/latest/CategoricalEvent.html>`_
          * - `ScalarEvent <https://gnosis-pm-contracts.readthedocs.io/en/latest/ScalarEvent.html>`_
          * - `EventFactory <https://gnosis-pm-contracts.readthedocs.io/en/latest/EventFactory.html>`_
-         * - `Token <https://gnosis-pm-contracts.readthedocs.io/en/latest/Token.html>`_
          * - `HumanFriendlyToken <https://gnosis-pm-contracts.readthedocs.io/en/latest/HumanFriendlyToken.html>`_
-         * - `Ether Token <https://gnosis-pm-contracts.readthedocs.io/en/latest/EtherToken.html>`_
          * - `CentralizedOracle <https://gnosis-pm-contracts.readthedocs.io/en/latest/CentralizedOracle.html>`_
          * - `CentralizedOracleFactory <https://gnosis-pm-contracts.readthedocs.io/en/latest/CentralizedOracleFactory.html>`_
          * - `UltimateOracle <https://gnosis-pm-contracts.readthedocs.io/en/latest/UltimateOracle.html>`_
@@ -114,6 +112,8 @@ class Gnosis {
          * - `Market <https://gnosis-pm-contracts.readthedocs.io/en/latest/Market.html>`_
          * - `StandardMarket <https://gnosis-pm-contracts.readthedocs.io/en/latest/StandardMarket.html>`_
          * - `Standard Market Factory <https://gnosis-pm-contracts.readthedocs.io/en/latest/StandardMarketFactory.html>`_
+         * - `ERC20 <https://theethereum.wiki/w/index.php/ERC20_Token_Standard>`_
+         * - `WETH9 <https://weth.io/>`_
          *
          * These are configured to use the web3 provider specified in Gnosis.create or subsequently modified with Gnosis.setWeb3Provider. The default gas costs for these abstractions are set to the maximum cost of their respective entries found in the `gas-stats.json` file built from the `core contracts <https://github.com/gnosis/pm-contracts#readme>`_. Additionally, the default message sender (i.e. `from` address) is set via the optional `defaultAccount` param in Gnosis.setWeb3Provider.
          *
