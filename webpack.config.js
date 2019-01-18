@@ -22,7 +22,7 @@ module.exports = {
             },
             {
                 test: /\/build\/contracts\/\w+\.json$/,
-                use: ['json-x-loader?exclude=unlinked_binary+networks.*.events+networks.*.links']
+                use: ['json-x-loader?exclude=unlinked_binary+networks.*.events+networks.*.links+bytecode+deployedBytecode+sourceMap+deployedSourceMap+source+sourcePath+ast+legacyAST']
             },
             {
                 test: /\/gas-stats.json$/,
