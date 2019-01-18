@@ -101,7 +101,7 @@ export async function buyOutcomeTokens() {
     buyTxOpts = Object.assign({}, opts, buyTxOpts)
 
     const market = await this.contracts.Market.at(marketAddress)
-    const collateralToken = await this.contracts.WETH9.at(
+    const collateralToken = await this.contracts.ERC20.at(
         await this.contracts.Event.at(
             await market.eventContract(opts)
         ).collateralToken()
@@ -159,7 +159,7 @@ export async function buyOutcomeTokens() {
 
 buyOutcomeTokens.estimateGas = async function({ using }) {
     if(using === 'stats') {
-        return this.contracts.WETH9.gasStats.approve.averageGasUsed +
+        return this.contracts.ERC20.gasStats.approve.averageGasUsed +
             this.contracts.Market.gasStats.buy.averageGasUsed
     }
     throw new Error(`unsupported gas estimation source ${using}`)
@@ -202,7 +202,7 @@ export async function sellOutcomeTokens() {
     sellTxOpts = Object.assign({}, opts, sellTxOpts)
 
     const market = await this.contracts.Market.at(marketAddress)
-    const outcomeToken = await this.contracts.WETH9.at(
+    const outcomeToken = await this.contracts.ERC20.at(
         await this.contracts.Event.at(
             await market.eventContract(opts)
         ).outcomeTokens(outcomeTokenIndex)
@@ -260,7 +260,7 @@ export async function sellOutcomeTokens() {
 
 sellOutcomeTokens.estimateGas = async function({ using }) {
     if(using === 'stats') {
-        return this.contracts.WETH9.gasStats.approve.averageGasUsed +
+        return this.contracts.ERC20.gasStats.approve.averageGasUsed +
             this.contracts.Market.gasStats.sell.averageGasUsed
     }
     throw new Error(`unsupported gas estimation source ${using}`)
