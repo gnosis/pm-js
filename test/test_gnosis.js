@@ -70,6 +70,12 @@ describe('Gnosis', function () {
         assert(gnosis.standardMarketFactory.gasStats)
     })
 
+    it('initializes with contract aliases for ERC20 and WETH9', async () => {
+        let gnosis = await Gnosis.create()
+        assert.strictEqual(gnosis.contracts.ERC20, gnosis.contracts.Token)
+        assert.strictEqual(gnosis.contracts.WETH9, gnosis.contracts.EtherToken)
+    })
+
     it('initializes on the mainnet with an etherToken instance that points to the maker WETH', async () => {
         let gnosis = await Gnosis.create({
             ethereum: ganache.provider({ network_id: 1 }),

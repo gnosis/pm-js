@@ -131,6 +131,9 @@ class Gnosis {
             return [name, c]
         }))
 
+        this.contracts.Token = this.contracts.ERC20
+        this.contracts.EtherToken = this.contracts.WETH9
+
         _.forOwn(this.contracts, (c, name, cs) => {
             const maxGasCost = Math.max(
                 ...Object.values(c.gasStats || {}).map(
