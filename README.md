@@ -24,7 +24,7 @@ See the [documentation](https://gnosis-apollo.readthedocs.io/en/latest/pm-js.htm
    ```sh
    cd path/to/pm-contracts
    npm install
-   npm run migrate
+   npm run migrate -- --network quickstart
    ```
 4. Download [`gnosis-pm.js`](https://raw.githubusercontent.com/gnosis/pm-js/master/dist/gnosis-pm.js) and put it in an HTML file:
    ```html
